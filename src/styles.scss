@@ -6,6 +6,8 @@
   --card-foreground: #09090b;
   --primary: #18181b;
   --primary-foreground: #fafafa;
+  --brand-red: #e31937;
+  --brand-red-foreground: #ffffff;
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
   --muted: #f4f4f5;
@@ -53,4 +55,27 @@ a:hover {
 button {
   font-family: inherit;
   cursor: pointer;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--brand-red);
+  color: var(--brand-red-foreground);
+}
+
+.btn-primary:hover {
+  filter: brightness(0.9);
 }

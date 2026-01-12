@@ -38,6 +38,10 @@ export class ProfilesRepository {
     this.storage.setItem(this.key, list);
   }
 
+  saveBulk(profiles: Profile[]): void {
+    this.storage.setItem(this.key, profiles);
+  }
+
   getById(id: string): Profile | undefined {
     return this.getAll().find((p) => p.id === id);
   }

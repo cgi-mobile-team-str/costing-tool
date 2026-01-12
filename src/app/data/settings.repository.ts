@@ -10,6 +10,7 @@ export class SettingsRepository {
   private storage = inject(LocalStorageService);
 
   private defaultSettings: Settings = {
+    projectName: 'Mon Projet Costing',
     marginRate: 0.15,
     currency: 'EUR',
     version: '1.0.0',

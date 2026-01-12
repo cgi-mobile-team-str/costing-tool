@@ -219,6 +219,9 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         max-width: 800px;
         margin: 0 auto;
       }
+      .project-input:focus {
+        border-color: var(--brand-red);
+      }
       .form-group {
         margin-bottom: 1rem;
       }
@@ -270,8 +273,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         cursor: pointer;
       }
       .btn-primary {
-        background: #007bff;
-        color: white;
+        background: var(--brand-red);
+        color: var(--brand-red-foreground);
       }
       .btn-secondary {
         background: #6c757d;

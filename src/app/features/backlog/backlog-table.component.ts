@@ -18,8 +18,8 @@ export interface ClusterGroup {
       <table>
         <thead>
           <tr>
-            <th width="40"></th>
-            <th style="padding-left: 2rem;">{{ 'backlog.title' | translate }}</th>
+            <th width="32" style="padding-right: 0;"></th>
+            <th style="padding-left: 0.5rem;">{{ 'backlog.title' | translate }}</th>
             <th>{{ 'backlog.description' | translate }}</th>
             <th>{{ 'backlog.hypotheses' | translate }}</th>
             <th>{{ 'backlog.comments' | translate }}</th>

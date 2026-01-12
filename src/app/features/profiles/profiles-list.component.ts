@@ -15,7 +15,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   template: `
     <div class="header">
       <h2>{{ 'nav.profiles' | translate }}</h2>
-      <a routerLink="/profiles/new" class="btn btn-primary">{{ 'common.add' | translate }}</a>
     </div>
 
     <!-- Margin Configuration -->
@@ -36,27 +35,27 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       </div>
     </div>
 
-    <div class="table-container">
+    <div class="table-container shadow-sm">
       <table>
         <thead>
           <tr>
             <th>{{ 'profiles.name' | translate }}</th>
             <th>{{ 'profiles.rate' | translate }}</th>
             <th>{{ 'profiles.active' | translate }}</th>
-            <th>{{ 'common.actions' | translate }}</th>
+            <th class="text-right">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (profile of profiles(); track profile.id) {
           <tr [class.inactive]="!profile.active">
-            <td>{{ profile.name }}</td>
+            <td class="font-medium">{{ profile.name }}</td>
             <td>{{ profile.dailyRate | currency : 'EUR' }}</td>
             <td>
               <span class="badge" [class.success]="profile.active">{{
                 profile.active ? 'Oui' : 'Non'
               }}</span>
             </td>
-            <td class="actions">
+            <td class="actions text-right">
               <a [routerLink]="['/profiles', profile.id]" class="btn-sm btn-outline">{{
                 'common.edit' | translate
               }}</a>
@@ -69,6 +68,24 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         </tbody>
       </table>
     </div>
+
+    <div class="footer-actions">
+      <a routerLink="/profiles/new" class="btn btn-dark">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          style="margin-right: 0.5rem"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        {{ 'common.add' | translate }}
+      </a>
+    </div>
   `,
   styles: [
     `
@@ -79,77 +96,98 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         margin-bottom: 1.5rem;
       }
       .table-container {
-        overflow-x: auto;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        background: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        margin-bottom: 1rem;
       }
       table {
         width: 100%;
         border-collapse: collapse;
+        font-size: 0.875rem;
       }
       th,
       td {
-        padding: 1rem;
+        padding: 0.75rem 1rem;
         text-align: left;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
       }
       th {
-        background: #f8f9fa;
+        background: var(--muted);
         font-weight: 600;
-        color: #495057;
+        color: var(--muted-foreground);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
       tr:hover {
-        background: #f8f9fa;
+        background: rgba(0, 0, 0, 0.02);
       }
       tr.inactive {
         opacity: 0.6;
       }
-      .btn {
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
+      .font-medium {
+        font-weight: 500;
+        color: var(--foreground);
       }
-      .btn-primary {
-        background: #007bff;
+      .text-right {
+        text-align: right;
+      }
+
+      .footer-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+      }
+
+      .btn-dark {
+        background: var(--primary);
         color: white;
       }
+      .btn-dark:hover {
+        background: #27272a;
+      }
+
       .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8125rem;
         border-radius: 4px;
         cursor: pointer;
         border: 1px solid transparent;
-        margin-right: 0.5rem;
+        margin-left: 0.5rem;
         text-decoration: none;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
       }
       .btn-outline {
-        border-color: #dee2e6;
-        color: #495057;
+        border-color: var(--border);
+        color: var(--muted-foreground);
         background: white;
       }
+      .btn-outline:hover {
+        background: var(--muted);
+        color: var(--foreground);
+      }
       .btn-danger {
-        background: #dc3545;
-        color: white;
-        border-color: #dc3545;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .btn-danger:hover {
+        background: #fecaca;
       }
       .badge {
-        padding: 0.25rem 0.5rem;
-        border-radius: 12px;
+        padding: 0.125rem 0.625rem;
+        border-radius: 9999px;
         font-size: 0.75rem;
-        background: #e9ecef;
-        color: #495057;
+        font-weight: 500;
+        background: #f4f4f5;
+        color: #71717a;
       }
       .badge.success {
-        background: #d4edda;
-        color: #155724;
-      }
-      .badge.success {
-        background: #d4edda;
-        color: #155724;
+        background: #dcfce7;
+        color: #166534;
       }
       .card {
         background: white;

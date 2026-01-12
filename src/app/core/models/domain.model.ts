@@ -29,6 +29,7 @@ export interface BacklogItem {
 }
 
 export interface Settings {
+  projectName?: string;
   marginRate: number; // 0.15 = 15%
   currency: string;
   version: string;

@@ -14,7 +14,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   imports: [CommonModule, TranslatePipe, RouterLink],
   template: `
     <div class="container">
-      <h2>{{ 'nav.dashboard' | translate }}</h2>
+      <div class="header">
+        <div>
+          <span class="context-label">{{ 'nav.dashboard' | translate }}</span>
+          <h2>{{ settings().projectName }}</h2>
+        </div>
+      </div>
 
       <!-- Global Stats -->
       <div class="stats-grid">
@@ -87,6 +92,29 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         max-width: 1200px;
         margin: 0 auto;
       }
+      .header {
+        margin-bottom: 2.5rem;
+        padding-top: 1rem;
+      }
+      .context-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        display: block;
+      }
+      .header h2 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+      }
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -100,7 +128,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       }
       .stat-card.total {
-        background: #007bff;
+        background: var(--brand-red);
         color: white;
       }
       .stat-card.total .sub {
@@ -121,6 +149,28 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       .sub {
         font-size: 0.9rem;
         color: #6c757d;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+      }
+      .btn-secondary {
+        background: var(--muted);
+        color: var(--muted-foreground);
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
       }
 
       .dashboard-content {
@@ -163,7 +213,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         transition: width 0.5s ease;
       }
       .bar.ht {
-        background: #007bff;
+        background: var(--brand-red);
       }
       .bar-value {
         width: 80px;
@@ -213,7 +263,7 @@ export class DashboardComponent {
 
   private backlog = signal(this.backlogRepo.getAll());
   private profiles = this.profilesRepo.getAll(); // Static for calc, fine if refreshed
-  private settings = this.settingsRepo.get();
+  settings = signal(this.settingsRepo.get());
 
   scopes: Scope[] = ['MVP', 'V1', 'V2'];
 
@@ -234,7 +284,7 @@ export class DashboardComponent {
     return (targetScope: Scope) => {
       const items = this.backlog().filter((i) => i.scope === targetScope);
       const totalHt = items.reduce((acc, i) => acc + this.getItemCost(i), 0);
-      const totalTtc = this.calc.applyMargin(totalHt, this.settings.marginRate);
+      const totalTtc = this.calc.applyMargin(totalHt, this.settings().marginRate);
       return { totalHt, totalTtc };
     };
   });
@@ -242,7 +292,7 @@ export class DashboardComponent {
   globalStats = computed(() => {
     const items = this.backlog();
     const totalHt = items.reduce((acc, i) => acc + this.getItemCost(i), 0);
-    const margin = this.calc.calculateMarginAmount(totalHt, this.settings.marginRate);
+    const margin = this.calc.calculateMarginAmount(totalHt, this.settings().marginRate);
     const totalTtc = totalHt + margin;
     return { totalHt, margin, totalTtc };
   });
@@ -254,11 +304,6 @@ export class DashboardComponent {
 
   getBarWidth(value: number): number {
     return (value / this.globalStats().totalHt) * 100; // Relative to global total or max scope? usually max scope width.
-    // Let's use max scope value for scaling bars.
-    // Actually relative to Global Total nicely shows contribution.
-    // But bars should probably be relative to the biggest bar on the chart.
-    const max = Math.max(...this.scopes.map((s) => this.scopeStats()(s).totalHt), 1);
-    return (value / max) * 100;
   }
 
   topItems = computed(() => {

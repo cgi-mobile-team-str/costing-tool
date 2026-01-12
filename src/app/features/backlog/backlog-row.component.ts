@@ -10,11 +10,16 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
   imports: [CommonModule, RouterLink, FormsModule],
   template: `
     <tr>
-      <td>
-        <input type="checkbox" [checked]="isSelected" (change)="selectionToggle.emit(item.id)" />
+      <td style="width: 32px; padding-right: 0;">
+        <input
+          type="checkbox"
+          style="vertical-align: middle; margin-top: -2px;"
+          [checked]="isSelected"
+          (change)="selectionToggle.emit(item.id)"
+        />
       </td>
       <!-- Title -->
-      <td style="width: 300px;" (dblclick)="startEdit('title')">
+      <td style="width: 300px; padding-left: 0.5rem;" (dblclick)="startEdit('title')">
         @if (isEditing('title')) {
         <input
           type="text"
@@ -25,7 +30,7 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
           (keydown.escape)="cancelEdit()"
         />
         } @else {
-        <strong style="padding-left: 1rem; font-size: 0.8125rem;">{{ item.title }}</strong>
+        <strong style="font-size: 0.8125rem;">{{ item.title }}</strong>
         }
       </td>
       <!-- Description -->
