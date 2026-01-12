@@ -42,83 +42,101 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         </select>
       </div>
 
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th width="40"><input type="checkbox" (change)="toggleAll($event)" /></th>
-              <th>{{ 'backlog.title' | translate }}</th>
-              <th>{{ 'backlog.description' | translate }}</th>
-              <th>{{ 'backlog.hypotheses' | translate }}</th>
-              <th>{{ 'backlog.comments' | translate }}</th>
-              <th>{{ 'backlog.moscow' | translate }}</th>
-              <th>{{ 'backlog.scope' | translate }}</th>
-              <th>{{ 'backlog.profile' | translate }}</th>
-              <th>{{ 'backlog.chargeType' | translate }}</th>
-              <th>{{ 'backlog.effort' | translate }}</th>
-              <th>{{ 'backlog.cost' | translate }} (HT)</th>
-              <th>{{ 'common.actions' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Group items by Product then Cluster -->
-            @for (prodGroup of groupedItems(); track prodGroup.product) {
-            <tr class="product-header">
-              <td colspan="12">{{ prodGroup.product }}</td>
-            </tr>
-            @for (clusterGroup of prodGroup.clusters; track clusterGroup.cluster) {
-            <tr class="cluster-header">
-              <td colspan="12" style="padding-left: 2rem;">{{ clusterGroup.cluster }}</td>
-            </tr>
-            @for (item of clusterGroup.items; track item.id) {
-            <tr>
-              <td>
-                <input
-                  type="checkbox"
-                  [checked]="isSelected(item.id)"
-                  (change)="toggleSelection(item.id)"
-                />
-              </td>
-              <td style="width: 300px;">
-                <strong style="padding-left: 1rem; font-size: 0.8125rem;">{{ item.title }}</strong>
-              </td>
-              <td class="text-small">{{ item.description || '-' }}</td>
-              <td class="text-small">{{ item.hypotheses || '-' }}</td>
-              <td class="text-small">{{ item.comments || '-' }}</td>
-              <td>
-                <span class="badge moscow">{{ item.moscow || '-' }}</span>
-              </td>
-              <td>
-                <span class="badge" [class]="item.scope">{{ item.scope }}</span>
-              </td>
-              <td>{{ getProfileName(item.profileId) }}</td>
-              <td>{{ item.chargeType === 'ratio' ? 'Ratio' : 'Jours' }}</td>
-              <td>{{ item.effortDays }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}</td>
-              <td>{{ getItemCost(item) | currency : 'EUR' }}</td>
-              <td class="actions">
-                <a [routerLink]="['/backlog', item.id]" class="btn-icon" title="Edit">
-                  <img
-                    src="/assets/pen-to-square-regular-full.svg"
-                    alt="Edit"
-                    width="20"
-                    height="20"
+      <!-- One table per product -->
+      @for (prodGroup of groupedItems(); track prodGroup.product) {
+      <div class="product-section">
+        <h3 class="product-title" (click)="toggleProduct(prodGroup.product)">
+          <span class="chevron" [class.expanded]="isProductExpanded(prodGroup.product)">▶</span>
+          <span class="product-name">{{ prodGroup.product }}</span>
+          <span class="product-cost">{{ getProductTotal(prodGroup) | currency : 'EUR' }}</span>
+        </h3>
+        @if (isProductExpanded(prodGroup.product)) {
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th width="40"><input type="checkbox" (change)="toggleAll($event)" /></th>
+                <th>{{ 'backlog.title' | translate }}</th>
+                <th>{{ 'backlog.description' | translate }}</th>
+                <th>{{ 'backlog.hypotheses' | translate }}</th>
+                <th>{{ 'backlog.comments' | translate }}</th>
+                <th>{{ 'backlog.moscow' | translate }}</th>
+                <th>{{ 'backlog.scope' | translate }}</th>
+                <th>{{ 'backlog.profile' | translate }}</th>
+                <th>{{ 'backlog.chargeType' | translate }}</th>
+                <th>{{ 'backlog.effort' | translate }}</th>
+                <th>{{ 'backlog.cost' | translate }} (HT)</th>
+                <th>{{ 'common.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (clusterGroup of prodGroup.clusters; track clusterGroup.cluster) {
+              <tr class="cluster-header">
+                <td colspan="12">{{ clusterGroup.cluster }}</td>
+              </tr>
+              @for (item of clusterGroup.items; track item.id) {
+              <tr>
+                <td>
+                  <input
+                    type="checkbox"
+                    [checked]="isSelected(item.id)"
+                    (change)="toggleSelection(item.id)"
                   />
-                </a>
-                <button (click)="duplicate(item)" class="btn-icon" title="Duplicate">
-                  <img src="/assets/copy-regular-full.svg" alt="Copy" width="20" height="20" />
-                </button>
-              </td>
-            </tr>
-            } } } @if (groupedItems().length === 0) {
-            <tr>
-              <td colspan="12" class="empty">No items found.</td>
-            </tr>
-            }
-          </tbody>
-        </table>
+                </td>
+                <td style="width: 300px;">
+                  <strong style="padding-left: 1rem; font-size: 0.8125rem;">{{
+                    item.title
+                  }}</strong>
+                </td>
+                <td class="text-small">{{ item.description || '-' }}</td>
+                <td class="text-small">{{ item.hypotheses || '-' }}</td>
+                <td class="text-small">{{ item.comments || '-' }}</td>
+                <td>
+                  <span class="badge moscow">{{ item.moscow || '-' }}</span>
+                </td>
+                <td>
+                  <span class="badge" [class]="item.scope">{{ item.scope }}</span>
+                </td>
+                <td>{{ getProfileName(item.profileId) }}</td>
+                <td>{{ item.chargeType === 'ratio' ? 'Ratio' : 'Jours' }}</td>
+                <td>{{ item.effortDays }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}</td>
+                <td>{{ getItemCost(item) | currency : 'EUR' }}</td>
+                <td class="actions">
+                  <a [routerLink]="['/backlog', item.id]" class="btn-icon" title="Edit">
+                    <img
+                      src="/assets/pen-to-square-regular-full.svg"
+                      alt="Edit"
+                      width="20"
+                      height="20"
+                    />
+                  </a>
+                  <button (click)="duplicate(item)" class="btn-icon" title="Duplicate">
+                    <img src="/assets/copy-regular-full.svg" alt="Copy" width="20" height="20" />
+                  </button>
+                </td>
+              </tr>
+              }
+              <!-- Cluster Total -->
+              <tr class="cluster-total">
+                <td colspan="10" style="text-align: right; font-weight: 600;">
+                  Total {{ clusterGroup.cluster }}:
+                </td>
+                <td style="font-weight: 600;">
+                  {{ getClusterTotal(clusterGroup.items) | currency : 'EUR' }}
+                </td>
+                <td></td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
       </div>
-
-      @if (selectedIds().length > 0) {
+      } @if (groupedItems().length === 0) {
+      <div class="empty-state">
+        <p>No items found.</p>
+      </div>
+      } @if (selectedIds().length > 0) {
       <div class="bulk-actions">
         <span>{{ selectedIds().length }} selected</span>
         <button (click)="deleteSelected()" class="btn btn-danger btn-sm">Delete Selected</button>
@@ -201,21 +219,63 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       tbody tr:last-child td {
         border-bottom: none;
       }
-      .product-header td {
-        background: var(--primary);
-        color: var(--primary-foreground);
+      .product-section {
+        margin-bottom: 2rem;
+      }
+      .product-title {
+        font-size: 1.25rem;
         font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        background: #3f3f46;
+        border-radius: var(--radius);
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        transition: background-color 0.15s ease;
+      }
+      .product-title:hover {
+        background: #52525b;
+      }
+      .product-name {
+        flex: 1;
+      }
+      .product-cost {
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-left: auto;
+      }
+      .chevron {
         font-size: 0.875rem;
-        padding: 0.875rem 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.2s ease;
+        display: inline-block;
+      }
+      .chevron.expanded {
+        transform: rotate(90deg);
       }
       .cluster-header td {
-        background: var(--secondary);
+        background: #e5e7eb;
         font-weight: 600;
-        color: var(--secondary-foreground);
-        font-size: 0.8125rem;
+        color: #374151;
+        font-size: 0.9375rem;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--border);
+      }
+      .cluster-total td {
+        background: #f3f4f6;
+        font-weight: 600;
+        color: #374151;
+        padding: 0.75rem 1rem;
+        border-top: 2px solid var(--border);
+      }
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--muted-foreground);
       }
       .badge {
         display: inline-flex;
@@ -255,11 +315,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         transition: all 0.15s ease;
       }
       .btn-primary {
-        background: var(--accent);
+        background: #e31937;
         color: var(--accent-foreground);
       }
       .btn-primary:hover {
-        background: #2563eb;
+        background: #c41530;
       }
       .btn-danger {
         background: #ef4444;
@@ -326,6 +386,7 @@ export class BacklogListComponent {
   profileFilter = '';
 
   selectedIds = signal<string[]>([]);
+  collapsedProducts = signal<Set<string>>(new Set());
 
   constructor() {
     this.profiles = this.profilesRepo.getAll();
@@ -335,6 +396,31 @@ export class BacklogListComponent {
   refresh() {
     this.items.set(this.repo.getAll());
     this.selectedIds.set([]);
+  }
+
+  toggleProduct(productName: string) {
+    const collapsed = this.collapsedProducts();
+    const newSet = new Set(collapsed);
+    if (newSet.has(productName)) {
+      newSet.delete(productName);
+    } else {
+      newSet.add(productName);
+    }
+    this.collapsedProducts.set(newSet);
+  }
+
+  isProductExpanded(productName: string): boolean {
+    return !this.collapsedProducts().has(productName);
+  }
+
+  getClusterTotal(items: BacklogItem[]): number {
+    return items.reduce((sum, item) => sum + this.getItemCost(item), 0);
+  }
+
+  getProductTotal(prodGroup: any): number {
+    return prodGroup.clusters.reduce((sum: number, cluster: any) => {
+      return sum + this.getClusterTotal(cluster.items);
+    }, 0);
   }
 
   // Nested Grouping logic: Product -> Cluster -> Items
