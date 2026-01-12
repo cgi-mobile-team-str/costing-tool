@@ -96,6 +96,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
         border: none;
         cursor: pointer;
         transition: all 0.15s ease;
+        text-decoration: none;
       }
       .btn-primary {
         background: #e31937;

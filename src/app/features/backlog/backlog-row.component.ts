@@ -131,11 +131,11 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
           (blur)="cancelEdit()"
           (change)="saveEdit()"
         >
-          <option value="days">Jours</option>
+          <option value="days">RTU</option>
           <option value="ratio">Ratio</option>
         </select>
         } @else {
-        {{ item.chargeType === 'ratio' ? 'Ratio' : 'Jours' }}
+        {{ item.chargeType === 'ratio' ? 'Ratio' : 'RTU' }}
         }
       </td>
       <!-- Effort -->

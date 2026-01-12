@@ -26,6 +26,22 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           </div>
         </div>
         <nav class="sidebar-nav">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            <span>{{ 'nav.dashboard' | translate }}</span>
+          </a>
           <a routerLink="/backlog" routerLinkActive="active" class="nav-item">
             <svg
               width="20"
@@ -55,22 +71,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
             </svg>
             <span>{{ 'nav.profiles' | translate }}</span>
-          </a>
-          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-            </svg>
-            <span>{{ 'nav.dashboard' | translate }}</span>
           </a>
           <a routerLink="/settings" routerLinkActive="active" class="nav-item">
             <svg
