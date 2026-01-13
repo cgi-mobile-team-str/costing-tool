@@ -68,37 +68,7 @@ export interface ClusterGroup {
   `,
   styles: [
     `
-      .table-container {
-        overflow: hidden;
-        border-radius: var(--radius);
-        border: 1px solid var(--border);
-        background: var(--card);
-      }
-      table {
-        width: auto;
-        min-width: 100%;
-        border-collapse: collapse;
-        font-size: 0.875rem;
-      }
-      th,
-      td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border);
-        vertical-align: middle;
-      }
-      th {
-        background: var(--muted);
-        font-weight: 600;
-        color: var(--muted-foreground);
-        white-space: nowrap;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      tbody tr:last-child td {
-        border-bottom: none;
-      }
+      /* Inherits global table styles */
       .cluster-header td {
         background: #e5e7eb;
         font-weight: 600;

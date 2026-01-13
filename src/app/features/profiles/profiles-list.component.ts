@@ -95,46 +95,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         align-items: center;
         margin-bottom: 1.5rem;
       }
-      .table-container {
-        overflow: hidden;
-        background: var(--card);
-        border-radius: var(--radius);
-        border: 1px solid var(--border);
-        margin-bottom: 1rem;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.875rem;
-      }
-      th,
-      td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border);
-        vertical-align: middle;
-      }
-      th {
-        background: var(--muted);
-        font-weight: 600;
-        color: var(--muted-foreground);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      tr:hover {
-        background: rgba(0, 0, 0, 0.02);
-      }
-      tr.inactive {
-        opacity: 0.6;
-      }
-      .font-medium {
-        font-weight: 500;
-        color: var(--foreground);
-      }
-      .text-right {
-        text-align: right;
-      }
+      /* Global styles inherited */
 
       .footer-actions {
         display: flex;
@@ -142,53 +103,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         margin-top: 1.5rem;
       }
 
-      .btn-dark {
-        background: var(--primary);
-        color: white;
-      }
-      .btn-dark:hover {
-        background: #27272a;
-      }
-
-      .btn-sm {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.8125rem;
-        border-radius: 4px;
-        cursor: pointer;
-        border: 1px solid transparent;
-        margin-left: 0.5rem;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-      }
-      .btn-outline {
-        border-color: var(--border);
-        color: var(--muted-foreground);
-        background: white;
-      }
-      .btn-outline:hover {
-        background: var(--muted);
-        color: var(--foreground);
-      }
-      .btn-danger {
-        background: #fee2e2;
-        color: #dc2626;
-      }
-      .btn-danger:hover {
-        background: #fecaca;
-      }
-      .badge {
-        padding: 0.125rem 0.625rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        background: #f4f4f5;
-        color: #71717a;
-      }
-      .badge.success {
-        background: #dcfce7;
-        color: #166534;
-      }
       .card {
         background: white;
         padding: 1rem;

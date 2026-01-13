@@ -196,15 +196,7 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         word-wrap: break-word;
         color: var(--muted-foreground);
       }
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.25rem 0.625rem;
-        border-radius: calc(var(--radius) - 2px);
-        font-size: 0.75rem;
-        font-weight: 600;
-        white-space: nowrap;
-      }
+      /* Inherited global badge */
       .badge.MVP {
         background: #dcfce7;
         color: #166534;

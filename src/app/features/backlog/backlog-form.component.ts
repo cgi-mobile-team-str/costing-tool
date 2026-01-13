@@ -266,20 +266,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         gap: 1rem;
         justify-content: flex-end;
       }
-      .btn {
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .btn-primary {
-        background: var(--brand-red);
-        color: var(--brand-red-foreground);
-      }
-      .btn-secondary {
-        background: #6c757d;
-        color: white;
-      }
+      /* Button styles inherited */
       .d-flex {
         display: flex;
         gap: 0.5rem;

@@ -111,22 +111,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
         transition: all 0.15s ease;
         text-decoration: none;
       }
-      .btn-primary {
-        background: var(--brand-red);
-        color: var(--brand-red-foreground);
-      }
-      .btn-primary:hover {
-        background: #c41530;
-      }
-      .btn-secondary {
-        background: var(--muted);
-        color: var(--muted-foreground);
-        border: 1px solid var(--border);
-      }
-      .btn-secondary:hover {
-        background: var(--accent);
-        color: var(--accent-foreground);
-      }
+      /* Button styles inherited from global */
       .empty-state {
         text-align: center;
         padding: 3rem;

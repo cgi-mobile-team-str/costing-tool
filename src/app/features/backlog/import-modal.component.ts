@@ -95,41 +95,13 @@ import { FormsModule } from '@angular/forms';
         flex-direction: column;
         gap: 0.75rem;
       }
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1rem;
-        border-radius: var(--radius);
-        font-size: 0.875rem;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        text-decoration: none;
-      }
-      .btn-primary {
-        background: var(--brand-red);
-        color: var(--brand-red-foreground);
-      }
-      .btn-primary:hover {
-        background: #c41530;
-      }
+      /* Button styles inherited */
       .btn-warning {
         background: #f59e0b;
         color: white;
       }
       .btn-warning:hover {
         background: #d97706;
-      }
-      .btn-secondary {
-        background: var(--muted);
-        color: var(--muted-foreground);
-        border: 1px solid var(--border);
-      }
-      .btn-secondary:hover {
-        background: var(--accent);
-        color: var(--accent-foreground);
       }
     `,
   ],

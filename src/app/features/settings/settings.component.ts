@@ -130,30 +130,7 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
       .actions {
         text-align: right;
       }
-      .btn {
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .btn-primary {
-        background: var(--brand-red);
-        color: var(--brand-red-foreground);
-      }
-      .btn-danger {
-        background: #dc3545;
-        color: white;
-      }
-      .btn-secondary {
-        background: var(--muted);
-        color: var(--muted-foreground);
-        border: 1px solid var(--border);
-        transition: all 0.15s ease;
-      }
-      .btn-secondary:hover {
-        background: var(--accent);
-        color: var(--accent-foreground);
-      }
+      /* Button styles inherited */
       .data-actions {
         display: flex;
         gap: 1rem;
