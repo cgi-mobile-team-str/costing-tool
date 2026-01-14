@@ -49,7 +49,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <button
                 type="button"
                 (click)="switchToProductSelect()"
-                class="btn btn-sm btn-outline-secondary"
+                class="btn btn-sm btn-outline"
                 title="Choisir existant"
               >
                 📋
@@ -87,7 +87,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <button
                 type="button"
                 (click)="switchToClusterSelect()"
-                class="btn btn-sm btn-outline-secondary"
+                class="btn btn-sm btn-outline"
                 title="Choisir existant"
               >
                 📋
@@ -124,7 +124,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <button
                 type="button"
                 (click)="switchToTitleSelect()"
-                class="btn btn-sm btn-outline-secondary"
+                class="btn btn-sm btn-outline"
                 title="Choisir existant"
               >
                 📋

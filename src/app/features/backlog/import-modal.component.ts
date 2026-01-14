@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ZardButtonComponent } from '../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-import-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZardButtonComponent],
   template: `
     <div class="modal-overlay" (click)="onAction('cancel')">
       <div class="modal-content" (click)="$event.stopPropagation()">
@@ -23,13 +24,17 @@ import { FormsModule } from '@angular/forms';
         </div>
         <p class="summary-text">Que souhaitez-vous faire ?</p>
         <div class="modal-actions">
-          <button (click)="onAction('add')" class="btn btn-primary">
-            Ajouter au backlog existant
-          </button>
-          <button (click)="onAction('replace')" class="btn btn-warning">
+          <button (click)="onAction('add')" z-button zFull>Ajouter au backlog existant</button>
+          <button
+            (click)="onAction('replace')"
+            z-button
+            zType="secondary"
+            class="warning-btn"
+            zFull
+          >
             Remplacer tout le backlog
           </button>
-          <button (click)="onAction('cancel')" class="btn btn-secondary">Annuler</button>
+          <button (click)="onAction('cancel')" z-button zType="outline" zFull>Annuler</button>
         </div>
       </div>
     </div>

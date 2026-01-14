@@ -107,8 +107,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
       .sidebar {
         width: 240px;
-        background: var(--primary);
-        color: var(--primary-foreground);
+        background: #18181b;
+        color: #fafafa;
         display: flex;
         flex-direction: column;
         border-right: 1px solid rgba(255, 255, 255, 0.1);

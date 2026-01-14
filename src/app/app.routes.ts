@@ -20,16 +20,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'profiles/new',
-        loadComponent: () =>
-          import('./features/profiles/profile-form.component').then((m) => m.ProfileFormComponent),
-      },
-      {
-        path: 'profiles/:id',
-        loadComponent: () =>
-          import('./features/profiles/profile-form.component').then((m) => m.ProfileFormComponent),
-      },
-      {
         path: 'backlog',
         loadComponent: () =>
           import('./features/backlog/backlog-list.component').then((m) => m.BacklogListComponent),

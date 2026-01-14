@@ -1,6 +1,7 @@
 export interface Profile {
   id: string;
   name: string;
+  username?: string;
   dailyRate: number;
   active: boolean;
 }

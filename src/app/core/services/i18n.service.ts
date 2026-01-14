@@ -26,10 +26,16 @@ const FR = {
   'dash.top_expensive': 'Top 5 Coûts',
 
   // Profiles
-  'profiles.name': 'Nom',
+  'profiles.name': 'Rôle', // Was Nom, renamed for clarity
+  'profiles.username': 'Nom du collaborateur',
   'profiles.rate': 'TJM',
   'profiles.active': 'Actif',
   'profiles.create_title': 'Nouveau Profil',
+  'profiles.edit_title': 'Éditer le profil',
+  'profiles.edit_desc': 'Modifiez votre profil ici. Cliquez sur enregistrer une fois terminé.',
+  'profiles.save_changes': 'Enregistrer les modifications',
+  'profiles.name_exists': 'Ce nom existe déjà',
+  'profiles.rate_positive': 'Doit être > 0',
 
   // Backlog
   'backlog.title': 'Feature', // Renamed from Titre
@@ -71,10 +77,16 @@ const EN = {
   'dash.top_expensive': 'Top 5 Expensive',
 
   // Profiles
-  'profiles.name': 'Name',
+  'profiles.name': 'Role', // Was Name
+  'profiles.username': 'Collaborator Name',
   'profiles.rate': 'Daily Rate',
   'profiles.active': 'Active',
   'profiles.create_title': 'New Profile',
+  'profiles.edit_title': 'Edit profile',
+  'profiles.edit_desc': "Make changes to your profile here. Click save when you're done.",
+  'profiles.save_changes': 'Save changes',
+  'profiles.name_exists': 'Name already exists',
+  'profiles.rate_positive': 'Must be > 0',
 
   // Backlog
   'backlog.title': 'Feature',

@@ -48,13 +48,55 @@ export class ProfilesRepository {
 
   private getSeedData(): Profile[] {
     return [
-      { id: this.idService.generate(), name: 'UX Designer', dailyRate: 550, active: true },
-      { id: this.idService.generate(), name: 'Business Analyst', dailyRate: 600, active: true },
-      { id: this.idService.generate(), name: 'Chef de projet', dailyRate: 700, active: true },
-      { id: this.idService.generate(), name: 'Architecte', dailyRate: 800, active: true },
-      { id: this.idService.generate(), name: 'Tech Lead Frontend', dailyRate: 750, active: true },
-      { id: this.idService.generate(), name: 'Tech Lead Backend', dailyRate: 800, active: true },
-      { id: this.idService.generate(), name: 'Dév Senior Frontend', dailyRate: 650, active: true },
+      {
+        id: this.idService.generate(),
+        name: 'UX Designer',
+        username: 'Matheus Ribeiro',
+        dailyRate: 550,
+        active: true,
+      },
+      {
+        id: this.idService.generate(),
+        name: 'Business Analyst',
+        username: 'Sarah Jones',
+        dailyRate: 600,
+        active: true,
+      },
+      {
+        id: this.idService.generate(),
+        name: 'Chef de projet',
+        username: 'Jean Dupont',
+        dailyRate: 700,
+        active: true,
+      },
+      {
+        id: this.idService.generate(),
+        name: 'Architecte',
+        username: 'John Doe',
+        dailyRate: 800,
+        active: true,
+      },
+      {
+        id: this.idService.generate(),
+        name: 'Tech Lead Frontend',
+        username: 'Jane Smith',
+        dailyRate: 750,
+        active: true,
+      },
+      {
+        id: this.idService.generate(),
+        name: 'Tech Lead Backend',
+        username: 'Bob Martin',
+        dailyRate: 800,
+        active: true,
+      },
+      {
+        id: this.idService.generate(),
+        name: 'Dév Senior Frontend',
+        username: 'Alice Wonderland',
+        dailyRate: 650,
+        active: true,
+      },
     ];
   }
 }

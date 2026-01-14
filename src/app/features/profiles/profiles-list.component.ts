@@ -1,17 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
+import { I18nService } from '../../core/services/i18n.service';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
+import { ZardButtonComponent } from '../../shared/components/button/button.component';
+import { ZardIconComponent } from '../../shared/components/icon/icon.component';
+import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
+import { ZardTableImports } from '../../shared/components/table/table.imports';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { ProfileFormComponent } from './profile-form.component';
 
 @Component({
   selector: 'app-profiles-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe, FormsModule],
+  imports: [
+    CommonModule,
+    TranslatePipe,
+    FormsModule,
+    ZardButtonComponent,
+    ZardIconComponent,
+    ...ZardTableImports,
+  ],
   template: `
     <div class="header">
       <div>
@@ -20,53 +32,77 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       </div>
     </div>
 
-    <!-- Margin Configuration -->
-    <div class="margin-config card">
-      <div class="form-group">
-        <label>Marge Global (%)</label>
-        <div class="d-flex">
+    <div class="profiles-toolbar">
+      <!-- Margin Configuration -->
+      <div class="margin-config card">
+        <div class="form-group">
+          <label>Marge Global (%)</label>
+          <div class="d-flex">
+            <input
+              type="number"
+              [(ngModel)]="marginPercent"
+              (change)="updateMargin()"
+              class="form-control margin-input"
+              min="0"
+              max="100"
+            />
+            <span class="preview">Ex: 1000€ ➔ {{ calculatePreview() | currency : 'EUR' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <z-icon zType="search" class="search-icon" />
           <input
-            type="number"
-            [(ngModel)]="marginPercent"
-            (change)="updateMargin()"
-            class="form-control margin-input"
-            min="0"
-            max="100"
+            type="text"
+            [ngModel]="searchTerm()"
+            (ngModelChange)="searchTerm.set($event)"
+            placeholder="Rechercher un profil..."
+            class="search-input"
           />
-          <span class="preview">Ex: 1000€ ➔ {{ calculatePreview() | currency : 'EUR' }}</span>
         </div>
       </div>
     </div>
 
     <div class="table-container shadow-sm">
-      <table>
-        <thead>
-          <tr>
-            <th>{{ 'profiles.name' | translate }}</th>
-            <th>{{ 'profiles.rate' | translate }}</th>
-            <th>{{ 'profiles.active' | translate }}</th>
-            <th class="text-right">{{ 'common.actions' | translate }}</th>
+      <table z-table>
+        <thead z-table-header>
+          <tr z-table-row>
+            <th z-table-head>{{ 'profiles.name' | translate }}</th>
+            <th z-table-head>{{ 'profiles.username' | translate }}</th>
+            <th z-table-head>{{ 'profiles.rate' | translate }}</th>
+            <th z-table-head>{{ 'profiles.active' | translate }}</th>
+            <th z-table-head class="text-right">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
-        <tbody>
-          @for (profile of profiles(); track profile.id) {
-          <tr [class.inactive]="!profile.active">
-            <td class="font-medium">{{ profile.name }}</td>
-            <td>{{ profile.dailyRate | currency : 'EUR' }}</td>
-            <td>
+        <tbody z-table-body>
+          @for (profile of filteredProfiles(); track profile.id) {
+          <tr z-table-row [class.inactive]="!profile.active">
+            <td z-table-cell class="font-medium">{{ profile.name }}</td>
+            <td z-table-cell>{{ profile.username || '-' }}</td>
+            <td z-table-cell>{{ profile.dailyRate | currency : 'EUR' }}</td>
+            <td z-table-cell>
               <span class="badge" [class.success]="profile.active">{{
                 profile.active ? 'Oui' : 'Non'
               }}</span>
             </td>
-            <td class="actions text-right">
-              <a
-                [routerLink]="['/profiles', profile.id]"
-                class="btn btn-sm btn-outline"
-                >{{ 'common.edit' | translate }}</a
-              >
-              <button (click)="delete(profile)" class="btn btn-sm btn-danger">
-                {{ 'common.delete' | translate }}
-              </button>
+            <td z-table-cell class="text-right">
+              <div class="flex justify-end gap-2">
+                <button z-button zType="outline" zSize="sm" (click)="openProfileSheet(profile)">
+                  {{ 'common.edit' | translate }}
+                </button>
+                <button z-button zType="destructive" zSize="sm" (click)="delete(profile)">
+                  {{ 'common.delete' | translate }}
+                </button>
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr z-table-row>
+            <td z-table-cell colspan="5" class="text-center py-8 text-muted-foreground">
+              Aucun profil trouvé pour "{{ searchTerm() }}"
             </td>
           </tr>
           }
@@ -74,22 +110,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       </table>
     </div>
 
-    <div class="footer-actions">
-      <a routerLink="/profiles/new" class="btn btn-dark">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          style="margin-right: 0.5rem"
-        >
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+    <!-- Floating Action Button for Mobile / Standard for Desktop -->
+    <div class="fab-container gap-2 flex flex-col items-end">
+      <button z-button (click)="openProfileSheet()">
+        <z-icon zType="plus" />
         {{ 'common.add' | translate }}
-      </a>
+      </button>
     </div>
   `,
   styles: [
@@ -136,13 +162,63 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         margin-top: 1.5rem;
       }
 
+      .profiles-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .fab-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 50;
+      }
+
+      .search-container {
+        flex: 1;
+        max-width: 400px;
+      }
+
+      .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        color: #6c757d;
+        width: 18px;
+        height: 18px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.625rem 1rem 0.625rem 2.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        background: white;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+      }
+
       .card {
         background: white;
         padding: 1rem;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1.5rem;
-        max-width: 400px;
+        margin-bottom: 0;
+        min-width: 300px;
       }
       .margin-config label {
         font-weight: 500;
@@ -171,10 +247,18 @@ export class ProfilesListComponent {
   private repo = inject(ProfilesRepository);
   private settingsRepo = inject(SettingsRepository);
   private calc = inject(CalculationService);
+  private sheetService = inject(ZardSheetService);
+  private i18n = inject(I18nService);
 
   profiles = signal<Profile[]>([]);
-  settings = signal(this.settingsRepo.get());
+  searchTerm = signal('');
   marginPercent = 0;
+
+  filteredProfiles = computed(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.profiles();
+    return this.profiles().filter((p) => p.name.toLowerCase().includes(term));
+  });
 
   constructor() {
     this.refresh();
@@ -196,6 +280,27 @@ export class ProfilesListComponent {
 
   calculatePreview() {
     return this.calc.applyMargin(1000, this.marginPercent / 100);
+  }
+
+  openProfileSheet(profile?: Profile) {
+    this.sheetService.create({
+      zTitle: profile
+        ? this.i18n.translate('profiles.edit_title')
+        : this.i18n.translate('profiles.create_title'),
+      zDescription: this.i18n.translate('profiles.edit_desc'),
+      zContent: ProfileFormComponent,
+      zData: profile,
+      zOkText: this.i18n.translate('profiles.save_changes'),
+      zCancelText: this.i18n.translate('common.cancel'),
+      zWidth: '400px',
+      zOnOk: (instance: ProfileFormComponent) => {
+        if (instance.save()) {
+          this.refresh();
+          return;
+        }
+        return false;
+      },
+    });
   }
 
   delete(profile: Profile) {

@@ -6,6 +6,8 @@ import { CalculationService } from '../../core/services/calculation.service';
 import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
+import { ZardButtonComponent } from '../../shared/components/button/button.component';
+import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { SettingsRepository } from '../../data/settings.repository';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogFiltersComponent } from './backlog-filters.component';
@@ -22,28 +24,17 @@ import { BulkActionsComponent } from './bulk-actions.component';
     BacklogFiltersComponent,
     BacklogProductSectionComponent,
     BulkActionsComponent,
+    ZardButtonComponent,
+    ZardIconComponent,
   ],
   template: `
     <div class="backlog-container">
       <div class="header">
-        <div>
-          <span class="context-label">{{ 'nav.backlog' | translate }}</span>
-          <h2>{{ settings().projectName }}</h2>
-        </div>
-        <a routerLink="/backlog/new" class="btn btn-primary"
-          ><svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            style="margin-right: 0.5rem"
-          >
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line></svg
-          >{{ 'common.add' | translate }}</a
-        >
+        <h2>{{ 'nav.backlog' | translate }}</h2>
+        <a z-button routerLink="/backlog/new">
+          <z-icon zType="plus" />
+          {{ 'common.add' | translate }}
+        </a>
       </div>
 
       <app-backlog-filters

@@ -8,13 +8,20 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
+import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ImportModalComponent } from '../backlog/import-modal.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, ImportModalComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+    ImportModalComponent,
+    ZardButtonComponent,
+  ],
   template: `
     <div class="container ps-container">
       <div class="header">
@@ -57,7 +64,7 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
         </div>
 
         <div class="actions">
-          <button type="submit" [disabled]="form.invalid || form.pristine" class="btn btn-primary">
+          <button type="submit" [disabled]="form.invalid || form.pristine" z-button>
             {{ 'common.save' | translate }}
           </button>
         </div>
@@ -76,10 +83,10 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
             (change)="importJson($event)"
             accept=".json"
           />
-          <button (click)="fileInput.click()" class="btn btn-secondary">
+          <button (click)="fileInput.click()" z-button zType="secondary">
             Importer un Backlog (JSON)
           </button>
-          <button (click)="exportJson()" class="btn btn-secondary">
+          <button (click)="exportJson()" z-button zType="secondary">
             Exporter le Backlog (JSON)
           </button>
         </div>
@@ -87,7 +94,7 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
 
       <div class="danger-zone">
         <h3>Danger Zone</h3>
-        <button (click)="resetApp()" class="btn btn-danger">Reset App Data</button>
+        <button (click)="resetApp()" z-button zType="destructive">Reset App Data</button>
       </div>
 
       @if (showImportModal()) {
