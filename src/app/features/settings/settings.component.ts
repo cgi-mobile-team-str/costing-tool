@@ -16,8 +16,13 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslatePipe, ImportModalComponent],
   template: `
-    <div class="container">
-      <h2>{{ 'nav.settings' | translate }}</h2>
+    <div class="container ps-container">
+      <div class="header">
+        <div>
+          <span class="context-label">{{ 'nav.settings' | translate }}</span>
+          <h2>{{ settings().projectName }}</h2>
+        </div>
+      </div>
 
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="card">
@@ -96,9 +101,32 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
   `,
   styles: [
     `
-      .container {
+      .ps-container {
         max-width: 600px;
         margin: 0 auto;
+      }
+      .header {
+        margin-bottom: 2.5rem;
+        padding-top: 1rem;
+      }
+      .context-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        display: block;
+      }
+      .header h2 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
       }
       .card {
         background: white;
@@ -163,6 +191,8 @@ export class SettingsComponent {
   profilesToImport = signal<Profile[]>([]);
   importedProjectName = signal('');
 
+  settings = signal(this.repo.get());
+
   form = this.fb.group({
     projectName: ['', Validators.required],
     currency: ['EUR', Validators.required],
@@ -182,11 +212,13 @@ export class SettingsComponent {
     if (this.form.valid) {
       const val = this.form.value;
       const current = this.repo.get();
-      this.repo.save({
+      const newSettings = {
         ...current,
         projectName: val.projectName || current.projectName,
         currency: val.currency || 'EUR',
-      });
+      };
+      this.repo.save(newSettings);
+      this.settings.set(newSettings);
       this.form.markAsPristine();
       alert('Settings saved');
     }
@@ -209,8 +241,9 @@ export class SettingsComponent {
     const date = new Date().toISOString().split('T')[0];
     link.href = url;
     link.download = `${(s.projectName || 'export')
-      .toLowerCase()
-      .replace(/\s+/g, '-')}-export-${date}.json`;
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+      }-export-${date}.json`;
     link.click();
     URL.revokeObjectURL(url);
   }

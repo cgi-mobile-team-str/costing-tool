@@ -6,6 +6,7 @@ import { CalculationService } from '../../core/services/calculation.service';
 import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
+import { SettingsRepository } from '../../data/settings.repository';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
@@ -25,7 +26,10 @@ import { BulkActionsComponent } from './bulk-actions.component';
   template: `
     <div class="backlog-container">
       <div class="header">
-        <h2>{{ 'nav.backlog' | translate }}</h2>
+        <div>
+          <span class="context-label">{{ 'nav.backlog' | translate }}</span>
+          <h2>{{ settings().projectName }}</h2>
+        </div>
         <a routerLink="/backlog/new" class="btn btn-primary"
           ><svg
             width="16"
@@ -68,6 +72,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
         (editSave)="saveEdit($event)"
         (editCancel)="cancelEdit()"
         (duplicateItem)="duplicate($event)"
+        (toggleExpand)="toggleProduct($event)"
       />
       } @if (groupedItems().length === 0) {
       <div class="empty-state">
@@ -90,13 +95,28 @@ import { BulkActionsComponent } from './bulk-actions.component';
       .header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
+        align-items: flex-end;
+        margin-bottom: 2.5rem;
+        padding-top: 1rem;
+      }
+      .context-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        display: block;
       }
       .header h2 {
-        font-size: 1.875rem;
-        font-weight: 700;
-        color: var(--foreground);
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
       }
       .btn {
         display: inline-flex;
@@ -110,6 +130,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
         cursor: pointer;
         transition: all 0.15s ease;
         text-decoration: none;
+        margin-bottom: 0.5rem;
       }
       /* Button styles inherited from global */
       .empty-state {
@@ -123,10 +144,12 @@ import { BulkActionsComponent } from './bulk-actions.component';
 export class BacklogListComponent {
   private repo = inject(BacklogRepository);
   private profilesRepo = inject(ProfilesRepository);
+  private settingsRepo = inject(SettingsRepository);
   private calc = inject(CalculationService);
   private idService = inject(IdService);
 
   items = signal<BacklogItem[]>([]);
+  settings = signal(this.settingsRepo.get());
   profiles: Profile[] = [];
 
   // Filters

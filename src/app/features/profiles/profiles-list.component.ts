@@ -14,7 +14,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   imports: [CommonModule, RouterLink, TranslatePipe, FormsModule],
   template: `
     <div class="header">
-      <h2>{{ 'nav.profiles' | translate }}</h2>
+      <div>
+        <span class="context-label">{{ 'nav.profiles' | translate }}</span>
+        <h2>{{ settings().projectName }}</h2>
+      </div>
     </div>
 
     <!-- Margin Configuration -->
@@ -56,10 +59,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               }}</span>
             </td>
             <td class="actions text-right">
-              <a [routerLink]="['/profiles', profile.id]" class="btn-sm btn-outline">{{
-                'common.edit' | translate
-              }}</a>
-              <button (click)="delete(profile)" class="btn-sm btn-danger">
+              <a
+                [routerLink]="['/profiles', profile.id]"
+                class="btn btn-sm btn-outline"
+                >{{ 'common.edit' | translate }}</a
+              >
+              <button (click)="delete(profile)" class="btn btn-sm btn-danger">
                 {{ 'common.delete' | translate }}
               </button>
             </td>
@@ -92,8 +97,36 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       .header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
+        align-items: flex-end;
+        margin-bottom: 2.5rem;
+        padding-top: 1rem;
+      }
+      .actions a,
+      .actions button {
+        margin-left: 0.5rem;
+        border-radius: var(--radius) !important;
+      }
+      .actions button.btn-danger {
+        border: none !important;
+      }
+      .context-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        display: block;
+      }
+      .header h2 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
       }
       /* Global styles inherited */
 
@@ -140,11 +173,12 @@ export class ProfilesListComponent {
   private calc = inject(CalculationService);
 
   profiles = signal<Profile[]>([]);
+  settings = signal(this.settingsRepo.get());
   marginPercent = 0;
 
   constructor() {
     this.refresh();
-    const s = this.settingsRepo.get();
+    const s = this.settings();
     this.marginPercent = s.marginRate * 100;
   }
 
