@@ -8,10 +8,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   template: `
     <div class="app-layout">
-      <aside class="sidebar">
+      <aside class="sidebar" [class.collapsed]="isCollapsed">
         <div class="sidebar-header">
           <div class="logo">
             <svg
+              (click)="toggleSidebar()"
+              style="cursor: pointer"
               width="24"
               height="24"
               viewBox="0 0 24 24"
@@ -110,11 +112,23 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         display: flex;
         flex-direction: column;
         border-right: 1px solid rgba(255, 255, 255, 0.1);
+        transition: width 0.3s ease;
+      }
+
+      .sidebar.collapsed {
+        width: 64px;
       }
 
       .sidebar-header {
         padding: 1.5rem 1rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+
+      .sidebar.collapsed .sidebar-header {
+        padding: 1.5rem 0.5rem;
+        display: flex;
+        justify-content: center;
       }
 
       .logo {
@@ -123,10 +137,16 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         gap: 0.75rem;
         font-weight: 600;
         font-size: 1.125rem;
+        white-space: nowrap;
       }
 
       .logo svg {
         opacity: 0.9;
+        min-width: 24px;
+      }
+      
+      .sidebar.collapsed .logo span {
+        display: none;
       }
 
       .sidebar-nav {
@@ -147,6 +167,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         transition: all 0.15s ease;
         font-size: 0.875rem;
         font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .sidebar.collapsed .nav-item {
+        padding: 0.75rem;
+        justify-content: center;
       }
 
       .nav-item:hover {
@@ -163,6 +190,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       .nav-item svg {
         flex-shrink: 0;
       }
+      
+      .sidebar.collapsed .nav-item span {
+        display: none;
+      }
 
       .main-content {
         flex: 1;
@@ -172,4 +203,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     `,
   ],
 })
-export class MainLayoutComponent {}
+export class MainLayoutComponent {
+  isCollapsed = false;
+
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
+}
