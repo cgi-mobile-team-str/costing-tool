@@ -2,6 +2,7 @@
   <h3 class="product-title" (click)="toggleExpand.emit(productGroup.product)">
     <span class="chevron" [class.expanded]="isExpanded">▶</span>
     <span class="product-name">{{ productGroup.product }}</span>
+    <span class="product-effort">{{ productEffort | number : '1.1-1' }} j/h</span>
     <span class="product-cost">{{ productTotal | currency : 'EUR' }}</span>
   </h3>
   @if (isExpanded) {

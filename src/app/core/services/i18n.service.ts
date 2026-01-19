@@ -9,6 +9,7 @@ const FR = {
   'common.delete': 'Supprimer',
   'common.edit': 'Éditer',
   'common.add': 'Ajouter',
+  'common.all': 'Tous',
   'common.actions': 'Actions',
   'common.required': 'Requis',
   'common.confirm_delete': 'Êtes-vous sûr de vouloir supprimer cet élément ?',
@@ -53,6 +54,8 @@ const FR = {
   'backlog.description': 'Description',
   'backlog.edit_title': "Modifier l'item",
   'backlog.create_desc': 'Ajoutez une nouvelle fonctionnalité au backlog.',
+  'backlog.filter_profiles': 'Filtrer par profil',
+  'backlog.filter_columns': 'Colonnes visibles',
 };
 
 const EN = {
@@ -62,6 +65,7 @@ const EN = {
   'common.delete': 'Delete',
   'common.edit': 'Edit',
   'common.add': 'Add',
+  'common.all': 'All',
   'common.actions': 'Actions',
   'common.required': 'Required',
   'common.confirm_delete': 'Are you sure you want to delete this item?',
@@ -106,6 +110,8 @@ const EN = {
   'backlog.description': 'Description',
   'backlog.edit_title': 'Edit Item',
   'backlog.create_desc': 'Add a new feature to the backlog.',
+  'backlog.filter_profiles': 'Filter by profile',
+  'backlog.filter_columns': 'Visible columns',
 };
 
 @Injectable({

@@ -1,0 +1,21 @@
+<div class="column-visibility-toolbar">
+  <label class="filter-label">{{ 'backlog.filter_columns' | translate }}</label>
+  <div class="column-toggles">
+    <button
+      class="column-badge"
+      [class.selected]="isAllColumnsVisible()"
+      (click)="selectAllColumns()"
+    >
+      {{ 'common.all' | translate }}
+    </button>
+    @for (col of availableColumns; track col.id) {
+    <button
+      class="column-badge"
+      [class.selected]="!isAllColumnsVisible() && isColumnVisible(col.id)"
+      (click)="toggleColumn(col.id)"
+    >
+      {{ col.label | translate }}
+    </button>
+    }
+  </div>
+</div>

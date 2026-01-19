@@ -20,15 +20,11 @@
     (profileFilterChange)="profileFilter.set($event)"
   />
 
-  <div class="column-visibility-toolbar">
-    <div class="column-toggles">
-      @for (col of availableColumns; track col.id) {
-      <z-checkbox [checked]="isColumnVisible(col.id)" (checkChange)="toggleColumn(col.id)">
-        {{ col.label | translate }}
-      </z-checkbox>
-      }
-    </div>
-  </div>
+  <app-column-selector
+    [availableColumns]="availableColumns"
+    [visibleColumns]="visibleColumns()"
+    (visibleColumnsChange)="visibleColumns.set($event)"
+  />
 
   @for (prodGroup of groupedItems(); track prodGroup.product) {
   <app-backlog-product-section
@@ -38,6 +34,7 @@
     [selectedIds]="selectedIds()"
     [editingCell]="editingCell()"
     [productTotal]="getProductTotal(prodGroup)"
+    [productEffort]="getProductEffort(prodGroup)"
     [visibleColumns]="visibleColumns()"
     [getItemCost]="getItemCost.bind(this)"
     (toggleExpand)="toggleProduct($event)"
@@ -47,7 +44,6 @@
     (editSave)="saveEdit($event)"
     (editCancel)="cancelEdit()"
     (duplicateItem)="duplicate($event)"
-    (toggleExpand)="toggleProduct($event)"
   />
   } @if (groupedItems().length === 0) {
   <div class="empty-state">

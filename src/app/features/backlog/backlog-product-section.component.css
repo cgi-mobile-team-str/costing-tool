@@ -22,7 +22,20 @@
 }
 .product-name {
   flex: 1;
+  font-weight: 700;
+  font-size: 1.125rem;
 }
+
+.product-effort {
+  font-size: 0.875rem;
+  color: white;
+  font-weight: 600;
+  margin-right: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
 .product-cost {
   font-size: 1.125rem;
   font-weight: 700;

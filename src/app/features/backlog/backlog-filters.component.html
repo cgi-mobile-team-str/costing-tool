@@ -1,29 +1,42 @@
-<div class="filters">
-  <input
-    type="text"
-    [ngModel]="searchTerm"
-    (ngModelChange)="searchTermChange.emit($event)"
-    placeholder="Search..."
-    class="form-control search"
-  />
-  <select
-    [ngModel]="scopeFilter"
-    (ngModelChange)="scopeFilterChange.emit($event)"
-    class="form-control"
-  >
-    <option value="">All Scopes</option>
-    <option value="MVP">MVP</option>
-    <option value="V1">V1</option>
-    <option value="V2">V2</option>
-  </select>
-  <select
-    [ngModel]="profileFilter"
-    (ngModelChange)="profileFilterChange.emit($event)"
-    class="form-control"
-  >
-    <option value="">All Profiles</option>
-    @for (p of profiles; track p.id) {
-    <option [value]="p.id">{{ p.name }}</option>
-    }
-  </select>
+<div class="filters-container">
+  <div class="filters-row">
+    <input
+      type="text"
+      [ngModel]="searchTerm"
+      (ngModelChange)="searchTermChange.emit($event)"
+      placeholder="Search..."
+      class="form-control search"
+    />
+    <select
+      [ngModel]="scopeFilter"
+      (ngModelChange)="scopeFilterChange.emit($event)"
+      class="form-control"
+    >
+      <option value="">All Scopes</option>
+      <option value="MVP">MVP</option>
+      <option value="V1">V1</option>
+      <option value="V2">V2</option>
+    </select>
+  </div>
+  <div class="filter-section">
+    <label class="filter-label">{{ 'backlog.filter_profiles' | translate }}</label>
+    <div class="profile-badges">
+      <button
+        class="badge-filter"
+        [class.selected]="profileFilter.length === 0"
+        (click)="profileFilterChange.emit([])"
+      >
+        {{ 'common.all' | translate }}
+      </button>
+      @for (p of profiles; track p.id) {
+      <button
+        class="badge-filter"
+        [class.selected]="profileFilter.includes(p.id)"
+        (click)="toggleProfile(p.id)"
+      >
+        {{ p.name }}
+      </button>
+      }
+    </div>
+  </div>
 </div>

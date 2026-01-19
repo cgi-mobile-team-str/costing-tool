@@ -13,6 +13,7 @@
 @import "./app/features/backlog/backlog-filters.component.css";
 @import "./app/features/backlog/backlog-product-section.component.css";
 @import "./app/features/backlog/bulk-actions.component.css";
+@import "./app/features/backlog/column-selector.component.css";
 @import "./app/features/backlog/editable-cell.component.css";
 @import "./app/features/backlog/import-modal.component.css";
 @import "./app/features/profiles/profiles-list.component.css";

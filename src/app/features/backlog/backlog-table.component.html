@@ -50,8 +50,11 @@
       }
       <!-- Cluster Total -->
       <tr class="cluster-total">
-        <td [attr.colspan]="visibleColumnCount + 1" class="total-label">
+        <td [attr.colspan]="visibleColumnCount" class="total-label">
           Total {{ clusterGroup.cluster }}:
+        </td>
+        <td class="total-effort">
+          {{ getClusterEffort(clusterGroup.items) | number : '1.1-1' }} j/h
         </td>
         <td class="total-value">
           {{ getClusterTotal(clusterGroup.items) | currency : 'EUR' }}

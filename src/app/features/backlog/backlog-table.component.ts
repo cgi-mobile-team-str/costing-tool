@@ -40,6 +40,10 @@ export class BacklogTableComponent {
     return items.reduce((sum, item) => sum + this.getItemCost(item), 0);
   }
 
+  getClusterEffort(items: BacklogItem[]): number {
+    return items.reduce((sum, item) => sum + (item.effortDays || 0), 0);
+  }
+
   get visibleColumnCount(): number {
     return this.visibleColumns.length;
   }

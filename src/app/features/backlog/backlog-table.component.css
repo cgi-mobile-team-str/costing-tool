@@ -49,3 +49,9 @@ app-backlog-table .total-label {
 app-backlog-table .total-value {
   font-weight: 600;
 }
+
+app-backlog-table .total-effort {
+  font-weight: 600;
+  text-align: center;
+  color: #6b7280;
+}

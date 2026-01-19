@@ -24,6 +24,7 @@ import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogFormComponent } from './backlog-form.component';
 import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
 import { BulkActionsComponent } from './bulk-actions.component';
+import { ColumnSelectorComponent } from './column-selector.component';
 
 @Component({
   selector: 'app-backlog-list',
@@ -34,6 +35,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
     BacklogFiltersComponent,
     BacklogProductSectionComponent,
     BulkActionsComponent,
+    ColumnSelectorComponent,
     ZardButtonComponent,
     ZardIconComponent,
     ZardCheckboxComponent,
@@ -58,7 +60,7 @@ export class BacklogListComponent {
   // Filters
   searchTerm = signal('');
   scopeFilter = signal('');
-  profileFilter = signal('');
+  profileFilter = signal<string[]>([]);
 
   // State
   selectedIds = signal<string[]>([]);
@@ -141,6 +143,17 @@ export class BacklogListComponent {
     }, 0);
   }
 
+  getProductEffort(prodGroup: ProductGroup): number {
+    return prodGroup.clusters.reduce((sum: number, cluster: any) => {
+      return (
+        sum +
+        cluster.items.reduce((itemSum: number, item: BacklogItem) => {
+          return itemSum + (item.effortDays || 0);
+        }, 0)
+      );
+    }, 0);
+  }
+
   // Grouping logic
   groupedItems = computed(() => {
     let res = this.items();
@@ -148,7 +161,7 @@ export class BacklogListComponent {
     // Filtering
     const term = this.searchTerm().toLowerCase();
     const scope = this.scopeFilter();
-    const profile = this.profileFilter();
+    const profiles = this.profileFilter();
 
     if (term) {
       res = res.filter((i) => i.title.toLowerCase().includes(term));
@@ -156,8 +169,8 @@ export class BacklogListComponent {
     if (scope) {
       res = res.filter((i) => i.scope === scope);
     }
-    if (profile) {
-      res = res.filter((i) => i.profileId === profile);
+    if (profiles.length > 0) {
+      res = res.filter((i) => profiles.includes(i.profileId));
     }
 
     // Grouping
@@ -267,18 +280,5 @@ export class BacklogListComponent {
     }
     this.editingCell.set(null);
     this.refresh();
-  }
-
-  toggleColumn(columnId: string) {
-    const current = this.visibleColumns();
-    if (current.includes(columnId)) {
-      this.visibleColumns.set(current.filter((c) => c !== columnId));
-    } else {
-      this.visibleColumns.set([...current, columnId]);
-    }
-  }
-
-  isColumnVisible(columnId: string): boolean {
-    return this.visibleColumns().includes(columnId);
   }
 }

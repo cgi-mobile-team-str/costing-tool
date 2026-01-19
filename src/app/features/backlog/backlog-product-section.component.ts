@@ -22,6 +22,7 @@ export class BacklogProductSectionComponent {
   @Input() selectedIds: string[] = [];
   @Input() editingCell: { itemId: string; field: string } | null = null;
   @Input() productTotal = 0;
+  @Input() productEffort = 0;
   @Input() visibleColumns: string[] = [];
   @Input() getItemCost!: (item: BacklogItem) => number;
 

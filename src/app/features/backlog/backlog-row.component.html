@@ -143,7 +143,7 @@
   }
   <!-- Effort -->
   @if (visibleColumns.includes('effort')) {
-  <td (dblclick)="startEdit('effortDays')">
+  <td class="effort-cell" (dblclick)="startEdit('effortDays')">
     @if (isEditing('effortDays')) {
     <input
       type="number"
@@ -156,7 +156,7 @@
       min="0"
     />
     } @else {
-    {{ item.effortDays }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}
+    {{ item.effortDays | number : '1.1-1' }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}
     }
   </td>
   } @if (visibleColumns.includes('cost')) {

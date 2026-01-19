@@ -49,6 +49,13 @@ app-backlog-row td {
   color: var(--foreground);
   outline: none;
 }
+.inline-edit-select option {
+  color: var(--foreground);
+}
+
+.effort-cell {
+  text-align: center;
+}
 .inline-edit:focus,
 .inline-edit-select:focus {
   border-color: #2563eb;

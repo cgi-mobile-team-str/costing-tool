@@ -1,0 +1,43 @@
+app-column-selector .column-visibility-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+app-column-selector .filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+app-column-selector .column-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+app-column-selector .column-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--muted-foreground);
+  transition: all 0.2s ease;
+}
+
+app-column-selector .column-badge:hover {
+  background: var(--muted);
+}
+
+app-column-selector .column-badge.selected {
+  background: var(--brand-red);
+  color: white;
+  border-color: var(--brand-red);
+}
