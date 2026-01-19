@@ -3,6 +3,7 @@ export interface Profile {
   name: string;
   username?: string;
   dailyRate: number;
+  scr?: number;
   active: boolean;
 }
 

@@ -1,0 +1,96 @@
+<div class="dashboard-card dashboard-profiles-card">
+  <h3>{{ 'dash.profiles_stats' | translate }}</h3>
+
+  <div class="dashboard-table-container">
+    <table z-table>
+      <thead z-table-header class="bg-muted">
+        <tr z-table-row>
+          <th
+            z-table-head
+            class="text-xs uppercase font-semibold text-muted-foreground tracking-wider"
+          >
+            {{ 'profiles.name' | translate }}
+          </th>
+          <th
+            z-table-head
+            class="text-right text-xs uppercase font-semibold text-muted-foreground tracking-wider"
+          >
+            {{ 'dash.charge' | translate }}
+          </th>
+          <th
+            z-table-head
+            class="text-right text-xs uppercase font-semibold text-muted-foreground tracking-wider"
+          >
+            {{ 'profiles.scr' | translate }}
+          </th>
+          <th
+            z-table-head
+            class="text-right text-xs uppercase font-semibold text-muted-foreground tracking-wider"
+          >
+            {{ 'dash.scr_amount' | translate }}
+          </th>
+          <th
+            z-table-head
+            class="text-right text-xs uppercase font-semibold text-muted-foreground tracking-wider"
+          >
+            {{ 'profiles.rate' | translate }}
+          </th>
+          <th
+            z-table-head
+            class="text-right text-xs uppercase font-semibold text-muted-foreground tracking-wider"
+          >
+            {{ 'dash.cost' | translate }}
+          </th>
+          <th
+            z-table-head
+            class="text-right text-xs uppercase font-semibold text-muted-foreground tracking-wider"
+          >
+            {{ 'dash.margin' | translate }}
+          </th>
+        </tr>
+      </thead>
+
+      <tbody z-table-body>
+        @for (stat of profileStats(); track stat.id) {
+        <tr z-table-row>
+          <td z-table-cell>
+            <div class="flex flex-col">
+              <span class="font-medium">{{ stat.name }}</span>
+              <span class="text-xs text-muted-foreground">{{ stat.username }}</span>
+            </div>
+          </td>
+          <td z-table-cell class="text-right">{{ stat.totalDays | number : '1.1-2' }}j</td>
+          <td z-table-cell class="text-right">
+            {{ stat.scr || 0 | currency : 'EUR' : 'symbol' : '1.0-0' }}
+          </td>
+          <td z-table-cell class="text-right">
+            {{ stat.totalScrCost | currency : 'EUR' : 'symbol' : '1.0-0' }}
+          </td>
+          <td z-table-cell class="text-right">
+            {{ stat.dailyRate | currency : 'EUR' : 'symbol' : '1.0-0' }}
+          </td>
+          <td z-table-cell class="text-right font-bold">
+            {{ stat.totalCost | currency : 'EUR' : 'symbol' : '1.0-0' }}
+          </td>
+          <td z-table-cell class="text-right">
+            <span
+              class="badge"
+              [class.success]="stat.margin >= 0.2"
+              [class.warning]="stat.margin < 0.2 && stat.margin > 0"
+              [class.destructive]="stat.margin <= 0"
+            >
+              {{ stat.margin | percent : '1.0-0' }}
+            </span>
+          </td>
+        </tr>
+        } @empty {
+        <tr z-table-row>
+          <td z-table-cell colspan="7" class="text-center text-muted">
+            {{ 'dash.no_data' | translate }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

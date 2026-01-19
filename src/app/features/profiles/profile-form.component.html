@@ -35,4 +35,17 @@
     <p class="text-sm text-destructive">{{ 'profiles.rate_positive' | translate }}</p>
     }
   </div>
+
+  <div class="flex flex-col gap-1.5">
+    <label
+      for="scr"
+      class="flex items-center gap-2 text-sm font-semibold peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+    >
+      {{ 'profiles.scr' | translate }} (€)
+    </label>
+    <input z-input id="scr" type="number" formControlName="scr" />
+    @if (form.get('scr')?.invalid && form.get('scr')?.touched) {
+    <p class="text-sm text-destructive">{{ 'profiles.rate_positive' | translate }}</p>
+    }
+  </div>
 </form>

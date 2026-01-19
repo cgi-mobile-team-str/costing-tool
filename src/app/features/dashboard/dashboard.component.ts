@@ -7,11 +7,12 @@ import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { DashboardProfilesStatsComponent } from './dashboard-profiles-stats/dashboard-profiles-stats.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, RouterLink],
+  imports: [CommonModule, TranslatePipe, RouterLink, DashboardProfilesStatsComponent],
   templateUrl: './dashboard.component.html',
   encapsulation: ViewEncapsulation.None,
 })

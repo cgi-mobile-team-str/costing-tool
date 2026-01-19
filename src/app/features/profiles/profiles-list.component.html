@@ -49,6 +49,7 @@
         <th z-table-head>{{ 'profiles.name' | translate }}</th>
         <th z-table-head>{{ 'profiles.username' | translate }}</th>
         <th z-table-head>{{ 'profiles.rate' | translate }}</th>
+        <th z-table-head>{{ 'profiles.scr' | translate }}</th>
         <th z-table-head>{{ 'profiles.active' | translate }}</th>
         <th z-table-head class="text-right">{{ 'common.actions' | translate }}</th>
       </tr>
@@ -59,6 +60,7 @@
         <td z-table-cell class="font-medium">{{ profile.name }}</td>
         <td z-table-cell>{{ profile.username || '-' }}</td>
         <td z-table-cell>{{ profile.dailyRate | currency : 'EUR' }}</td>
+        <td z-table-cell>{{ profile.scr || 0 | currency : 'EUR' }}</td>
         <td z-table-cell>
           <span class="badge" [class.success]="profile.active">{{
             profile.active ? ('common.yes' | translate) : ('common.no' | translate)

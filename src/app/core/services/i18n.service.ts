@@ -36,11 +36,18 @@ const FR = {
   'dash.global': 'Global',
   'dash.ht_label': 'HT',
   'dash.cost_distribution': 'Répartition des coûts',
+  'dash.profiles_stats': 'Coût et Charge par Profil',
+  'dash.items': 'Items',
+  'dash.charge': 'Charge (J)',
+  'dash.scr_amount': 'Montant (SCR)',
+  'dash.cost': 'Coût (HT)',
+  'dash.no_data': 'Aucune donnée à afficher',
 
   // Profiles
   'profiles.name': 'Rôle', // Was Nom, renamed for clarity
   'profiles.username': 'Nom du collaborateur',
   'profiles.rate': 'TJM',
+  'profiles.scr': 'SCR',
   'profiles.active': 'Actif',
   'profiles.create_title': 'Nouveau Profil',
   'profiles.edit_title': 'Éditer le profil',
@@ -135,11 +142,18 @@ const EN = {
   'dash.global': 'Global',
   'dash.ht_label': 'Excl. Tax',
   'dash.cost_distribution': 'Cost Distribution',
+  'dash.profiles_stats': 'Cost & Workload per Profile',
+  'dash.items': 'Items',
+  'dash.charge': 'Workload (D)',
+  'dash.scr_amount': 'Amount (SCR)',
+  'dash.cost': 'Cost (Excl. Tax)',
+  'dash.no_data': 'No data to display',
 
   // Profiles
   'profiles.name': 'Role', // Was Name
   'profiles.username': 'Collaborator Name',
   'profiles.rate': 'Daily Rate',
+  'profiles.scr': 'SCR',
   'profiles.active': 'Active',
   'profiles.create_title': 'New Profile',
   'profiles.edit_title': 'Edit profile',
