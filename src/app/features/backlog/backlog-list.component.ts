@@ -6,8 +6,10 @@ import {
   effect,
   inject,
   signal,
+  untracked,
   ViewEncapsulation,
 } from '@angular/core';
+import { toast } from 'ngx-sonner';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -24,7 +26,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogFormComponent } from './backlog-form.component';
 import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
-import { BulkActionsComponent } from './bulk-actions.component';
 import { ColumnSelectorComponent } from './column-selector.component';
 
 @Component({
@@ -35,12 +36,13 @@ import { ColumnSelectorComponent } from './column-selector.component';
     TranslatePipe,
     BacklogFiltersComponent,
     BacklogProductSectionComponent,
-    BulkActionsComponent,
+    // BulkActionsComponent, // Removed
     ColumnSelectorComponent,
     ZardButtonComponent,
     ZardIconComponent,
   ],
   templateUrl: './backlog-list.component.html',
+  styleUrls: ['./backlog-list.component.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -105,6 +107,32 @@ export class BacklogListComponent {
           }
         }, 0);
       }
+    });
+
+    // Bulk Actions Toast Effect
+    effect(() => {
+      const count = this.selectedIds().length;
+      untracked(() => {
+        if (count > 0) {
+          toast(`${count} ${this.i18n.translate('common.selected')}`, {
+            id: 'bulk-actions',
+            duration: Infinity,
+            position: 'bottom-center',
+            closeButton: true,
+            onDismiss: () => this.selectedIds.set([]),
+            action: {
+              label: this.i18n.translate('common.delete_selected'),
+              onClick: () => this.deleteSelected(),
+            },
+            actionButtonStyle: {
+              backgroundColor: 'var(--destructive)',
+              color: 'white',
+            } as any,
+          });
+        } else {
+          toast.dismiss('bulk-actions');
+        }
+      });
     });
   }
 
@@ -228,8 +256,10 @@ export class BacklogListComponent {
   deleteSelected() {
     this.dropdownService.close(); // Keep close to be safe, though alert manages focus
     this.alertDialogService.confirm({
-      zTitle: 'Delete Items',
-      zDescription: `Are you sure you want to delete ${this.selectedIds().length} items?`,
+      zTitle: this.i18n.translate('common.delete_selected'),
+      zDescription: this.i18n
+        .translate('common.confirm_bulk_delete_with_count')
+        .replace('{count}', this.selectedIds().length.toString()),
       zOkText: this.i18n.translate('common.delete'),
       zOkDestructive: true,
       zOnOk: () => {
