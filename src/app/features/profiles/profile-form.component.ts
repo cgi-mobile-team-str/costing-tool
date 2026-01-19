@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Profile } from '../../core/models/domain.model';
 import { IdService } from '../../core/services/id.service';
@@ -12,47 +12,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   selector: 'app-profile-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslatePipe, ZardInputDirective],
-  template: `
-    <form [formGroup]="form" class="grid flex-1 auto-rows-min gap-4 px-6 pt-2 pb-6">
-      <div class="flex flex-col gap-1.5">
-        <label
-          for="username"
-          class="flex items-center gap-2 text-sm font-semibold peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-        >
-          {{ 'profiles.username' | translate }}
-        </label>
-        <input z-input id="username" type="text" formControlName="username" />
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label
-          for="name"
-          class="flex items-center gap-2 text-sm font-semibold peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-        >
-          {{ 'profiles.name' | translate }}
-        </label>
-        <input z-input id="name" type="text" formControlName="name" />
-        @if (form.get('name')?.invalid && form.get('name')?.touched) {
-        <p class="text-sm text-destructive">{{ 'common.required' | translate }}</p>
-        } @if (form.errors?.['nameExists']) {
-        <p class="text-sm text-destructive">{{ 'profiles.name_exists' | translate }}</p>
-        }
-      </div>
-
-      <div class="flex flex-col gap-1.5">
-        <label
-          for="dailyRate"
-          class="flex items-center gap-2 text-sm font-semibold peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-        >
-          {{ 'profiles.rate' | translate }} (€)
-        </label>
-        <input z-input id="dailyRate" type="number" formControlName="dailyRate" />
-        @if (form.get('dailyRate')?.invalid && form.get('dailyRate')?.touched) {
-        <p class="text-sm text-destructive">{{ 'profiles.rate_positive' | translate }}</p>
-        }
-      </div>
-    </form>
-  `,
-  styles: [],
+  templateUrl: './profile-form.component.html',
+  encapsulation: ViewEncapsulation.None,
 })
 export class ProfileFormComponent {
   private fb = inject(FormBuilder);

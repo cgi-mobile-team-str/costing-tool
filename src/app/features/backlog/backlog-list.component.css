@@ -1,0 +1,87 @@
+app-backlog-list .backlog-container {
+  width: 100%;
+  max-width: 100%;
+}
+app-backlog-list .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  padding-top: 1rem;
+}
+app-backlog-list .context-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #6c757d;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+app-backlog-list .header h2 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+app-backlog-list .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+/* Button styles inherited from global */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted-foreground);
+}
+
+.column-visibility-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-radius: var(--radius);
+  border: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+}
+.toolbar-label {
+  font-weight: 600;
+  color: #4a5568;
+}
+.column-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.column-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  user-select: none;
+  color: #4a5568;
+  transition: color 0.15s ease;
+}
+.column-toggle:hover {
+  color: var(--brand-red);
+}
+.column-toggle input {
+  cursor: pointer;
+}

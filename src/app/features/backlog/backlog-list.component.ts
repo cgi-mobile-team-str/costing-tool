@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  ViewEncapsulation,
+} from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -30,161 +38,9 @@ import { BulkActionsComponent } from './bulk-actions.component';
     ZardIconComponent,
     ZardCheckboxComponent,
   ],
-  template: `
-    <div class="backlog-container">
-      <div class="header">
-        <div>
-          <span class="context-label">{{ 'nav.backlog' | translate }}</span>
-          <h2>{{ settings().projectName }}</h2>
-        </div>
-        <button z-button (click)="openBacklogSheet()">
-          <z-icon zType="plus" />
-          {{ 'common.add' | translate }}
-        </button>
-      </div>
-
-      <app-backlog-filters
-        [profiles]="profiles"
-        [searchTerm]="searchTerm"
-        [scopeFilter]="scopeFilter"
-        [profileFilter]="profileFilter"
-        (searchTermChange)="searchTerm = $event"
-        (scopeFilterChange)="scopeFilter = $event"
-        (profileFilterChange)="profileFilter = $event"
-      />
-
-      <div class="column-visibility-toolbar">
-        <span class="toolbar-label">Colonnes :</span>
-        <div class="column-toggles">
-          @for (col of availableColumns; track col.id) {
-          <z-checkbox [checked]="isColumnVisible(col.id)" (checkChange)="toggleColumn(col.id)">
-            {{ col.label | translate }}
-          </z-checkbox>
-          }
-        </div>
-      </div>
-
-      @for (prodGroup of groupedItems(); track prodGroup.product) {
-      <app-backlog-product-section
-        [productGroup]="prodGroup"
-        [profiles]="profiles"
-        [isExpanded]="isProductExpanded(prodGroup.product)"
-        [selectedIds]="selectedIds()"
-        [editingCell]="editingCell()"
-        [productTotal]="getProductTotal(prodGroup)"
-        [visibleColumns]="visibleColumns()"
-        [getItemCost]="getItemCost.bind(this)"
-        (toggleExpand)="toggleProduct($event)"
-        (toggleAll)="toggleAllProduct($event, prodGroup)"
-        (selectionToggle)="toggleSelection($event)"
-        (editStart)="startEdit($event.itemId, $event.field)"
-        (editSave)="saveEdit($event)"
-        (editCancel)="cancelEdit()"
-        (duplicateItem)="duplicate($event)"
-        (toggleExpand)="toggleProduct($event)"
-      />
-      } @if (groupedItems().length === 0) {
-      <div class="empty-state">
-        <p>No items found.</p>
-      </div>
-      }
-
-      <app-bulk-actions
-        [selectedCount]="selectedIds().length"
-        (deleteSelected)="deleteSelected()"
-      />
-    </div>
-  `,
-  styles: [
-    `
-      .backlog-container {
-        width: 100%;
-        max-width: 100%;
-      }
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 2.5rem;
-        padding-top: 1rem;
-      }
-      .context-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-        display: block;
-      }
-      .header h2 {
-        margin: 0;
-        font-size: 2.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-      }
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius);
-        font-size: 0.875rem;
-        font-weight: 500;
-        border: none;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        text-decoration: none;
-        margin-bottom: 0.5rem;
-      }
-      /* Button styles inherited from global */
-      .empty-state {
-        text-align: center;
-        padding: 3rem;
-        color: var(--muted-foreground);
-      }
-
-      .column-visibility-toolbar {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        padding: 0.75rem 1rem;
-        background: #f8f9fa;
-        border-radius: var(--radius);
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-      }
-      .toolbar-label {
-        font-weight: 600;
-        color: #4a5568;
-      }
-      .column-toggles {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-      }
-      .column-toggle {
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-        cursor: pointer;
-        user-select: none;
-        color: #4a5568;
-        transition: color 0.15s ease;
-      }
-      .column-toggle:hover {
-        color: var(--brand-red);
-      }
-      .column-toggle input {
-        cursor: pointer;
-      }
-    `,
-  ],
+  templateUrl: './backlog-list.component.html',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BacklogListComponent {
   private repo = inject(BacklogRepository);

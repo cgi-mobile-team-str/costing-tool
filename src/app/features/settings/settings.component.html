@@ -1,0 +1,80 @@
+<div class="container ps-container">
+  <div class="header">
+    <div>
+      <span class="context-label">{{ 'nav.settings' | translate }}</span>
+      <h2>{{ settings().projectName }}</h2>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="card">
+      <h3>Projet</h3>
+      <div class="form-group">
+        <label>Nom du projet</label>
+        <input type="text" formControlName="projectName" class="form-control" />
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Calculations</h3>
+
+      <div class="form-group">
+        <label>Currency</label>
+        <select formControlName="currency" class="form-control">
+          <option value="EUR">EUR (€)</option>
+          <option value="USD">USD ($)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Interface</h3>
+      <div class="form-group">
+        <label>Language</label>
+        <select [value]="currentLang()" (change)="changeLang($event)" class="form-control">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid || form.pristine" z-button>
+        {{ 'common.save' | translate }}
+      </button>
+    </div>
+  </form>
+
+  <div class="card card-mt">
+    <h3>Gestion des données</h3>
+    <p class="hint hint-mb">
+      Exportez votre backlog actuel ou importez un nouveau projet à partir d'un fichier JSON.
+    </p>
+    <div class="data-actions">
+      <input
+        type="file"
+        #fileInput
+        class="hidden-input"
+        (change)="importJson($event)"
+        accept=".json"
+      />
+      <button (click)="fileInput.click()" z-button zType="secondary">
+        Importer un Backlog (JSON)
+      </button>
+      <button (click)="exportJson()" z-button zType="secondary">Exporter le Backlog (JSON)</button>
+    </div>
+  </div>
+
+  <div class="danger-zone">
+    <h3>Danger Zone</h3>
+    <button (click)="resetApp()" z-button zType="destructive">Reset App Data</button>
+  </div>
+
+  @if (showImportModal()) {
+  <app-import-modal
+    [itemCount]="itemsToImport().length"
+    [projectName]="importedProjectName()"
+    (action)="handleImportAction($event)"
+  />
+  }
+</div>

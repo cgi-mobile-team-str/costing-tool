@@ -1,0 +1,59 @@
+<div class="backlog-container">
+  <div class="header">
+    <div>
+      <span class="context-label">{{ 'nav.backlog' | translate }}</span>
+      <h2>{{ settings().projectName }}</h2>
+    </div>
+    <button z-button (click)="openBacklogSheet()">
+      <z-icon zType="plus" />
+      {{ 'common.add' | translate }}
+    </button>
+  </div>
+
+  <app-backlog-filters
+    [profiles]="profiles"
+    [searchTerm]="searchTerm"
+    [scopeFilter]="scopeFilter"
+    [profileFilter]="profileFilter"
+    (searchTermChange)="searchTerm = $event"
+    (scopeFilterChange)="scopeFilter = $event"
+    (profileFilterChange)="profileFilter = $event"
+  />
+
+  <div class="column-visibility-toolbar">
+    <div class="column-toggles">
+      @for (col of availableColumns; track col.id) {
+      <z-checkbox [checked]="isColumnVisible(col.id)" (checkChange)="toggleColumn(col.id)">
+        {{ col.label | translate }}
+      </z-checkbox>
+      }
+    </div>
+  </div>
+
+  @for (prodGroup of groupedItems(); track prodGroup.product) {
+  <app-backlog-product-section
+    [productGroup]="prodGroup"
+    [profiles]="profiles"
+    [isExpanded]="isProductExpanded(prodGroup.product)"
+    [selectedIds]="selectedIds()"
+    [editingCell]="editingCell()"
+    [productTotal]="getProductTotal(prodGroup)"
+    [visibleColumns]="visibleColumns()"
+    [getItemCost]="getItemCost.bind(this)"
+    (toggleExpand)="toggleProduct($event)"
+    (toggleAll)="toggleAllProduct($event, prodGroup)"
+    (selectionToggle)="toggleSelection($event)"
+    (editStart)="startEdit($event.itemId, $event.field)"
+    (editSave)="saveEdit($event)"
+    (editCancel)="cancelEdit()"
+    (duplicateItem)="duplicate($event)"
+    (toggleExpand)="toggleProduct($event)"
+  />
+  } @if (groupedItems().length === 0) {
+  <div class="empty-state">
+    <p>No items found.</p>
+  </div>
+  }
+
+  <app-bulk-actions [selectedCount]="selectedIds().length" (deleteSelected)="deleteSelected()" />
+</div>

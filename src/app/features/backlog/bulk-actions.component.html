@@ -1,0 +1,6 @@
+@if (selectedCount > 0) {
+<div class="bulk-actions">
+  <span>{{ selectedCount }} selected</span>
+  <button (click)="deleteSelected.emit()" class="btn btn-danger btn-sm">Delete Selected</button>
+</div>
+}

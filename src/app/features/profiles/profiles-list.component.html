@@ -1,0 +1,92 @@
+<div class="header">
+  <div>
+    <span class="context-label">{{ 'nav.profiles' | translate }}</span>
+    <h2>{{ settings().projectName }}</h2>
+  </div>
+</div>
+
+<div class="profiles-toolbar">
+  <!-- Margin Configuration -->
+  <div class="margin-config card">
+    <div class="form-group">
+      <label>Marge Global (%)</label>
+      <div class="d-flex">
+        <input
+          type="number"
+          [(ngModel)]="marginPercent"
+          (change)="updateMargin()"
+          class="form-control margin-input"
+          min="0"
+          max="100"
+        />
+        <span class="preview">Ex: 1000€ ➔ {{ calculatePreview() | currency : 'EUR' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <z-icon zType="search" class="search-icon" />
+      <input
+        type="text"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+        placeholder="Rechercher un profil..."
+        class="search-input"
+      />
+    </div>
+  </div>
+</div>
+
+<div class="table-container shadow-sm">
+  <table z-table>
+    <thead z-table-header>
+      <tr z-table-row>
+        <th z-table-head>{{ 'profiles.name' | translate }}</th>
+        <th z-table-head>{{ 'profiles.username' | translate }}</th>
+        <th z-table-head>{{ 'profiles.rate' | translate }}</th>
+        <th z-table-head>{{ 'profiles.active' | translate }}</th>
+        <th z-table-head class="text-right">{{ 'common.actions' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody z-table-body>
+      @for (profile of filteredProfiles(); track profile.id) {
+      <tr z-table-row [class.inactive]="!profile.active">
+        <td z-table-cell class="font-medium">{{ profile.name }}</td>
+        <td z-table-cell>{{ profile.username || '-' }}</td>
+        <td z-table-cell>{{ profile.dailyRate | currency : 'EUR' }}</td>
+        <td z-table-cell>
+          <span class="badge" [class.success]="profile.active">{{
+            profile.active ? 'Oui' : 'Non'
+          }}</span>
+        </td>
+        <td z-table-cell class="text-right">
+          <div class="flex justify-end gap-2">
+            <button z-button zType="outline" zSize="sm" (click)="openProfileSheet(profile)">
+              {{ 'common.edit' | translate }}
+            </button>
+            <button z-button zType="destructive" zSize="sm" (click)="delete(profile)">
+              {{ 'common.delete' | translate }}
+            </button>
+          </div>
+        </td>
+      </tr>
+      } @empty {
+      <tr z-table-row>
+        <td z-table-cell colspan="5" class="text-center py-8 text-muted-foreground">
+          Aucun profil trouvé pour "{{ searchTerm() }}"
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Floating Action Button for Mobile / Standard for Desktop -->
+<div class="fab-container gap-2 flex flex-col items-end">
+  <button z-button (click)="openProfileSheet()">
+    <z-icon zType="plus" />
+    {{ 'common.add' | translate }}
+  </button>
+</div>

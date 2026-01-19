@@ -34,39 +34,7 @@ type OnChangeType = (value: boolean) => void;
 @Component({
   selector: 'z-checkbox, [z-checkbox]',
   imports: [ZardIconComponent, ZardIdDirective],
-  template: `
-    <span
-      class="flex items-center gap-2"
-      [class]="disabled() ? 'cursor-not-allowed' : 'cursor-pointer'"
-      [attr.aria-disabled]="disabled()"
-      zardId="checkbox"
-      #z="zardId"
-    >
-      <main class="relative flex">
-        <input
-          #input
-          type="checkbox"
-          [id]="z.id()"
-          [class]="classes()"
-          [checked]="currentChecked"
-          [disabled]="disabled()"
-          (change)="onCheckboxChange($event)"
-          (blur)="onCheckboxBlur()"
-          name="checkbox"
-        />
-        <z-icon
-          zType="check"
-          [class]="
-            'text-primary-foreground pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center transition-opacity ' +
-            (currentChecked ? 'opacity-100' : 'opacity-0')
-          "
-        />
-      </main>
-      <label [class]="labelClasses()" [for]="z.id()">
-        <ng-content />
-      </label>
-    </span>
-  `,
+  templateUrl: './checkbox.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

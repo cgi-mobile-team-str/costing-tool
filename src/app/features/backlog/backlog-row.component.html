@@ -1,0 +1,175 @@
+<tr>
+  <td class="select-col">
+    <z-checkbox [checked]="isSelected" (checkChange)="selectionToggle.emit(item.id)" />
+  </td>
+  <!-- Title -->
+  <td class="title-col" (dblclick)="startEdit('title')">
+    @if (isEditing('title')) {
+    <input
+      type="text"
+      class="inline-edit"
+      [(ngModel)]="item.title"
+      (blur)="saveEdit()"
+      (keydown.enter)="saveEdit()"
+      (keydown.escape)="cancelEdit()"
+    />
+    } @else {
+    <strong class="item-title-text">{{ item.title }}</strong>
+    }
+  </td>
+  <!-- Description -->
+  @if (visibleColumns.includes('description')) {
+  <td class="text-small" (dblclick)="startEdit('description')">
+    @if (isEditing('description')) {
+    <textarea
+      class="inline-edit"
+      [(ngModel)]="item.description"
+      (blur)="saveEdit()"
+      (keydown.escape)="cancelEdit()"
+      rows="2"
+    ></textarea>
+    } @else {
+    {{ item.description || '-' }}
+    }
+  </td>
+  }
+  <!-- Hypotheses -->
+  @if (visibleColumns.includes('hypotheses')) {
+  <td class="text-small" (dblclick)="startEdit('hypotheses')">
+    @if (isEditing('hypotheses')) {
+    <textarea
+      class="inline-edit"
+      [(ngModel)]="item.hypotheses"
+      (blur)="saveEdit()"
+      (keydown.escape)="cancelEdit()"
+      rows="2"
+    ></textarea>
+    } @else {
+    {{ item.hypotheses || '-' }}
+    }
+  </td>
+  }
+  <!-- Comments -->
+  @if (visibleColumns.includes('comments')) {
+  <td class="text-small" (dblclick)="startEdit('comments')">
+    @if (isEditing('comments')) {
+    <textarea
+      class="inline-edit"
+      [(ngModel)]="item.comments"
+      (blur)="saveEdit()"
+      (keydown.escape)="cancelEdit()"
+      rows="2"
+    ></textarea>
+    } @else {
+    {{ item.comments || '-' }}
+    }
+  </td>
+  }
+  <!-- Moscow -->
+  @if (visibleColumns.includes('moscow')) {
+  <td (dblclick)="startEdit('moscow')">
+    @if (isEditing('moscow')) {
+    <select
+      class="inline-edit-select"
+      [(ngModel)]="item.moscow"
+      (blur)="cancelEdit()"
+      (change)="saveEdit()"
+    >
+      <option value="MUST">Must</option>
+      <option value="SHOULD">Should</option>
+      <option value="COULD">Could</option>
+      <option value="WONT">Won't</option>
+    </select>
+    } @else {
+    <span class="badge moscow">{{ item.moscow || '-' }}</span>
+    }
+  </td>
+  }
+  <!-- Scope -->
+  @if (visibleColumns.includes('scope')) {
+  <td (dblclick)="startEdit('scope')">
+    @if (isEditing('scope')) {
+    <select
+      class="inline-edit-select"
+      [(ngModel)]="item.scope"
+      (blur)="cancelEdit()"
+      (change)="saveEdit()"
+    >
+      <option value="MVP">MVP</option>
+      <option value="V1">V1</option>
+      <option value="V2">V2</option>
+    </select>
+    } @else {
+    <span class="badge" [class]="item.scope">{{ item.scope }}</span>
+    }
+  </td>
+  }
+  <!-- Profile -->
+  @if (visibleColumns.includes('profile')) {
+  <td (dblclick)="startEdit('profileId')">
+    @if (isEditing('profileId')) {
+    <select
+      class="inline-edit-select"
+      [(ngModel)]="item.profileId"
+      (blur)="cancelEdit()"
+      (change)="saveEdit()"
+    >
+      @for (p of profiles; track p.id) {
+      <option [value]="p.id">{{ p.name }}</option>
+      }
+    </select>
+    } @else {
+    {{ getProfileName(item.profileId) }}
+    }
+  </td>
+  }
+  <!-- Charge Type -->
+  @if (visibleColumns.includes('chargeType')) {
+  <td (dblclick)="startEdit('chargeType')">
+    @if (isEditing('chargeType')) {
+    <select
+      class="inline-edit-select"
+      [(ngModel)]="item.chargeType"
+      (blur)="cancelEdit()"
+      (change)="saveEdit()"
+    >
+      <option value="days">RTU</option>
+      <option value="ratio">Ratio</option>
+    </select>
+    } @else {
+    {{ item.chargeType === 'ratio' ? 'Ratio' : 'RTU' }}
+    }
+  </td>
+  }
+  <!-- Effort -->
+  @if (visibleColumns.includes('effort')) {
+  <td (dblclick)="startEdit('effortDays')">
+    @if (isEditing('effortDays')) {
+    <input
+      type="number"
+      class="inline-edit"
+      [(ngModel)]="item.effortDays"
+      (blur)="saveEdit()"
+      (keydown.enter)="saveEdit()"
+      (keydown.escape)="cancelEdit()"
+      step="0.5"
+      min="0"
+    />
+    } @else {
+    {{ item.effortDays }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}
+    }
+  </td>
+  } @if (visibleColumns.includes('cost')) {
+  <td>{{ itemCost | currency : 'EUR' }}</td>
+  }
+  <td class="actions">
+    <div class="actions-container">
+      <button (click)="startEdit('title')" class="btn-icon" title="Edit">
+        <img src="/assets/pen-to-square-regular-full.svg" alt="Edit" width="20" height="20" />
+      </button>
+      <button (click)="duplicateItem.emit(item)" class="btn-icon" title="Duplicate">
+        <img src="/assets/copy-regular-full.svg" alt="Copy" width="20" height="20" />
+      </button>
+    </div>
+  </td>
+</tr>

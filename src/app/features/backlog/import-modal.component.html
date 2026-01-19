@@ -1,0 +1,24 @@
+<div class="modal-overlay" (click)="onAction('cancel')">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Import JSON</h3>
+    <p>
+      Vous allez importer <strong>{{ itemCount }}</strong> items pour le projet :
+    </p>
+    <div class="project-input-group">
+      <input
+        type="text"
+        [(ngModel)]="projectName"
+        placeholder="Nom du projet"
+        class="project-input"
+      />
+    </div>
+    <p class="summary-text">Que souhaitez-vous faire ?</p>
+    <div class="modal-actions">
+      <button (click)="onAction('add')" z-button zFull>Ajouter au backlog existant</button>
+      <button (click)="onAction('replace')" z-button zType="secondary" class="warning-btn" zFull>
+        Remplacer tout le backlog
+      </button>
+      <button (click)="onAction('cancel')" z-button zType="outline" zFull>Annuler</button>
+    </div>
+  </div>
+</div>

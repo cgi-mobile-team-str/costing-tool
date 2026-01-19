@@ -1,38 +1,33 @@
 import {
   afterNextRender,
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
-  type OnDestroy,
   ElementRef,
   inject,
   input,
   signal,
   ViewEncapsulation,
-  booleanAttribute,
+  type OnDestroy,
 } from '@angular/core';
 
 import type { ClassValue } from 'clsx';
 
+import { ZardIconComponent } from '@/shared/components/icon/icon.component';
 import {
   buttonVariants,
   type ZardButtonShapeVariants,
   type ZardButtonSizeVariants,
   type ZardButtonTypeVariants,
 } from './button.variants';
-import { ZardIconComponent } from '@/shared/components/icon/icon.component';
 
 import { mergeClasses } from '@/shared/utils/merge-classes';
 
 @Component({
   selector: 'z-button, button[z-button], a[z-button]',
   imports: [ZardIconComponent],
-  template: `
-    @if (zLoading()) {
-      <z-icon zType="loader-circle" class="animate-spin duration-2000" />
-    }
-    <ng-content />
-  `,
+  templateUrl: './button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -68,7 +63,7 @@ export class ZardButtonComponent implements OnDestroy {
         const el = this.elementRef.nativeElement;
         const hasIcon = el.querySelector('z-icon, [z-icon]') !== null;
         const children = Array.from<Node>(el.childNodes);
-        const hasText = children.some(node => {
+        const hasText = children.some((node) => {
           if (node.nodeType === 3) {
             return node.textContent?.trim() !== '';
           }
@@ -112,8 +107,8 @@ export class ZardButtonComponent implements OnDestroy {
         zLoading: this.zLoading(),
         zDisabled: this.zDisabled(),
       }),
-      this.class(),
-    ),
+      this.class()
+    )
   );
 
   protected readonly isNotInsideOfButtonOrLink = computed(() => {

@@ -1,0 +1,13 @@
+z-checkbox span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+z-checkbox label {
+  margin: 0 !important;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}

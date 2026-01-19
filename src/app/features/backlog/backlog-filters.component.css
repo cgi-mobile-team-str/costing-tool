@@ -1,0 +1,27 @@
+app-backlog-filters .filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+app-backlog-filters .search {
+  flex: 1;
+}
+app-backlog-filters .form-control {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  height: 40px;
+  box-sizing: border-box;
+}
+app-backlog-filters select.form-control {
+  width: 200px;
+}
+app-backlog-filters .form-control:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}

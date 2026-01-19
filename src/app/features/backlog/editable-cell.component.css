@@ -1,0 +1,19 @@
+:host {
+  display: contents;
+}
+.inline-edit,
+.inline-edit-select {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: 2px solid #3b82f6;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background: white;
+  color: var(--foreground);
+  outline: none;
+}
+.inline-edit:focus,
+.inline-edit-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}

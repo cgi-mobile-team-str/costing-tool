@@ -1,0 +1,29 @@
+<div class="filters">
+  <input
+    type="text"
+    [ngModel]="searchTerm"
+    (ngModelChange)="searchTermChange.emit($event)"
+    placeholder="Search..."
+    class="form-control search"
+  />
+  <select
+    [ngModel]="scopeFilter"
+    (ngModelChange)="scopeFilterChange.emit($event)"
+    class="form-control"
+  >
+    <option value="">All Scopes</option>
+    <option value="MVP">MVP</option>
+    <option value="V1">V1</option>
+    <option value="V2">V2</option>
+  </select>
+  <select
+    [ngModel]="profileFilter"
+    (ngModelChange)="profileFilterChange.emit($event)"
+    class="form-control"
+  >
+    <option value="">All Profiles</option>
+    @for (p of profiles; track p.id) {
+    <option [value]="p.id">{{ p.name }}</option>
+    }
+  </select>
+</div>

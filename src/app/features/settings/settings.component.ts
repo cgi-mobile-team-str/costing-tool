@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
@@ -22,167 +22,8 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
     ImportModalComponent,
     ZardButtonComponent,
   ],
-  template: `
-    <div class="container ps-container">
-      <div class="header">
-        <div>
-          <span class="context-label">{{ 'nav.settings' | translate }}</span>
-          <h2>{{ settings().projectName }}</h2>
-        </div>
-      </div>
-
-      <form [formGroup]="form" (ngSubmit)="save()">
-        <div class="card">
-          <h3>Projet</h3>
-          <div class="form-group">
-            <label>Nom du projet</label>
-            <input type="text" formControlName="projectName" class="form-control" />
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Calculations</h3>
-
-          <div class="form-group">
-            <label>Currency</label>
-            <select formControlName="currency" class="form-control">
-              <option value="EUR">EUR (€)</option>
-              <option value="USD">USD ($)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Interface</h3>
-          <div class="form-group">
-            <label>Language</label>
-            <select [value]="currentLang()" (change)="changeLang($event)" class="form-control">
-              <option value="fr">Français</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button type="submit" [disabled]="form.invalid || form.pristine" z-button>
-            {{ 'common.save' | translate }}
-          </button>
-        </div>
-      </form>
-
-      <div class="card" style="margin-top: 2rem;">
-        <h3>Gestion des données</h3>
-        <p class="hint" style="margin-bottom: 1.5rem;">
-          Exportez votre backlog actuel ou importez un nouveau projet à partir d'un fichier JSON.
-        </p>
-        <div class="data-actions">
-          <input
-            type="file"
-            #fileInput
-            style="display: none"
-            (change)="importJson($event)"
-            accept=".json"
-          />
-          <button (click)="fileInput.click()" z-button zType="secondary">
-            Importer un Backlog (JSON)
-          </button>
-          <button (click)="exportJson()" z-button zType="secondary">
-            Exporter le Backlog (JSON)
-          </button>
-        </div>
-      </div>
-
-      <div class="danger-zone">
-        <h3>Danger Zone</h3>
-        <button (click)="resetApp()" z-button zType="destructive">Reset App Data</button>
-      </div>
-
-      @if (showImportModal()) {
-      <app-import-modal
-        [itemCount]="itemsToImport().length"
-        [projectName]="importedProjectName()"
-        (action)="handleImportAction($event)"
-      />
-      }
-    </div>
-  `,
-  styles: [
-    `
-      .ps-container {
-        max-width: 600px;
-        margin: 0 auto;
-      }
-      .header {
-        margin-bottom: 2.5rem;
-        padding-top: 1rem;
-      }
-      .context-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-        display: block;
-      }
-      .header h2 {
-        margin: 0;
-        font-size: 2.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-      }
-      .card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-      h3 {
-        margin-top: 0;
-        font-size: 1.1rem;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 0.5rem;
-      }
-      .form-group {
-        margin-bottom: 1rem;
-      }
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-      }
-      .form-control {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-      }
-      .actions {
-        text-align: right;
-      }
-      /* Button styles inherited */
-      .data-actions {
-        display: flex;
-        gap: 1rem;
-      }
-      .danger-zone {
-        border-top: 1px solid #dc3545;
-        padding-top: 1rem;
-        margin-top: 3rem;
-      }
-      .hint {
-        display: block;
-        margin-top: 0.25rem;
-        color: #6c757d;
-        font-size: 0.875rem;
-      }
-    `,
-  ],
+  templateUrl: './settings.component.html',
+  encapsulation: ViewEncapsulation.None,
 })
 export class SettingsComponent {
   private fb = inject(FormBuilder);
@@ -248,9 +89,8 @@ export class SettingsComponent {
     const date = new Date().toISOString().split('T')[0];
     link.href = url;
     link.download = `${(s.projectName || 'export')
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-      }-export-${date}.json`;
+      .toLowerCase()
+      .replace(/\s+/g, '-')}-export-${date}.json`;
     link.click();
     URL.revokeObjectURL(url);
   }

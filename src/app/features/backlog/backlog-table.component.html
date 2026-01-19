@@ -1,0 +1,64 @@
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th class="select-col">
+          <z-checkbox [checked]="allSelected" (checkChange)="toggleAllItems($event)" />
+        </th>
+        <th class="title-col">{{ 'backlog.title' | translate }}</th>
+        @if (visibleColumns.includes('description')) {
+        <th>{{ 'backlog.description' | translate }}</th>
+        } @if (visibleColumns.includes('hypotheses')) {
+        <th>{{ 'backlog.hypotheses' | translate }}</th>
+        } @if (visibleColumns.includes('comments')) {
+        <th>{{ 'backlog.comments' | translate }}</th>
+        } @if (visibleColumns.includes('moscow')) {
+        <th>{{ 'backlog.moscow' | translate }}</th>
+        } @if (visibleColumns.includes('scope')) {
+        <th>{{ 'backlog.scope' | translate }}</th>
+        } @if (visibleColumns.includes('profile')) {
+        <th>{{ 'backlog.profile' | translate }}</th>
+        } @if (visibleColumns.includes('chargeType')) {
+        <th>{{ 'backlog.chargeType' | translate }}</th>
+        } @if (visibleColumns.includes('effort')) {
+        <th>{{ 'backlog.effort' | translate }}</th>
+        } @if (visibleColumns.includes('cost')) {
+        <th>{{ 'backlog.cost' | translate }} (HT)</th>
+        }
+        <th>{{ 'common.actions' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (clusterGroup of clusterGroups; track clusterGroup.cluster) {
+      <tr class="cluster-header">
+        <td [attr.colspan]="visibleColumnCount + 3">{{ clusterGroup.cluster }}</td>
+      </tr>
+      @for (item of clusterGroup.items; track item.id) {
+      <app-backlog-row
+        [item]="item"
+        [profiles]="profiles"
+        [isSelected]="isItemSelected(item.id)"
+        [editingCell]="editingCell"
+        [itemCost]="getItemCost(item)"
+        [visibleColumns]="visibleColumns"
+        (selectionToggle)="selectionToggle.emit($event)"
+        (editStart)="editStart.emit($event)"
+        (editSave)="editSave.emit($event)"
+        (editCancel)="editCancel.emit()"
+        (duplicateItem)="duplicateItem.emit($event)"
+      />
+      }
+      <!-- Cluster Total -->
+      <tr class="cluster-total">
+        <td [attr.colspan]="visibleColumnCount + 1" class="total-label">
+          Total {{ clusterGroup.cluster }}:
+        </td>
+        <td class="total-value">
+          {{ getClusterTotal(clusterGroup.items) | currency : 'EUR' }}
+        </td>
+        <td></td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

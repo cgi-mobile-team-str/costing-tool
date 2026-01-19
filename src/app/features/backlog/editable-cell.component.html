@@ -1,0 +1,37 @@
+@if (isEditing) { @if (fieldType === 'text') {
+<input
+  type="text"
+  class="inline-edit"
+  [(ngModel)]="editValue"
+  (blur)="onSave()"
+  (keydown.enter)="onSave()"
+  (keydown.escape)="onCancel()"
+/>
+} @else if (fieldType === 'textarea') {
+<textarea
+  class="inline-edit"
+  [(ngModel)]="editValue"
+  (blur)="onSave()"
+  (keydown.escape)="onCancel()"
+  rows="2"
+></textarea>
+} @else if (fieldType === 'number') {
+<input
+  type="number"
+  class="inline-edit"
+  [(ngModel)]="editValue"
+  (blur)="onSave()"
+  (keydown.enter)="onSave()"
+  (keydown.escape)="onCancel()"
+  step="0.5"
+  min="0"
+/>
+} @else if (fieldType === 'select') {
+<select class="inline-edit-select" [(ngModel)]="editValue" (blur)="onCancel()" (change)="onSave()">
+  @for (opt of options; track opt.value) {
+  <option [value]="opt.value">{{ opt.label }}</option>
+  }
+</select>
+} } @else {
+<ng-content></ng-content>
+}
