@@ -51,6 +51,8 @@ const FR = {
   'backlog.comments': 'Commentaires',
   'backlog.chargeType': 'Type',
   'backlog.description': 'Description',
+  'backlog.edit_title': "Modifier l'item",
+  'backlog.create_desc': 'Ajoutez une nouvelle fonctionnalité au backlog.',
 };
 
 const EN = {
@@ -102,6 +104,8 @@ const EN = {
   'backlog.comments': 'Comments',
   'backlog.chargeType': 'Type',
   'backlog.description': 'Description',
+  'backlog.edit_title': 'Edit Item',
+  'backlog.create_desc': 'Add a new feature to the backlog.',
 };
 
 @Injectable({

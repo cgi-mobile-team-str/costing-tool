@@ -20,22 +20,32 @@ export interface ClusterGroup {
           <tr>
             <th width="32" style="padding-right: 0;"></th>
             <th style="padding-left: 0.5rem;">{{ 'backlog.title' | translate }}</th>
+            @if (visibleColumns.includes('description')) {
             <th>{{ 'backlog.description' | translate }}</th>
+            } @if (visibleColumns.includes('hypotheses')) {
             <th>{{ 'backlog.hypotheses' | translate }}</th>
+            } @if (visibleColumns.includes('comments')) {
             <th>{{ 'backlog.comments' | translate }}</th>
+            } @if (visibleColumns.includes('moscow')) {
             <th>{{ 'backlog.moscow' | translate }}</th>
+            } @if (visibleColumns.includes('scope')) {
             <th>{{ 'backlog.scope' | translate }}</th>
+            } @if (visibleColumns.includes('profile')) {
             <th>{{ 'backlog.profile' | translate }}</th>
+            } @if (visibleColumns.includes('chargeType')) {
             <th>{{ 'backlog.chargeType' | translate }}</th>
+            } @if (visibleColumns.includes('effort')) {
             <th>{{ 'backlog.effort' | translate }}</th>
+            } @if (visibleColumns.includes('cost')) {
             <th>{{ 'backlog.cost' | translate }} (HT)</th>
+            }
             <th>{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (clusterGroup of clusterGroups; track clusterGroup.cluster) {
           <tr class="cluster-header">
-            <td colspan="12">{{ clusterGroup.cluster }}</td>
+            <td [attr.colspan]="visibleColumnCount + 3">{{ clusterGroup.cluster }}</td>
           </tr>
           @for (item of clusterGroup.items; track item.id) {
           <app-backlog-row
@@ -44,6 +54,7 @@ export interface ClusterGroup {
             [isSelected]="isItemSelected(item.id)"
             [editingCell]="editingCell"
             [itemCost]="getItemCost(item)"
+            [visibleColumns]="visibleColumns"
             (selectionToggle)="selectionToggle.emit($event)"
             (editStart)="editStart.emit($event)"
             (editSave)="editSave.emit($event)"
@@ -53,7 +64,10 @@ export interface ClusterGroup {
           }
           <!-- Cluster Total -->
           <tr class="cluster-total">
-            <td colspan="10" style="text-align: right; font-weight: 600;">
+            <td
+              [attr.colspan]="visibleColumnCount + 1"
+              style="text-align: right; font-weight: 600;"
+            >
               Total {{ clusterGroup.cluster }}:
             </td>
             <td style="font-weight: 600;">
@@ -92,6 +106,7 @@ export class BacklogTableComponent {
   @Input() profiles: Profile[] = [];
   @Input() selectedIds: string[] = [];
   @Input() editingCell: { itemId: string; field: string } | null = null;
+  @Input() visibleColumns: string[] = [];
   @Input() getItemCost!: (item: BacklogItem) => number;
 
   @Output() toggleAll = new EventEmitter<boolean>();
@@ -107,5 +122,13 @@ export class BacklogTableComponent {
 
   getClusterTotal(items: BacklogItem[]): number {
     return items.reduce((sum, item) => sum + this.getItemCost(item), 0);
+  }
+
+  get visibleColumnCount(): number {
+    return this.visibleColumns.length;
+  }
+
+  isColumnVisible(columnId: string): boolean {
+    return this.visibleColumns.includes(columnId);
   }
 }

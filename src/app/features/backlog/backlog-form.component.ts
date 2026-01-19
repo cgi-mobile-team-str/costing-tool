@@ -7,6 +7,8 @@ import { CalculationService } from '../../core/services/calculation.service';
 import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
+import { ZardSheetRef } from '../../shared/components/sheet/sheet-ref';
+import { Z_SHEET_DATA } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
@@ -14,13 +16,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   template: `
-    <div class="container">
-      <h2>{{ (isEditMode() ? 'common.edit' : 'backlog.create_title') | translate }}</h2>
-
+    <div class="form-container">
       <form [formGroup]="form" (ngSubmit)="save()">
         <!-- Hierarchy: Product > Cluster > Feature -->
         <div class="row">
-          <div class="form-group col-2">
+          <div class="form-group col">
             <label>{{ 'backlog.product' | translate }}</label>
 
             @if (!isProductInputMode() && existingProducts().length > 0) {
@@ -59,7 +59,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             }
           </div>
 
-          <div class="form-group col-2">
+          <div class="form-group col">
             <label>{{ 'backlog.cluster' | translate }}</label>
             @if (!isClusterInputMode() && existingClusters().length > 0) {
             <div class="input-group">
@@ -96,43 +96,44 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             </div>
             }
           </div>
-          <div class="form-group col-4">
-            <label>{{ 'backlog.title' | translate }}</label>
-            @if (!isTitleInputMode() && existingTitles().length > 0) {
-            <div class="input-group">
-              <select
-                [value]="form.controls.title.value"
-                (change)="onTitleSelect($event)"
-                class="form-control"
-              >
-                <option value="" disabled selected>Sélectionner...</option>
-                @for (t of existingTitles(); track t) {
-                <option [value]="t">{{ t }}</option>
-                }
-                <option value="__NEW__">➕ Nouvelle Feature...</option>
-              </select>
-            </div>
-            } @else {
-            <div class="input-group d-flex">
-              <input
-                type="text"
-                formControlName="title"
-                class="form-control"
-                placeholder="ex: Login Screen"
-              />
-              @if(existingTitles().length > 0) {
-              <button
-                type="button"
-                (click)="switchToTitleSelect()"
-                class="btn btn-sm btn-outline"
-                title="Choisir existant"
-              >
-                📋
-              </button>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'backlog.title' | translate }}</label>
+          @if (!isTitleInputMode() && existingTitles().length > 0) {
+          <div class="input-group">
+            <select
+              [value]="form.controls.title.value"
+              (change)="onTitleSelect($event)"
+              class="form-control"
+            >
+              <option value="" disabled selected>Sélectionner...</option>
+              @for (t of existingTitles(); track t) {
+              <option [value]="t">{{ t }}</option>
               }
-            </div>
+              <option value="__NEW__">➕ Nouvelle Feature...</option>
+            </select>
+          </div>
+          } @else {
+          <div class="input-group d-flex">
+            <input
+              type="text"
+              formControlName="title"
+              class="form-control"
+              placeholder="ex: Login Screen"
+            />
+            @if(existingTitles().length > 0) {
+            <button
+              type="button"
+              (click)="switchToTitleSelect()"
+              class="btn btn-sm btn-outline"
+              title="Choisir existant"
+            >
+              📋
+            </button>
             }
           </div>
+          }
         </div>
 
         <!-- Description -->
@@ -202,6 +203,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           {{ calculatedCost() | currency : 'EUR' }}
         </div>
 
+        @if (!isSheetMode) {
         <div class="actions">
           <button type="button" routerLink="/backlog" class="btn btn-secondary">
             {{ 'common.cancel' | translate }}
@@ -210,17 +212,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             {{ 'common.save' | translate }}
           </button>
         </div>
+        }
       </form>
     </div>
   `,
   styles: [
     `
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .project-input:focus {
-        border-color: var(--brand-red);
+      .form-container {
+        padding: 1rem;
       }
       .form-group {
         margin-bottom: 1rem;
@@ -232,16 +231,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       .col {
         flex: 1;
       }
-      .col-2 {
-        flex: 1;
-      }
-      .col-4 {
-        flex: 2;
-      }
       label {
         display: block;
         margin-bottom: 0.5rem;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--foreground);
       }
       .form-control {
         width: 100%;
@@ -249,35 +244,34 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         border: 1px solid #ced4da;
         border-radius: 4px;
         font-family: inherit;
+        font-size: 0.875rem;
       }
       textarea.form-control {
         resize: vertical;
       }
       .cost-preview {
-        background: #e9ecef;
+        background: #f8f9fa;
         padding: 1rem;
         border-radius: 4px;
         margin-bottom: 1.5rem;
         text-align: right;
         font-size: 1.1rem;
+        border: 1px solid #e9ecef;
       }
       .actions {
         display: flex;
         gap: 1rem;
         justify-content: flex-end;
       }
-      /* Button styles inherited */
       .d-flex {
         display: flex;
         gap: 0.5rem;
       }
-      .btn-outline-secondary {
+      .btn-outline {
         background: white;
         border: 1px solid #ced4da;
         color: #6c757d;
-      }
-      .btn-outline-secondary:hover {
-        background: #f8f9fa;
+        padding: 0.25rem 0.5rem;
       }
     `,
   ],
@@ -290,7 +284,9 @@ export class BacklogFormComponent {
   private route = inject(ActivatedRoute);
   private idService = inject(IdService);
   private calc = inject(CalculationService);
-
+  private sheetRef = inject(ZardSheetRef, { optional: true });
+  private zData = inject(Z_SHEET_DATA, { optional: true });
+  isSheetMode = !!this.sheetRef;
   profiles = signal(this.profilesRepo.getAll().filter((p) => p.active));
 
   form = this.fb.group({
@@ -316,9 +312,7 @@ export class BacklogFormComponent {
 
   // Autocomplete data
   existingProducts = computed(() => {
-    const items = this.repo.getAll(); // Ideally `repo.getAll` should be a signal or we need to access it differently to be reactive.
-    // But repo.getAll() returns a static array. It won't update automatically unless we refresh.
-    // However, on form init it's fine.
+    const items = this.repo.getAll();
     return [...new Set(items.map((i) => i.product).filter((p) => !!p))].sort();
   });
 
@@ -341,16 +335,13 @@ export class BacklogFormComponent {
     return [...new Set(filtered.map((i) => i.title).filter((t) => !!t))].sort();
   });
 
-  // Reactive version for inputs
   currentProductInput = signal('');
   currentClusterInput = signal('');
-
   private currentCost = signal(0);
 
-  // UI Modes for "Select vs Create"
   isProductInputMode = signal(false);
   isClusterInputMode = signal(false);
-  isTitleInputMode = signal(false); // For "Feature"
+  isTitleInputMode = signal(false);
 
   constructor() {
     // Set default profile if available
@@ -359,42 +350,23 @@ export class BacklogFormComponent {
       this.form.patchValue({ profileId: active[0].id });
     }
 
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.isEditMode.set(true);
-      const item = this.repo.getAll().find((i) => i.id === id);
-      if (item) {
-        this.form.patchValue(item as any);
-        this.currentProductInput.set(item.product || '');
-        this.currentClusterInput.set(item.cluster || '');
-
-        // Determine modes
-        this.isProductInputMode.set(!this.existingProducts().includes(item.product));
-        this.isClusterInputMode.set(!this.existingClusters().includes(item.cluster));
-        // For title, we check if it exists in the filtered list
-        // Note: existingTitles() depends on the current signals, which we just set.
-        // Signal updates are synchronous usually inside effect/computed but we are in constructor.
-        // We set signals, computed should reflect.
-        // CHECK: existingTitles might contain the current item's title (itself).
-        // If we are editing, we are ON that title. So it "exists".
-        // But for "Select vs Create", if I am editing an existing item, do I want a dropdown or text?
-        // User probably expects text input for Title when editing a specific item, unless it matches a standard?
-        // ACTUALLY: The feature title is the main identifier of "content".
-        // Re-reading user request: "select ... when they exist ... to avoid retyping".
-        // If I edit an existing item, I probably want to keep it as text?
-        // But if I want to "Change" it to another standard feature?
-        // Let's stick to the pattern: If it's in the list, show select.
-        this.isTitleInputMode.set(!this.existingTitles().includes(item.title));
-      }
+    if (this.zData) {
+      this.initForm(this.zData as BacklogItem);
     } else {
-      // New item
-      this.isProductInputMode.set(this.existingProducts().length === 0);
-      this.isClusterInputMode.set(true);
-      this.isTitleInputMode.set(true);
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        const item = this.repo.getAll().find((i) => i.id === id);
+        if (item) {
+          this.initForm(item);
+        }
+      } else {
+        this.isProductInputMode.set(this.existingProducts().length === 0);
+        this.isClusterInputMode.set(true);
+        this.isTitleInputMode.set(true);
+      }
     }
 
     this.form.valueChanges.subscribe(() => this.updateCost());
-
     this.form.controls.product.valueChanges.subscribe((val) =>
       this.currentProductInput.set(val || '')
     );
@@ -403,6 +375,17 @@ export class BacklogFormComponent {
     );
 
     this.updateCost();
+  }
+
+  private initForm(item: BacklogItem) {
+    this.isEditMode.set(true);
+    this.form.patchValue(item as any);
+    this.currentProductInput.set(item.product || '');
+    this.currentClusterInput.set(item.cluster || '');
+
+    this.isProductInputMode.set(!this.existingProducts().includes(item.product));
+    this.isClusterInputMode.set(!this.existingClusters().includes(item.cluster));
+    this.isTitleInputMode.set(!this.existingTitles().includes(item.title));
   }
 
   onProductSelect(event: Event) {
@@ -414,7 +397,6 @@ export class BacklogFormComponent {
     } else {
       this.form.controls.product.setValue(val);
       this.currentProductInput.set(val);
-      // Reset cluster mode when product changes
       this.isClusterInputMode.set(this.existingClusters().length === 0);
     }
   }
@@ -428,7 +410,6 @@ export class BacklogFormComponent {
     } else {
       this.form.controls.cluster.setValue(val);
       this.currentClusterInput.set(val);
-      // Reset title mode
       this.isTitleInputMode.set(this.existingTitles().length === 0);
     }
   }
@@ -445,9 +426,6 @@ export class BacklogFormComponent {
 
   switchToProductSelect() {
     this.isProductInputMode.set(false);
-    // Keeps current value if it matches, otherwise might want to clear?
-    // If current value is valid in list, select it. If not, maybe clear?
-    // Let's keep it simple: just show select. The select will show the current value if it matches an option.
   }
 
   switchToClusterSelect() {
@@ -461,7 +439,6 @@ export class BacklogFormComponent {
   updateCost() {
     const val = this.form.value;
     const profile = this.profiles().find((p) => p.id === val.profileId);
-    // If chargeType is ratio, calculation might differ. For now keeping same.
     if (profile && val.effortDays != undefined) {
       this.currentCost.set(this.calc.calculateItemCost(val.effortDays, profile.dailyRate));
     } else {
@@ -469,8 +446,11 @@ export class BacklogFormComponent {
     }
   }
 
-  save() {
-    if (this.form.invalid) return;
+  save(): boolean {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return false;
+    }
     const val = this.form.value as any;
 
     if (!val.id) {
@@ -478,6 +458,10 @@ export class BacklogFormComponent {
     }
 
     this.repo.save(val as BacklogItem);
-    this.router.navigate(['/backlog']);
+
+    if (!this.isSheetMode) {
+      this.router.navigate(['/backlog']);
+    }
+    return true;
   }
 }

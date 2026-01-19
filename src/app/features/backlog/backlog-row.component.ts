@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 
 @Component({
   selector: 'app-backlog-row',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <tr>
       <td style="width: 32px; padding-right: 0;">
@@ -34,6 +33,7 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         }
       </td>
       <!-- Description -->
+      @if (visibleColumns.includes('description')) {
       <td class="text-small" (dblclick)="startEdit('description')">
         @if (isEditing('description')) {
         <textarea
@@ -47,7 +47,9 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         {{ item.description || '-' }}
         }
       </td>
+      }
       <!-- Hypotheses -->
+      @if (visibleColumns.includes('hypotheses')) {
       <td class="text-small" (dblclick)="startEdit('hypotheses')">
         @if (isEditing('hypotheses')) {
         <textarea
@@ -61,7 +63,9 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         {{ item.hypotheses || '-' }}
         }
       </td>
+      }
       <!-- Comments -->
+      @if (visibleColumns.includes('comments')) {
       <td class="text-small" (dblclick)="startEdit('comments')">
         @if (isEditing('comments')) {
         <textarea
@@ -75,7 +79,9 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         {{ item.comments || '-' }}
         }
       </td>
+      }
       <!-- Moscow -->
+      @if (visibleColumns.includes('moscow')) {
       <td (dblclick)="startEdit('moscow')">
         @if (isEditing('moscow')) {
         <select
@@ -84,16 +90,18 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
           (blur)="cancelEdit()"
           (change)="saveEdit()"
         >
-          <option value="Must">Must</option>
-          <option value="Should">Should</option>
-          <option value="Could">Could</option>
-          <option value="Won't">Won't</option>
+          <option value="MUST">Must</option>
+          <option value="SHOULD">Should</option>
+          <option value="COULD">Could</option>
+          <option value="WONT">Won't</option>
         </select>
         } @else {
         <span class="badge moscow">{{ item.moscow || '-' }}</span>
         }
       </td>
+      }
       <!-- Scope -->
+      @if (visibleColumns.includes('scope')) {
       <td (dblclick)="startEdit('scope')">
         @if (isEditing('scope')) {
         <select
@@ -110,7 +118,9 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         <span class="badge" [class]="item.scope">{{ item.scope }}</span>
         }
       </td>
+      }
       <!-- Profile -->
+      @if (visibleColumns.includes('profile')) {
       <td (dblclick)="startEdit('profileId')">
         @if (isEditing('profileId')) {
         <select
@@ -127,7 +137,9 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         {{ getProfileName(item.profileId) }}
         }
       </td>
+      }
       <!-- Charge Type -->
+      @if (visibleColumns.includes('chargeType')) {
       <td (dblclick)="startEdit('chargeType')">
         @if (isEditing('chargeType')) {
         <select
@@ -143,7 +155,9 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         {{ item.chargeType === 'ratio' ? 'Ratio' : 'RTU' }}
         }
       </td>
+      }
       <!-- Effort -->
+      @if (visibleColumns.includes('effort')) {
       <td (dblclick)="startEdit('effortDays')">
         @if (isEditing('effortDays')) {
         <input
@@ -160,14 +174,18 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         {{ item.effortDays }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}
         }
       </td>
+      } @if (visibleColumns.includes('cost')) {
       <td>{{ itemCost | currency : 'EUR' }}</td>
+      }
       <td class="actions">
-        <a [routerLink]="['/backlog', item.id]" class="btn-icon" title="Edit">
-          <img src="/assets/pen-to-square-regular-full.svg" alt="Edit" width="20" height="20" />
-        </a>
-        <button (click)="duplicateItem.emit(item)" class="btn-icon" title="Duplicate">
-          <img src="/assets/copy-regular-full.svg" alt="Copy" width="20" height="20" />
-        </button>
+        <div class="actions-container">
+          <button (click)="startEdit('title')" class="btn-icon" title="Edit">
+            <img src="/assets/pen-to-square-regular-full.svg" alt="Edit" width="20" height="20" />
+          </button>
+          <button (click)="duplicateItem.emit(item)" class="btn-icon" title="Duplicate">
+            <img src="/assets/copy-regular-full.svg" alt="Copy" width="20" height="20" />
+          </button>
+        </div>
       </td>
     </tr>
   `,
@@ -236,14 +254,31 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
         background: rgba(59, 130, 246, 0.05);
       }
       .btn-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         background: none;
         border: none;
         cursor: pointer;
-        font-size: 1.1rem;
-        margin-right: 0.5rem;
+        padding: 4px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+      .btn-icon:hover {
+        background-color: rgba(0, 0, 0, 0.05);
       }
       .actions {
+        padding: 0 1rem;
         white-space: nowrap;
+        min-width: 80px;
+        vertical-align: middle;
+      }
+      .actions-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: 100%;
+        min-height: 40px; /* Ensures a minimum height for the hit area */
       }
     `,
   ],
@@ -253,6 +288,7 @@ export class BacklogRowComponent {
   @Input() profiles: Profile[] = [];
   @Input() isSelected = false;
   @Input() editingCell: { itemId: string; field: string } | null = null;
+  @Input() visibleColumns: string[] = [];
   @Input() itemCost = 0;
 
   @Output() selectionToggle = new EventEmitter<string>();
@@ -283,5 +319,9 @@ export class BacklogRowComponent {
 
   getProfileName(id: string): string {
     return this.profiles.find((p) => p.id === id)?.name || 'Unknown';
+  }
+
+  isColumnVisible(columnId: string): boolean {
+    return this.visibleColumns.includes(columnId);
   }
 }

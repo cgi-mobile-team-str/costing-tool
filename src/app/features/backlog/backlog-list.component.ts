@@ -1,16 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
+import { I18nService } from '../../core/services/i18n.service';
 import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
+import { SettingsRepository } from '../../data/settings.repository';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
-import { SettingsRepository } from '../../data/settings.repository';
+import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogFiltersComponent } from './backlog-filters.component';
+import { BacklogFormComponent } from './backlog-form.component';
 import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
 import { BulkActionsComponent } from './bulk-actions.component';
 
@@ -19,7 +21,6 @@ import { BulkActionsComponent } from './bulk-actions.component';
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     TranslatePipe,
     BacklogFiltersComponent,
     BacklogProductSectionComponent,
@@ -30,11 +31,14 @@ import { BulkActionsComponent } from './bulk-actions.component';
   template: `
     <div class="backlog-container">
       <div class="header">
-        <h2>{{ 'nav.backlog' | translate }}</h2>
-        <a z-button routerLink="/backlog/new">
+        <div>
+          <span class="context-label">{{ 'nav.backlog' | translate }}</span>
+          <h2>{{ settings().projectName }}</h2>
+        </div>
+        <button z-button (click)="openBacklogSheet()">
           <z-icon zType="plus" />
           {{ 'common.add' | translate }}
-        </a>
+        </button>
       </div>
 
       <app-backlog-filters
@@ -47,6 +51,22 @@ import { BulkActionsComponent } from './bulk-actions.component';
         (profileFilterChange)="profileFilter = $event"
       />
 
+      <div class="column-visibility-toolbar">
+        <span class="toolbar-label">Colonnes :</span>
+        <div class="column-toggles">
+          @for (col of availableColumns; track col.id) {
+          <label class="column-toggle">
+            <input
+              type="checkbox"
+              [checked]="isColumnVisible(col.id)"
+              (change)="toggleColumn(col.id)"
+            />
+            {{ col.label | translate }}
+          </label>
+          }
+        </div>
+      </div>
+
       @for (prodGroup of groupedItems(); track prodGroup.product) {
       <app-backlog-product-section
         [productGroup]="prodGroup"
@@ -55,6 +75,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
         [selectedIds]="selectedIds()"
         [editingCell]="editingCell()"
         [productTotal]="getProductTotal(prodGroup)"
+        [visibleColumns]="visibleColumns()"
         [getItemCost]="getItemCost.bind(this)"
         (toggleExpand)="toggleProduct($event)"
         (toggleAll)="toggleAll($event)"
@@ -129,6 +150,42 @@ import { BulkActionsComponent } from './bulk-actions.component';
         padding: 3rem;
         color: var(--muted-foreground);
       }
+
+      .column-visibility-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border-radius: var(--radius);
+        border: 1px solid #e2e8f0;
+        font-size: 0.875rem;
+      }
+      .toolbar-label {
+        font-weight: 600;
+        color: #4a5568;
+      }
+      .column-toggles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .column-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        cursor: pointer;
+        user-select: none;
+        color: #4a5568;
+        transition: color 0.15s ease;
+      }
+      .column-toggle:hover {
+        color: var(--brand-red);
+      }
+      .column-toggle input {
+        cursor: pointer;
+      }
     `,
   ],
 })
@@ -138,6 +195,8 @@ export class BacklogListComponent {
   private settingsRepo = inject(SettingsRepository);
   private calc = inject(CalculationService);
   private idService = inject(IdService);
+  private sheetService = inject(ZardSheetService);
+  private i18n = inject(I18nService);
 
   items = signal<BacklogItem[]>([]);
   settings = signal(this.settingsRepo.get());
@@ -153,6 +212,26 @@ export class BacklogListComponent {
   collapsedProducts = signal<Set<string>>(new Set());
   editingCell = signal<{ itemId: string; field: string } | null>(null);
   private originalItem: BacklogItem | null = null;
+  // Column Visibility
+  availableColumns = [
+    { id: 'description', label: 'backlog.description' },
+    { id: 'hypotheses', label: 'backlog.hypotheses' },
+    { id: 'comments', label: 'backlog.comments' },
+    { id: 'moscow', label: 'backlog.moscow' },
+    { id: 'scope', label: 'backlog.scope' },
+    { id: 'profile', label: 'backlog.profile' },
+    { id: 'chargeType', label: 'backlog.chargeType' },
+    { id: 'effort', label: 'backlog.effort' },
+    { id: 'cost', label: 'backlog.cost' },
+  ];
+  visibleColumns = signal<string[]>([
+    'description',
+    'moscow',
+    'scope',
+    'profile',
+    'effort',
+    'cost',
+  ]);
 
   constructor() {
     this.profiles = this.profilesRepo.getAll();
@@ -288,13 +367,33 @@ export class BacklogListComponent {
     this.refresh();
   }
 
+  openBacklogSheet(item?: BacklogItem) {
+    this.sheetService.create({
+      zTitle: item
+        ? this.i18n.translate('backlog.edit_title')
+        : this.i18n.translate('backlog.create_title'),
+      zDescription: item ? item.title : this.i18n.translate('backlog.create_desc'),
+      zContent: BacklogFormComponent,
+      zData: item,
+      zOkText: this.i18n.translate('common.save'),
+      zCancelText: this.i18n.translate('common.cancel'),
+      zWidth: '800px',
+      zOnOk: (instance: BacklogFormComponent) => {
+        if (instance.save()) {
+          this.refresh();
+          return;
+        }
+        return false;
+      },
+    });
+  }
+
   // Inline editing
   startEdit(itemId: string, field: string) {
     const item = this.items().find((i) => i.id === itemId);
     if (item) {
-      this.originalItem = { ...item };
+      this.openBacklogSheet(item);
     }
-    this.editingCell.set({ itemId, field });
   }
 
   saveEdit(item: BacklogItem) {
@@ -311,5 +410,18 @@ export class BacklogListComponent {
     }
     this.editingCell.set(null);
     this.refresh();
+  }
+
+  toggleColumn(columnId: string) {
+    const current = this.visibleColumns();
+    if (current.includes(columnId)) {
+      this.visibleColumns.set(current.filter((c) => c !== columnId));
+    } else {
+      this.visibleColumns.set([...current, columnId]);
+    }
+  }
+
+  isColumnVisible(columnId: string): boolean {
+    return this.visibleColumns().includes(columnId);
   }
 }

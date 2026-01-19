@@ -252,6 +252,7 @@ export class ProfilesListComponent {
 
   profiles = signal<Profile[]>([]);
   searchTerm = signal('');
+  settings = signal(this.settingsRepo.get());
   marginPercent = 0;
 
   filteredProfiles = computed(() => {
@@ -272,10 +273,12 @@ export class ProfilesListComponent {
 
   updateMargin() {
     const current = this.settingsRepo.get();
-    this.settingsRepo.save({
+    const updated = {
       ...current,
       marginRate: this.marginPercent / 100,
-    });
+    };
+    this.settingsRepo.save(updated);
+    this.settings.set(updated);
   }
 
   calculatePreview() {

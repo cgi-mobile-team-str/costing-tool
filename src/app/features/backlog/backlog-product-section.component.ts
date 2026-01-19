@@ -25,6 +25,7 @@ export interface ProductGroup {
         [profiles]="profiles"
         [selectedIds]="selectedIds"
         [editingCell]="editingCell"
+        [visibleColumns]="visibleColumns"
         [getItemCost]="getItemCost"
         (toggleAll)="toggleAll.emit($event)"
         (selectionToggle)="selectionToggle.emit($event)"
@@ -86,6 +87,7 @@ export class BacklogProductSectionComponent {
   @Input() selectedIds: string[] = [];
   @Input() editingCell: { itemId: string; field: string } | null = null;
   @Input() productTotal = 0;
+  @Input() visibleColumns: string[] = [];
   @Input() getItemCost!: (item: BacklogItem) => number;
 
   @Output() toggleExpand = new EventEmitter<string>();
