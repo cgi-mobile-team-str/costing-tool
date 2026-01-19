@@ -23,7 +23,7 @@
         } @if (visibleColumns.includes('effort')) {
         <th>{{ 'backlog.effort' | translate }}</th>
         } @if (visibleColumns.includes('cost')) {
-        <th>{{ 'backlog.cost' | translate }} (HT)</th>
+        <th>{{ 'backlog.cost' | translate }} {{ 'backlog.cost_ht' | translate }}</th>
         }
         <th>{{ 'common.actions' | translate }}</th>
       </tr>
@@ -46,12 +46,13 @@
         (editSave)="editSave.emit($event)"
         (editCancel)="editCancel.emit()"
         (duplicateItem)="duplicateItem.emit($event)"
+        (deleteItem)="deleteItem.emit($event)"
       />
       }
       <!-- Cluster Total -->
       <tr class="cluster-total">
         <td [attr.colspan]="visibleColumnCount" class="total-label">
-          Total {{ clusterGroup.cluster }}:
+          {{ 'common.total' | translate }} {{ clusterGroup.cluster }}:
         </td>
         <td class="total-effort">
           {{ getClusterEffort(clusterGroup.items) | number : '1.1-1' }} j/h

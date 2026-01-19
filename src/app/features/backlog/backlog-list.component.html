@@ -44,10 +44,11 @@
     (editSave)="saveEdit($event)"
     (editCancel)="cancelEdit()"
     (duplicateItem)="duplicate($event)"
+    (deleteItem)="delete($event)"
   />
   } @if (groupedItems().length === 0) {
   <div class="empty-state">
-    <p>No items found.</p>
+    <p>{{ 'backlog.no_items' | translate }}</p>
   </div>
   }
 

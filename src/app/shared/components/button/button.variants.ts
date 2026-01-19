@@ -23,6 +23,7 @@ export const buttonVariants = cva(
       },
       zSize: {
         default: 'h-9 px-4 py-2 data-icon-only:size-9 data-icon-only:p-0',
+        xs: 'h-7 rounded-md gap-1 px-2 text-xs data-icon-only:size-7 data-icon-only:p-0',
         sm: 'h-8 rounded-md gap-1.5 px-3 data-icon-only:size-8 data-icon-only:p-0',
         lg: 'h-10 rounded-md px-6 data-icon-only:size-10 data-icon-only:p-0',
       },

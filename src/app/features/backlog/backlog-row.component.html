@@ -75,13 +75,13 @@
       (blur)="cancelEdit()"
       (change)="saveEdit()"
     >
-      <option value="MUST">Must</option>
-      <option value="SHOULD">Should</option>
-      <option value="COULD">Could</option>
-      <option value="WONT">Won't</option>
+      <option value="MUST">{{ 'backlog.moscow_must' | translate }}</option>
+      <option value="SHOULD">{{ 'backlog.moscow_should' | translate }}</option>
+      <option value="COULD">{{ 'backlog.moscow_could' | translate }}</option>
+      <option value="WONT">{{ 'backlog.moscow_wont' | translate }}</option>
     </select>
     } @else {
-    <span class="badge moscow">{{ item.moscow || '-' }}</span>
+    <span class="badge moscow">{{ (getMoscowLabel(item.moscow) | translate) || '-' }}</span>
     }
   </td>
   }
@@ -95,12 +95,12 @@
       (blur)="cancelEdit()"
       (change)="saveEdit()"
     >
-      <option value="MVP">MVP</option>
-      <option value="V1">V1</option>
-      <option value="V2">V2</option>
+      <option value="MVP">{{ 'backlog.scope_mvp' | translate }}</option>
+      <option value="V1">{{ 'backlog.scope_v1' | translate }}</option>
+      <option value="V2">{{ 'backlog.scope_v2' | translate }}</option>
     </select>
     } @else {
-    <span class="badge" [class]="item.scope">{{ item.scope }}</span>
+    <span class="badge" [class]="item.scope">{{ getScopeLabel(item.scope) | translate }}</span>
     }
   </td>
   }
@@ -133,11 +133,11 @@
       (blur)="cancelEdit()"
       (change)="saveEdit()"
     >
-      <option value="days">RTU</option>
-      <option value="ratio">Ratio</option>
+      <option value="days">{{ 'backlog.rtu' | translate }}</option>
+      <option value="ratio">{{ 'backlog.ratio' | translate }}</option>
     </select>
     } @else {
-    {{ item.chargeType === 'ratio' ? 'Ratio' : 'RTU' }}
+    {{ (item.chargeType === 'ratio' ? 'backlog.ratio' : 'backlog.rtu') | translate }}
     }
   </td>
   }
@@ -164,12 +164,50 @@
   }
   <td class="actions">
     <div class="actions-container">
-      <button (click)="startEdit('title')" class="btn-icon" title="Edit">
-        <img src="assets/pen-to-square-regular-full.svg" alt="Edit" width="20" height="20" />
+      <button
+        type="button"
+        z-button
+        zType="outline"
+        zSize="xs"
+        z-dropdown
+        [zDropdownMenu]="actionMenu"
+        zAlign="end"
+      >
+        <img src="assets/ellipsis-solid-full.svg" alt="Edit" width="16" height="16" />
       </button>
-      <button (click)="duplicateItem.emit(item)" class="btn-icon" title="Duplicate">
-        <img src="assets/copy-regular-full.svg" alt="Copy" width="20" height="20" />
-      </button>
+
+      <z-dropdown-menu-content #actionMenu="zDropdownMenuContent">
+        <z-dropdown-menu-item (click)="startEdit('title')">
+          <img
+            src="assets/pen-to-square-regular-full.svg"
+            alt="Edit"
+            width="16"
+            height="16"
+            style="margin-right: 0.5rem"
+          />
+          {{ 'common.edit' | translate }}
+        </z-dropdown-menu-item>
+        <z-dropdown-menu-item (click)="duplicateItem.emit(item)">
+          <img
+            src="assets/copy-regular-full.svg"
+            alt="Duplicate"
+            width="16"
+            height="16"
+            style="margin-right: 0.5rem"
+          />
+          {{ 'common.duplicate' | translate }}
+        </z-dropdown-menu-item>
+        <z-dropdown-menu-item (click)="deleteItem.emit(item)">
+          <img
+            src="assets/trash-can-regular-full.svg"
+            alt="Delete"
+            width="16"
+            height="16"
+            style="margin-right: 0.5rem"
+          />
+          {{ 'common.delete' | translate }}
+        </z-dropdown-menu-item>
+      </z-dropdown-menu-content>
     </div>
   </td>
 </tr>

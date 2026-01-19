@@ -81,6 +81,26 @@ td[dblclick]:hover {
 .btn-icon:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
+
+.btn-text-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--brand-red);
+}
+
+.btn-text-action:hover {
+  background: rgba(227, 25, 55, 0.1);
+  color: var(--brand-red);
+}
 .actions {
   padding: 0 1rem;
   white-space: nowrap;

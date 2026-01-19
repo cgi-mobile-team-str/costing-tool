@@ -8,6 +8,7 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
+import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ImportModalComponent } from '../backlog/import-modal.component';
@@ -33,6 +34,7 @@ export class SettingsComponent {
   private storage = inject(LocalStorageService);
   private i18n = inject(I18nService);
   private calc = inject(CalculationService);
+  private alertDialogService = inject(ZardAlertDialogService);
 
   showImportModal = signal(false);
   itemsToImport = signal<BacklogItem[]>([]);
@@ -170,13 +172,16 @@ export class SettingsComponent {
   }
 
   resetApp() {
-    if (
-      confirm(
-        'ATTENTION: Cela va effacer toutes les données (Profils, Backlog, Settings). Continuer ?'
-      )
-    ) {
-      this.storage.clear();
-      window.location.reload();
-    }
+    this.alertDialogService.confirm({
+      zTitle: this.i18n.translate('settings.danger_zone'),
+      zDescription:
+        'ATTENTION: Cela va effacer toutes les données (Profils, Backlog, Settings). Continuer ?',
+      zOkText: this.i18n.translate('settings.reset_app'),
+      zOkDestructive: true,
+      zOnOk: () => {
+        this.storage.clear();
+        window.location.reload();
+      },
+    });
   }
 }

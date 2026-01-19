@@ -15,8 +15,9 @@ import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
+import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
-import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { ZardDropdownService } from '../../shared/components/dropdown/dropdown.service';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -38,7 +39,6 @@ import { ColumnSelectorComponent } from './column-selector.component';
     ColumnSelectorComponent,
     ZardButtonComponent,
     ZardIconComponent,
-    ZardCheckboxComponent,
   ],
   templateUrl: './backlog-list.component.html',
   encapsulation: ViewEncapsulation.None,
@@ -51,6 +51,8 @@ export class BacklogListComponent {
   private calc = inject(CalculationService);
   private idService = inject(IdService);
   private sheetService = inject(ZardSheetService);
+  private dropdownService = inject(ZardDropdownService);
+  private alertDialogService = inject(ZardAlertDialogService);
   private i18n = inject(I18nService);
 
   items = signal<BacklogItem[]>([]);
@@ -224,10 +226,17 @@ export class BacklogListComponent {
   }
 
   deleteSelected() {
-    if (confirm(`Delete ${this.selectedIds().length} items?`)) {
-      this.selectedIds().forEach((id) => this.repo.delete(id));
-      this.refresh();
-    }
+    this.dropdownService.close(); // Keep close to be safe, though alert manages focus
+    this.alertDialogService.confirm({
+      zTitle: 'Delete Items',
+      zDescription: `Are you sure you want to delete ${this.selectedIds().length} items?`,
+      zOkText: this.i18n.translate('common.delete'),
+      zOkDestructive: true,
+      zOnOk: () => {
+        this.selectedIds().forEach((id) => this.repo.delete(id));
+        this.refresh();
+      },
+    });
   }
 
   // Item actions
@@ -235,6 +244,20 @@ export class BacklogListComponent {
     const newItem = { ...item, id: this.idService.generate(), title: item.title + ' (Copy)' };
     this.repo.save(newItem);
     this.refresh();
+  }
+
+  delete(item: BacklogItem) {
+    this.dropdownService.close();
+    this.alertDialogService.confirm({
+      zTitle: this.i18n.translate('backlog.delete_title') || 'Delete Item',
+      zDescription: this.i18n.translate('backlog.delete_confirm'),
+      zOkText: this.i18n.translate('common.delete'),
+      zOkDestructive: true,
+      zOnOk: () => {
+        this.repo.delete(item.id);
+        this.refresh();
+      },
+    });
   }
 
   openBacklogSheet(item?: BacklogItem) {

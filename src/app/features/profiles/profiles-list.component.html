@@ -9,7 +9,7 @@
   <!-- Margin Configuration -->
   <div class="margin-config card">
     <div class="form-group">
-      <label>Marge Global (%)</label>
+      <label>{{ 'profiles.global_margin' | translate }}</label>
       <div class="d-flex">
         <input
           type="number"
@@ -19,7 +19,10 @@
           min="0"
           max="100"
         />
-        <span class="preview">Ex: 1000€ ➔ {{ calculatePreview() | currency : 'EUR' }}</span>
+        <span class="preview"
+          >{{ 'settings.example' | translate }} 1000€ ➔
+          {{ calculatePreview() | currency : 'EUR' }}</span
+        >
       </div>
     </div>
   </div>
@@ -32,7 +35,7 @@
         type="text"
         [ngModel]="searchTerm()"
         (ngModelChange)="searchTerm.set($event)"
-        placeholder="Rechercher un profil..."
+        placeholder="{{ 'profiles.search_placeholder' | translate }}"
         class="search-input"
       />
     </div>
@@ -58,7 +61,7 @@
         <td z-table-cell>{{ profile.dailyRate | currency : 'EUR' }}</td>
         <td z-table-cell>
           <span class="badge" [class.success]="profile.active">{{
-            profile.active ? 'Oui' : 'Non'
+            profile.active ? ('common.yes' | translate) : ('common.no' | translate)
           }}</span>
         </td>
         <td z-table-cell class="text-right">
@@ -75,7 +78,7 @@
       } @empty {
       <tr z-table-row>
         <td z-table-cell colspan="5" class="text-center py-8 text-muted-foreground">
-          Aucun profil trouvé pour "{{ searchTerm() }}"
+          {{ 'profiles.no_results' | translate }} "{{ searchTerm() }}"
         </td>
       </tr>
       }

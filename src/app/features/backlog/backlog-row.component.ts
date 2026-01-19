@@ -2,12 +2,27 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { ZardDropdownMenuItemComponent } from '../../shared/components/dropdown/dropdown-item.component';
+import { ZardDropdownMenuContentComponent } from '../../shared/components/dropdown/dropdown-menu-content.component';
+import { ZardDropdownDirective } from '../../shared/components/dropdown/dropdown-trigger.directive';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-backlog-row',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZardCheckboxComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ZardCheckboxComponent,
+    ZardButtonComponent,
+    ZardDropdownMenuItemComponent,
+    ZardDropdownMenuContentComponent,
+    ZardDropdownMenuContentComponent,
+    ZardDropdownDirective,
+    TranslatePipe,
+  ],
   templateUrl: './backlog-row.component.html',
   encapsulation: ViewEncapsulation.None,
 })
@@ -24,6 +39,7 @@ export class BacklogRowComponent {
   @Output() editSave = new EventEmitter<BacklogItem>();
   @Output() editCancel = new EventEmitter<void>();
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
+  @Output() deleteItem = new EventEmitter<BacklogItem>();
 
   isEditing(field: string): boolean {
     return (
@@ -51,5 +67,17 @@ export class BacklogRowComponent {
 
   isColumnVisible(columnId: string): boolean {
     return this.visibleColumns.includes(columnId);
+  }
+
+  getMoscowLabel(value?: string | null): string {
+    if (!value) return '';
+    // Maps MUST -> backlog.moscow_must
+    return `backlog.moscow_${value.toLowerCase()}`;
+  }
+
+  getScopeLabel(value?: string | null): string {
+    if (!value) return '';
+    // Maps MVP -> backlog.scope_mvp
+    return `backlog.scope_${value.toLowerCase()}`;
   }
 }

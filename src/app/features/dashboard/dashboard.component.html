@@ -9,17 +9,23 @@
   <!-- Global Stats -->
   <div class="dashboard-stats-grid">
     <div class="dashboard-card dashboard-stat-card total">
-      <h3>Global</h3>
+      <h3>{{ 'dash.global' | translate }}</h3>
       <div class="dashboard-value">{{ globalStats().totalTtc | currency : 'EUR' }}</div>
-      <div class="dashboard-sub">HT: {{ globalStats().totalHt | currency : 'EUR' }}</div>
-      <div class="dashboard-sub">Marge: {{ globalStats().margin | currency : 'EUR' }}</div>
+      <div class="dashboard-sub">
+        {{ 'dash.ht_label' | translate }}: {{ globalStats().totalHt | currency : 'EUR' }}
+      </div>
+      <div class="dashboard-sub">
+        {{ 'dash.margin' | translate }}: {{ globalStats().margin | currency : 'EUR' }}
+      </div>
     </div>
 
     @for (scope of scopes; track scope) {
     <div class="dashboard-card dashboard-stat-card">
       <h3>{{ scope }}</h3>
       <div class="dashboard-value">{{ scopeStats()(scope).totalTtc | currency : 'EUR' }}</div>
-      <div class="dashboard-sub">HT: {{ scopeStats()(scope).totalHt | currency : 'EUR' }}</div>
+      <div class="dashboard-sub">
+        {{ 'dash.ht_label' | translate }}: {{ scopeStats()(scope).totalHt | currency : 'EUR' }}
+      </div>
     </div>
     }
   </div>
@@ -27,7 +33,7 @@
   <!-- Chart & Top Items -->
   <div class="dashboard-content-main">
     <div class="dashboard-card dashboard-chart-card">
-      <h3>Cost Distribution</h3>
+      <h3>{{ 'dash.cost_distribution' | translate }}</h3>
       <div class="dashboard-chart-container">
         <!-- Simple CSS Bar Chart -->
         @for (scope of scopes; track scope) {

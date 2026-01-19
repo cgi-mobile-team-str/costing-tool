@@ -33,4 +33,5 @@ export class BacklogProductSectionComponent {
   @Output() editSave = new EventEmitter<BacklogItem>();
   @Output() editCancel = new EventEmitter<void>();
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
+  @Output() deleteItem = new EventEmitter<BacklogItem>();
 }

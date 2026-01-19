@@ -55,3 +55,7 @@ app-backlog-table .total-effort {
   text-align: center;
   color: #6b7280;
 }
+
+app-backlog-table th:last-child {
+  text-align: center;
+}

@@ -31,6 +31,7 @@ export class BacklogTableComponent {
   @Output() editSave = new EventEmitter<BacklogItem>();
   @Output() editCancel = new EventEmitter<void>();
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
+  @Output() deleteItem = new EventEmitter<BacklogItem>();
 
   isItemSelected(id: string): boolean {
     return this.selectedIds.includes(id);

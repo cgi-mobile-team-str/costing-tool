@@ -6,6 +6,7 @@ import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
+import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
@@ -33,6 +34,7 @@ export class ProfilesListComponent {
   private calc = inject(CalculationService);
   private sheetService = inject(ZardSheetService);
   private i18n = inject(I18nService);
+  private alertDialogService = inject(ZardAlertDialogService);
 
   profiles = signal<Profile[]>([]);
   searchTerm = signal('');
@@ -91,9 +93,15 @@ export class ProfilesListComponent {
   }
 
   delete(profile: Profile) {
-    if (confirm('Are you sure?')) {
-      this.repo.delete(profile.id);
-      this.refresh();
-    }
+    this.alertDialogService.confirm({
+      zTitle: this.i18n.translate('common.delete'),
+      zDescription: this.i18n.translate('common.confirm_delete'),
+      zOkText: this.i18n.translate('common.delete'),
+      zOkDestructive: true,
+      zOnOk: () => {
+        this.repo.delete(profile.id);
+        this.refresh();
+      },
+    });
   }
 }
