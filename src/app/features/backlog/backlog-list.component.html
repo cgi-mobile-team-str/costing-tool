@@ -12,12 +12,12 @@
 
   <app-backlog-filters
     [profiles]="profiles"
-    [searchTerm]="searchTerm"
-    [scopeFilter]="scopeFilter"
-    [profileFilter]="profileFilter"
-    (searchTermChange)="searchTerm = $event"
-    (scopeFilterChange)="scopeFilter = $event"
-    (profileFilterChange)="profileFilter = $event"
+    [searchTerm]="searchTerm()"
+    [scopeFilter]="scopeFilter()"
+    [profileFilter]="profileFilter()"
+    (searchTermChange)="searchTerm.set($event)"
+    (scopeFilterChange)="scopeFilter.set($event)"
+    (profileFilterChange)="profileFilter.set($event)"
   />
 
   <div class="column-visibility-toolbar">

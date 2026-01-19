@@ -56,9 +56,9 @@ export class BacklogListComponent {
   profiles: Profile[] = [];
 
   // Filters
-  searchTerm = '';
-  scopeFilter = '';
-  profileFilter = '';
+  searchTerm = signal('');
+  scopeFilter = signal('');
+  profileFilter = signal('');
 
   // State
   selectedIds = signal<string[]>([]);
@@ -146,15 +146,18 @@ export class BacklogListComponent {
     let res = this.items();
 
     // Filtering
-    if (this.searchTerm) {
-      const term = this.searchTerm.toLowerCase();
+    const term = this.searchTerm().toLowerCase();
+    const scope = this.scopeFilter();
+    const profile = this.profileFilter();
+
+    if (term) {
       res = res.filter((i) => i.title.toLowerCase().includes(term));
     }
-    if (this.scopeFilter) {
-      res = res.filter((i) => i.scope === this.scopeFilter);
+    if (scope) {
+      res = res.filter((i) => i.scope === scope);
     }
-    if (this.profileFilter) {
-      res = res.filter((i) => i.profileId === this.profileFilter);
+    if (profile) {
+      res = res.filter((i) => i.profileId === profile);
     }
 
     // Grouping
