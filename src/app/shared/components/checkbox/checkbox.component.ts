@@ -13,6 +13,9 @@ import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import type { ClassValue } from 'clsx';
 
+import { mergeClasses, transform } from '@/shared/utils/merge-classes';
+import { ZardIdDirective } from '../../core';
+
 import { ZardIconComponent } from '../icon/icon.component';
 import {
   checkboxLabelVariants,
@@ -20,29 +23,30 @@ import {
   type ZardCheckboxVariants,
 } from './checkbox.variants';
 
-import { generateId, mergeClasses, transform } from '@/shared/utils/merge-classes';
-
 // Force Tailwind to detect these classes:
 // appearance-none [appearance:none] border border-primary border-destructive checked:bg-primary checked:bg-destructive h-4 w-4 h-6 w-6 rounded rounded-full rounded-none
 // cursor-[unset] peer transition shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-current empty:hidden text-base text-lg
+// stroke-none
 
 type OnTouchedType = () => void;
 type OnChangeType = (value: boolean) => void;
 
 @Component({
   selector: 'z-checkbox, [z-checkbox]',
-  imports: [ZardIconComponent],
+  imports: [ZardIconComponent, ZardIdDirective],
   template: `
     <span
       class="flex items-center gap-2"
       [class]="disabled() ? 'cursor-not-allowed' : 'cursor-pointer'"
       [attr.aria-disabled]="disabled()"
+      zardId="checkbox"
+      #z="zardId"
     >
       <main class="relative flex">
         <input
           #input
           type="checkbox"
-          [id]="id"
+          [id]="z.id()"
           [class]="classes()"
           [checked]="currentChecked"
           [disabled]="disabled()"
@@ -58,7 +62,7 @@ type OnChangeType = (value: boolean) => void;
           "
         />
       </main>
-      <label [class]="labelClasses()" [for]="id">
+      <label [class]="labelClasses()" [for]="z.id()">
         <ng-content />
       </label>
     </span>
@@ -105,8 +109,6 @@ export class ZardCheckboxComponent implements ControlValueAccessor {
   get currentChecked(): boolean {
     return this.checked() || this._checked;
   }
-
-  protected readonly id = generateId('checkbox');
 
   writeValue(val: boolean): void {
     this._checked = val;

@@ -13,52 +13,53 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, TranslatePipe, RouterLink],
   template: `
-    <div class="container">
-      <div class="header">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
         <div>
-          <span class="context-label">{{ 'nav.dashboard' | translate }}</span>
+          <span class="dashboard-context-label">{{ 'nav.dashboard' | translate }}</span>
           <h2>{{ settings().projectName }}</h2>
         </div>
       </div>
 
       <!-- Global Stats -->
-      <div class="stats-grid">
-        <div class="card stat-card total">
+      <div class="dashboard-stats-grid">
+        <div class="dashboard-card dashboard-stat-card total">
           <h3>Global</h3>
-          <div class="value">{{ globalStats().totalTtc | currency : 'EUR' }}</div>
-          <div class="sub">HT: {{ globalStats().totalHt | currency : 'EUR' }}</div>
-          <div class="sub">Marge: {{ globalStats().margin | currency : 'EUR' }}</div>
+          <div class="dashboard-value">{{ globalStats().totalTtc | currency : 'EUR' }}</div>
+          <div class="dashboard-sub">HT: {{ globalStats().totalHt | currency : 'EUR' }}</div>
+          <div class="dashboard-sub">Marge: {{ globalStats().margin | currency : 'EUR' }}</div>
         </div>
 
         @for (scope of scopes; track scope) {
-        <div class="card stat-card">
+        <div class="dashboard-card dashboard-stat-card">
           <h3>{{ scope }}</h3>
-          <div class="value">{{ scopeStats()(scope).totalTtc | currency : 'EUR' }}</div>
-          <div class="sub">HT: {{ scopeStats()(scope).totalHt | currency : 'EUR' }}</div>
+          <div class="dashboard-value">{{ scopeStats()(scope).totalTtc | currency : 'EUR' }}</div>
+          <div class="dashboard-sub">HT: {{ scopeStats()(scope).totalHt | currency : 'EUR' }}</div>
         </div>
         }
       </div>
 
       <!-- Chart & Top Items -->
-      <div class="dashboard-content">
-        <div class="card chart-card">
+      <div class="dashboard-content-main">
+        <div class="dashboard-card dashboard-chart-card">
           <h3>Cost Distribution</h3>
-          <div class="chart-container">
+          <div class="dashboard-chart-container">
             <!-- Simple CSS Bar Chart -->
             @for (scope of scopes; track scope) {
-            <div class="bar-group">
-              <div class="bar-label">{{ scope }}</div>
-              <div class="bar-track">
-                <!-- HT Bar -->
-                <div
-                  class="bar ht"
-                  [style.width.%]="getBarWidth(scopeStats()(scope).totalHt)"
-                  [title]="'HT: ' + scopeStats()(scope).totalHt"
-                ></div>
-                <!-- Margin Bar (stacked visual or separate? Let's do overlay or just total) -->
-                <!-- Let's show Total TTC as the main bar width relative to global max -->
+            <div class="dashboard-bar-group">
+              <div class="dashboard-bar-label">{{ scope }}</div>
+              <div class="dashboard-bar-track">
+                <svg width="100%" height="100%" preserveAspectRatio="none">
+                  <rect
+                    class="dashboard-bar ht"
+                    x="0"
+                    y="0"
+                    [attr.width]="getBarWidth(scopeStats()(scope).totalHt) + '%'"
+                    height="100%"
+                  ></rect>
+                </svg>
               </div>
-              <div class="bar-value">
+              <div class="dashboard-bar-value">
                 {{ scopeStats()(scope).totalTtc | currency : 'EUR' : 'symbol' : '1.0-0' }}
               </div>
             </div>
@@ -66,16 +67,16 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           </div>
         </div>
 
-        <div class="card list-card">
+        <div class="dashboard-card dashboard-list-card">
           <h3>{{ 'dash.top_expensive' | translate }}</h3>
-          <div class="top-list">
+          <div class="dashboard-top-list">
             @for (item of topItems(); track item.id) {
-            <div class="top-item">
-              <div class="top-info">
-                <div class="top-title">{{ item.title }}</div>
-                <div class="top-meta">{{ item.scope }} • {{ item.effortDays }}j</div>
+            <div class="dashboard-top-item">
+              <div class="dashboard-top-info">
+                <div class="dashboard-top-title">{{ item.title }}</div>
+                <div class="dashboard-top-meta">{{ item.scope }} • {{ item.effortDays }}j</div>
               </div>
-              <div class="top-cost">
+              <div class="dashboard-top-cost">
                 {{ getItemCost(item) | currency : 'EUR' }}
                 <a [routerLink]="['/backlog', item.id]">✏️</a>
               </div>
@@ -86,174 +87,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       </div>
     </div>
   `,
-  styles: [
-    `
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      .header {
-        margin-bottom: 2.5rem;
-        padding-top: 1rem;
-      }
-      .context-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-        display: block;
-      }
-      .header h2 {
-        margin: 0;
-        font-size: 2.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-      }
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
-      .card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      }
-      .stat-card.total {
-        background: var(--brand-red);
-        color: white;
-      }
-      .stat-card.total .sub {
-        color: rgba(255, 255, 255, 0.8);
-      }
-      .stat-card h3 {
-        margin-top: 0;
-        font-size: 1rem;
-        opacity: 0.8;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-      .value {
-        font-size: 1.8rem;
-        font-weight: bold;
-        margin: 0.5rem 0;
-      }
-      .sub {
-        font-size: 0.9rem;
-        color: #6c757d;
-      }
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius);
-        font-size: 0.875rem;
-        font-weight: 500;
-        border: none;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        text-decoration: none;
-      }
-      .btn-secondary {
-        background: var(--muted);
-        color: var(--muted-foreground);
-        border: 1px solid var(--border);
-      }
-      .btn-secondary:hover {
-        background: var(--accent);
-        color: var(--accent-foreground);
-      }
-
-      .dashboard-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      @media (max-width: 768px) {
-        .dashboard-content {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .chart-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        height: 200px;
-      }
-      .bar-group {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-      .bar-label {
-        width: 50px;
-        font-weight: bold;
-      }
-      .bar-track {
-        flex: 1;
-        background: #e9ecef;
-        height: 24px;
-        border-radius: 12px;
-        overflow: hidden;
-        position: relative;
-      }
-      .bar {
-        height: 100%;
-        transition: width 0.5s ease;
-      }
-      .bar.ht {
-        background: var(--brand-red);
-      }
-      .bar-value {
-        width: 80px;
-        text-align: right;
-        font-size: 0.9rem;
-      }
-
-      .top-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .top-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #eee;
-      }
-      .top-item:last-child {
-        border-bottom: none;
-      }
-      .top-title {
-        font-weight: 500;
-      }
-      .top-meta {
-        font-size: 0.8rem;
-        color: #6c757d;
-      }
-      .top-cost {
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      a {
-        text-decoration: none;
-      }
-    `,
-  ],
 })
 export class DashboardComponent {
   private backlogRepo = inject(BacklogRepository);

@@ -40,6 +40,15 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/~costing/",
+              "optimization": {
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "scripts": true,
+                "fonts": true
+              },
               "budgets": [
                 {
                   "type": "initial",
