@@ -1,6 +1,7 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogRowComponent } from './backlog-row.component';
 
@@ -12,13 +13,15 @@ export interface ClusterGroup {
 @Component({
   selector: 'app-backlog-table',
   standalone: true,
-  imports: [CommonModule, BacklogRowComponent, CurrencyPipe, TranslatePipe],
+  imports: [CommonModule, BacklogRowComponent, CurrencyPipe, TranslatePipe, ZardCheckboxComponent],
   template: `
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th width="32" style="padding-right: 0;"></th>
+            <th width="32" style="padding-right: 0;">
+              <z-checkbox [checked]="allSelected" (checkChange)="toggleAllItems($event)" />
+            </th>
             <th style="padding-left: 0.5rem;">{{ 'backlog.title' | translate }}</th>
             @if (visibleColumns.includes('description')) {
             <th>{{ 'backlog.description' | translate }}</th>
@@ -126,6 +129,15 @@ export class BacklogTableComponent {
 
   get visibleColumnCount(): number {
     return this.visibleColumns.length;
+  }
+
+  get allSelected(): boolean {
+    const allItems = this.clusterGroups.flatMap((cg) => cg.items);
+    return allItems.length > 0 && allItems.every((item) => this.selectedIds.includes(item.id));
+  }
+
+  toggleAllItems(checked: boolean) {
+    this.toggleAll.emit(checked);
   }
 
   isColumnVisible(columnId: string): boolean {

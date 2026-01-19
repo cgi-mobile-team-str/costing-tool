@@ -8,6 +8,7 @@ import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
+import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -27,6 +28,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
     BulkActionsComponent,
     ZardButtonComponent,
     ZardIconComponent,
+    ZardCheckboxComponent,
   ],
   template: `
     <div class="backlog-container">
@@ -55,14 +57,9 @@ import { BulkActionsComponent } from './bulk-actions.component';
         <span class="toolbar-label">Colonnes :</span>
         <div class="column-toggles">
           @for (col of availableColumns; track col.id) {
-          <label class="column-toggle">
-            <input
-              type="checkbox"
-              [checked]="isColumnVisible(col.id)"
-              (change)="toggleColumn(col.id)"
-            />
+          <z-checkbox [checked]="isColumnVisible(col.id)" (checkChange)="toggleColumn(col.id)">
             {{ col.label | translate }}
-          </label>
+          </z-checkbox>
           }
         </div>
       </div>
@@ -78,7 +75,7 @@ import { BulkActionsComponent } from './bulk-actions.component';
         [visibleColumns]="visibleColumns()"
         [getItemCost]="getItemCost.bind(this)"
         (toggleExpand)="toggleProduct($event)"
-        (toggleAll)="toggleAll($event)"
+        (toggleAll)="toggleAllProduct($event, prodGroup)"
         (selectionToggle)="toggleSelection($event)"
         (editStart)="startEdit($event.itemId, $event.field)"
         (editSave)="saveEdit($event)"
@@ -333,15 +330,16 @@ export class BacklogListComponent {
   });
 
   // Bulk selection
-  toggleAll(checked: boolean) {
+  toggleAllProduct(checked: boolean, group: ProductGroup) {
+    const current = new Set(this.selectedIds());
+    const groupItemIds = group.clusters.flatMap((c) => c.items.map((i) => i.id));
+
     if (checked) {
-      const allIds = this.groupedItems().flatMap((p) =>
-        p.clusters.flatMap((c) => c.items.map((i) => i.id))
-      );
-      this.selectedIds.set(allIds);
+      groupItemIds.forEach((id) => current.add(id));
     } else {
-      this.selectedIds.set([]);
+      groupItemIds.forEach((id) => current.delete(id));
     }
+    this.selectedIds.set(Array.from(current));
   }
 
   toggleSelection(id: string) {

@@ -24,7 +24,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <path d="M9 3v18" />
             </svg>
-            <span>CGI Costing</span>
+            <span><span class="text-primary">CGI</span> Costing Tool</span>
           </div>
         </div>
         <nav class="sidebar-nav">
@@ -144,7 +144,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         opacity: 0.9;
         min-width: 24px;
       }
-      
+
       .sidebar.collapsed .logo span {
         display: none;
       }
@@ -190,7 +190,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       .nav-item svg {
         flex-shrink: 0;
       }
-      
+
       .sidebar.collapsed .nav-item span {
         display: none;
       }

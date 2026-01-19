@@ -2,20 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 @Component({
   selector: 'app-backlog-row',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZardCheckboxComponent],
   template: `
     <tr>
       <td style="width: 32px; padding-right: 0;">
-        <input
-          type="checkbox"
-          style="vertical-align: middle; margin-top: -2px;"
-          [checked]="isSelected"
-          (change)="selectionToggle.emit(item.id)"
-        />
+        <z-checkbox [checked]="isSelected" (checkChange)="selectionToggle.emit(item.id)" />
       </td>
       <!-- Title -->
       <td style="width: 300px; padding-left: 0.5rem;" (dblclick)="startEdit('title')">

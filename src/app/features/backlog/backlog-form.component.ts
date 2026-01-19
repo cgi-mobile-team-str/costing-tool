@@ -188,7 +188,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           <div class="form-group col">
             <label>{{ 'backlog.chargeType' | translate }}</label>
             <select formControlName="chargeType" class="form-control">
-              <option value="days">Jours Homme</option>
+              <option value="days">RTU</option>
               <option value="ratio">Ratio (%)</option>
             </select>
           </div>
