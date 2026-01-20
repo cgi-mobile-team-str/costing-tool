@@ -4,13 +4,23 @@
 /* Layout */
 @import './app/core/layout/main-layout.component.css';
 
-/* Components - Features (without styleUrls) */
+/* Components - Features */
 @import './app/features/dashboard/dashboard.component.css';
+@import './app/features/backlog/backlog-list.component.css';
+@import './app/features/backlog/backlog-form.component.css';
+@import './app/features/backlog/backlog-table.component.css';
+@import './app/features/backlog/backlog-row.component.css';
+@import './app/features/backlog/backlog-filters.component.css';
+@import './app/features/backlog/backlog-product-section.component.css';
+@import './app/features/backlog/column-selector.component.css';
+@import './app/features/backlog/editable-cell.component.css';
+@import './app/features/backlog/import-modal.component.css';
+@import './app/features/backlog/bulk-actions-toast.component.css';
 @import './app/features/profiles/profiles-list.component.css';
 @import './app/features/profiles/profile-form.component.css';
 @import './app/features/settings/settings.component.css';
 
-/* Components - Shared (without styleUrls) */
+/* Components - Shared */
 @import './app/shared/components/button/button.component.css';
 @import './app/shared/components/checkbox/checkbox.component.css';
 @import './app/shared/components/icon/icon.component.css';
