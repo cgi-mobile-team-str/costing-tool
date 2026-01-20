@@ -4,6 +4,19 @@
 /* Layout */
 @import './app/core/layout/main-layout.component.css';
 
+/* Components - Features (without styleUrls) */
+@import './app/features/dashboard/dashboard.component.css';
+@import './app/features/profiles/profiles-list.component.css';
+@import './app/features/profiles/profile-form.component.css';
+@import './app/features/settings/settings.component.css';
+
+/* Components - Shared (without styleUrls) */
+@import './app/shared/components/button/button.component.css';
+@import './app/shared/components/checkbox/checkbox.component.css';
+@import './app/shared/components/icon/icon.component.css';
+@import './app/shared/components/table/table.component.css';
+@import './app/shared/components/sheet/sheet.component.css';
+
 @theme {
   --radius: 0.625rem;
   --breakpoint-3xl: 1600px;
