@@ -6,10 +6,8 @@ import {
   effect,
   inject,
   signal,
-  untracked,
   ViewEncapsulation,
 } from '@angular/core';
-import { toast } from 'ngx-sonner';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -26,6 +24,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogFormComponent } from './backlog-form.component';
 import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
+import { BulkActionsToastComponent } from './bulk-actions-toast.component';
 import { ColumnSelectorComponent } from './column-selector.component';
 
 @Component({
@@ -36,14 +35,14 @@ import { ColumnSelectorComponent } from './column-selector.component';
     TranslatePipe,
     BacklogFiltersComponent,
     BacklogProductSectionComponent,
-    // BulkActionsComponent, // Removed
+    BulkActionsToastComponent,
     ColumnSelectorComponent,
     ZardButtonComponent,
     ZardIconComponent,
   ],
   templateUrl: './backlog-list.component.html',
   styleUrls: ['./backlog-list.component.css'],
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BacklogListComponent {
@@ -55,7 +54,7 @@ export class BacklogListComponent {
   private sheetService = inject(ZardSheetService);
   private dropdownService = inject(ZardDropdownService);
   private alertDialogService = inject(ZardAlertDialogService);
-  private i18n = inject(I18nService);
+  i18n = inject(I18nService);
 
   items = signal<BacklogItem[]>([]);
   settings = signal(this.settingsRepo.get());
@@ -107,32 +106,6 @@ export class BacklogListComponent {
           }
         }, 0);
       }
-    });
-
-    // Bulk Actions Toast Effect
-    effect(() => {
-      const count = this.selectedIds().length;
-      untracked(() => {
-        if (count > 0) {
-          toast(`${count} ${this.i18n.translate('common.selected')}`, {
-            id: 'bulk-actions',
-            duration: Infinity,
-            position: 'bottom-center',
-            closeButton: true,
-            onDismiss: () => this.selectedIds.set([]),
-            action: {
-              label: this.i18n.translate('common.delete_selected'),
-              onClick: () => this.deleteSelected(),
-            },
-            actionButtonStyle: {
-              backgroundColor: 'var(--destructive)',
-              color: 'white',
-            } as any,
-          });
-        } else {
-          toast.dismiss('bulk-actions');
-        }
-      });
     });
   }
 

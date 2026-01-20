@@ -9,7 +9,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './backlog-filters.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./backlog-filters.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class BacklogFiltersComponent {
   @Input() profiles: Profile[] = [];

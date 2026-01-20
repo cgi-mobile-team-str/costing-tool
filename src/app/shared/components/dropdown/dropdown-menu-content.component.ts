@@ -23,9 +23,9 @@ import { mergeClasses } from '@/shared/utils/merge-classes';
     </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.Emulated,
   host: {
-    '[style.display]': '"none"',
+    '[class.hidden]': 'true',
   },
   exportAs: 'zDropdownMenuContent',
 })
@@ -34,5 +34,7 @@ export class ZardDropdownMenuContentComponent {
 
   readonly class = input<ClassValue>('');
 
-  protected readonly contentClasses = computed(() => mergeClasses(dropdownContentVariants(), this.class()));
+  protected readonly contentClasses = computed(() =>
+    mergeClasses(dropdownContentVariants(), this.class())
+  );
 }

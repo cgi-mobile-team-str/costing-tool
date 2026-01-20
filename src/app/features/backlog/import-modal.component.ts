@@ -8,7 +8,8 @@ import { ZardButtonComponent } from '../../shared/components/button/button.compo
   standalone: true,
   imports: [CommonModule, FormsModule, ZardButtonComponent],
   templateUrl: './import-modal.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./import-modal.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class ImportModalComponent {
   @Input() itemCount = 0;

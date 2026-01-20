@@ -24,7 +24,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     TranslatePipe,
   ],
   templateUrl: './backlog-row.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./backlog-row.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class BacklogRowComponent {
   @Input() item!: BacklogItem;

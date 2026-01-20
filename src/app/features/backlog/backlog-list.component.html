@@ -27,28 +27,38 @@
   />
 
   @for (prodGroup of groupedItems(); track prodGroup.product) {
-  <app-backlog-product-section
-    [productGroup]="prodGroup"
-    [profiles]="profiles"
-    [isExpanded]="isProductExpanded(prodGroup.product)"
-    [selectedIds]="selectedIds()"
-    [editingCell]="editingCell()"
-    [productTotal]="getProductTotal(prodGroup)"
-    [productEffort]="getProductEffort(prodGroup)"
-    [visibleColumns]="visibleColumns()"
-    [getItemCost]="getItemCost.bind(this)"
-    (toggleExpand)="toggleProduct($event)"
-    (toggleAll)="toggleAllProduct($event, prodGroup)"
-    (selectionToggle)="toggleSelection($event)"
-    (editStart)="startEdit($event.itemId, $event.field)"
-    (editSave)="saveEdit($event)"
-    (editCancel)="cancelEdit()"
-    (duplicateItem)="duplicate($event)"
-    (deleteItem)="delete($event)"
-  />
-  } @if (groupedItems().length === 0) {
-  <div class="empty-state">
-    <p>{{ 'backlog.no_items' | translate }}</p>
-  </div>
+    <app-backlog-product-section
+      [productGroup]="prodGroup"
+      [profiles]="profiles"
+      [isExpanded]="isProductExpanded(prodGroup.product)"
+      [selectedIds]="selectedIds()"
+      [editingCell]="editingCell()"
+      [productTotal]="getProductTotal(prodGroup)"
+      [productEffort]="getProductEffort(prodGroup)"
+      [visibleColumns]="visibleColumns()"
+      [getItemCost]="getItemCost.bind(this)"
+      (toggleExpand)="toggleProduct($event)"
+      (toggleAll)="toggleAllProduct($event, prodGroup)"
+      (selectionToggle)="toggleSelection($event)"
+      (editStart)="startEdit($event.itemId, $event.field)"
+      (editSave)="saveEdit($event)"
+      (editCancel)="cancelEdit()"
+      (duplicateItem)="duplicate($event)"
+      (deleteItem)="delete($event)"
+    />
   }
+  @if (groupedItems().length === 0) {
+    <div class="empty-state">
+      <p>{{ 'backlog.no_items' | translate }}</p>
+    </div>
+  }
+
+  <app-bulk-actions-toast
+    [count]="selectedIds().length"
+    [visible]="selectedIds().length > 0"
+    [message]="i18n.translate('common.selected')"
+    [deleteLabel]="i18n.translate('common.delete_selected')"
+    (close)="selectedIds.set([])"
+    (delete)="deleteSelected()"
+  />
 </div>

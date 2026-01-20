@@ -22,7 +22,8 @@ export interface SelectOption {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './editable-cell.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./editable-cell.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class EditableCellComponent {
   @Input() value: any;

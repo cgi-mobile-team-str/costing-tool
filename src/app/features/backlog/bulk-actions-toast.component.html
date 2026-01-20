@@ -1,0 +1,11 @@
+<div class="bulk-actions-toast" [class.visible]="visible()">
+  <button type="button" class="toast-close" (click)="onClose()" aria-label="Close">
+    <z-icon zType="x" zSize="sm" />
+  </button>
+  <div class="toast-content">
+    <span class="toast-message">{{ count() }} {{ message() }}</span>
+    <z-button zType="destructive" zSize="sm" (click)="onDelete()">
+      {{ deleteLabel() }}
+    </z-button>
+  </div>
+</div>

@@ -12,7 +12,8 @@ export interface ColumnDefinition {
   standalone: true,
   imports: [CommonModule, TranslatePipe],
   templateUrl: './column-selector.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./column-selector.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class ColumnSelectorComponent {
   @Input() availableColumns: ColumnDefinition[] = [];

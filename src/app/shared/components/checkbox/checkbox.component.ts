@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  effect,
   forwardRef,
   inject,
   input,
@@ -62,20 +63,27 @@ export class ZardCheckboxComponent implements ControlValueAccessor {
   /* eslint-disable-next-line @typescript-eslint/no-empty-function */
   private onTouched: OnTouchedType = () => {};
 
+  constructor() {
+    effect(() => {
+      this._checked = this.checked();
+      this.cdr.markForCheck();
+    });
+  }
+
   protected readonly classes = computed(() =>
     mergeClasses(
       checkboxVariants({ zType: this.zType(), zSize: this.zSize(), zShape: this.zShape() }),
-      this.class()
-    )
+      this.class(),
+    ),
   );
 
   protected readonly labelClasses = computed(() =>
-    mergeClasses(checkboxLabelVariants({ zSize: this.zSize() }))
+    mergeClasses(checkboxLabelVariants({ zSize: this.zSize() })),
   );
 
   private _checked = false;
   get currentChecked(): boolean {
-    return this.checked() || this._checked;
+    return this._checked;
   }
 
   writeValue(val: boolean): void {

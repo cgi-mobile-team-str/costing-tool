@@ -15,7 +15,8 @@ export interface ClusterGroup {
   standalone: true,
   imports: [CommonModule, BacklogRowComponent, CurrencyPipe, TranslatePipe, ZardCheckboxComponent],
   templateUrl: './backlog-table.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./backlog-table.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class BacklogTableComponent {
   @Input() clusterGroups: ClusterGroup[] = [];

@@ -13,7 +13,8 @@ export interface ProductGroup {
   standalone: true,
   imports: [CommonModule, BacklogTableComponent, CurrencyPipe],
   templateUrl: './backlog-product-section.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./backlog-product-section.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class BacklogProductSectionComponent {
   @Input() productGroup!: ProductGroup;

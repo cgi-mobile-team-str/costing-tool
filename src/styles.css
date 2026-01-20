@@ -1,31 +1,8 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "tailwindcss-animate";
 
 /* Layout */
-@import "./app/core/layout/main-layout.component.css";
-
-/* Components - Features */
-@import "./app/features/dashboard/dashboard.component.css";
-@import "./app/features/backlog/backlog-list.component.css";
-@import "./app/features/backlog/backlog-form.component.css";
-@import "./app/features/backlog/backlog-table.component.css";
-@import "./app/features/backlog/backlog-row.component.css";
-@import "./app/features/backlog/backlog-filters.component.css";
-@import "./app/features/backlog/backlog-product-section.component.css";
-@import "./app/features/backlog/bulk-actions.component.css";
-@import "./app/features/backlog/column-selector.component.css";
-@import "./app/features/backlog/editable-cell.component.css";
-@import "./app/features/backlog/import-modal.component.css";
-@import "./app/features/profiles/profiles-list.component.css";
-@import "./app/features/profiles/profile-form.component.css";
-@import "./app/features/settings/settings.component.css";
-
-/* Components - Shared */
-@import "./app/shared/components/button/button.component.css";
-@import "./app/shared/components/checkbox/checkbox.component.css";
-@import "./app/shared/components/icon/icon.component.css";
-@import "./app/shared/components/table/table.component.css";
-@import "./app/shared/components/sheet/sheet.component.css";
+@import './app/core/layout/main-layout.component.css';
 
 @theme {
   --radius: 0.625rem;
@@ -262,14 +239,21 @@
   }
 }
 
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      sans-serif;
   }
 
   html {
@@ -285,19 +269,19 @@
     @apply opacity-60 md:opacity-100;
   }
 
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
-  input[type="number"] {
+  input[type='number'] {
     -moz-appearance: textfield;
     appearance: textfield;
   }
 
   /* Reset generic appearance: none for checkboxes if it was added */
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     appearance: auto;
   }
 }

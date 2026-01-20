@@ -16,7 +16,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './backlog-form.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./backlog-form.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class BacklogFormComponent {
   private fb = inject(FormBuilder);
@@ -110,10 +111,10 @@ export class BacklogFormComponent {
 
     this.form.valueChanges.subscribe(() => this.updateCost());
     this.form.controls.product.valueChanges.subscribe((val) =>
-      this.currentProductInput.set(val || '')
+      this.currentProductInput.set(val || ''),
     );
     this.form.controls.cluster.valueChanges.subscribe((val) =>
-      this.currentClusterInput.set(val || '')
+      this.currentClusterInput.set(val || ''),
     );
 
     this.updateCost();
