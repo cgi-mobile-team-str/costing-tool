@@ -1,0 +1,21 @@
+[build]
+  # Commande pour construire l'application Angular
+  command = "npm run build"
+  
+  # Répertoire contenant les fichiers à déployer après le build
+  publish = "dist/cgi-costing-tool/browser"
+
+# Configuration pour les Single Page Applications (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers de sécurité recommandés
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
