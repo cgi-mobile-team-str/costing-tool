@@ -202,14 +202,18 @@
           />
           {{ 'common.duplicate' | translate }}
         </z-dropdown-menu-item>
-        <z-dropdown-menu-item (click)="moveItemUp.emit(item)">
-          <z-icon zType="arrow-up" class="h-4 w-4 mr-2" />
-          {{ 'common.move_up' | translate }}
-        </z-dropdown-menu-item>
-        <z-dropdown-menu-item (click)="moveItemDown.emit(item)">
-          <z-icon zType="arrow-down" class="h-4 w-4 mr-2" />
-          {{ 'common.move_down' | translate }}
-        </z-dropdown-menu-item>
+        @if (!isFirst) {
+          <z-dropdown-menu-item (click)="moveItemUp.emit(item)">
+            <z-icon zType="arrow-up" class="h-4 w-4 mr-2" />
+            {{ 'common.move_up' | translate }}
+          </z-dropdown-menu-item>
+        }
+        @if (!isLast) {
+          <z-dropdown-menu-item (click)="moveItemDown.emit(item)">
+            <z-icon zType="arrow-down" class="h-4 w-4 mr-2" />
+            {{ 'common.move_down' | translate }}
+          </z-dropdown-menu-item>
+        }
         <z-dropdown-menu-item (click)="deleteItem.emit(item)">
           <img
             src="assets/trash-can-regular-full.svg"

@@ -20,9 +20,7 @@
       (editCancel)="editCancel.emit()"
       (duplicateItem)="duplicateItem.emit($event)"
       (deleteItem)="deleteItem.emit($event)"
-      (duplicateItem)="duplicateItem.emit($event)"
-      (deleteItem)="deleteItem.emit($event)"
-      (addItemToCluster)="addItem.emit({ product: productGroup.product, cluster: $event })"
+      (addItemToCluster)="addItem.emit({ productId: productGroup.productId, clusterId: $event })"
       (moveItemUp)="moveItemUp.emit($event)"
       (moveItemDown)="moveItemDown.emit($event)"
     />

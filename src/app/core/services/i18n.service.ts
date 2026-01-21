@@ -21,6 +21,10 @@ const FR = {
   'common.duplicate': 'Dupliquer',
   'common.yes': 'Oui',
   'common.no': 'Non',
+  'common.ok': 'Ok',
+  'common.move_up': 'Monter',
+  'common.move_down': 'Descendre',
+  'common.currency_per_day': '€/j',
 
   // Navigation
   'nav.backlog': 'Backlog',
@@ -106,6 +110,13 @@ const FR = {
   'backlog.moscow_should': 'Should',
   'backlog.moscow_could': 'Could',
   'backlog.moscow_wont': 'Wont',
+  'backlog.percent': '(%)',
+  'backlog.select_product_first_hint': 'Sélectionnez un produit en premier',
+  'backlog.new_product_option': '➕ Nouveau produit',
+  'backlog.new_cluster_option': '➕ Nouveau cluster',
+  'backlog.new_product_placeholder': 'Ex. Produit ABC',
+  'backlog.new_cluster_placeholder': 'Ex. Cluster ABC',
+  'backlog.select_placeholder': 'Sélectionnez...',
 };
 
 const EN = {
@@ -127,6 +138,10 @@ const EN = {
   'common.duplicate': 'Duplicate',
   'common.yes': 'Yes',
   'common.no': 'No',
+  'common.move_up': 'Move up',
+  'common.move_down': 'Move down',
+  'common.ok': 'Ok',
+  'common.currency_per_day': '€/d',
 
   // Navigation
   'nav.backlog': 'Backlog',
@@ -211,6 +226,13 @@ const EN = {
   'backlog.moscow_should': 'Should',
   'backlog.moscow_could': 'Could',
   'backlog.moscow_wont': 'Wont',
+  'backlog.percent': '(%)',
+  'backlog.select_product_first_hint': 'Select a product first',
+  'backlog.new_product_option': '➕ New product',
+  'backlog.new_cluster_option': '➕ New cluster',
+  'backlog.new_product_placeholder': 'Ex. Product ABC',
+  'backlog.new_cluster_placeholder': 'Ex. Cluster ABC',
+  'backlog.select_placeholder': 'Select...',
 };
 
 @Injectable({

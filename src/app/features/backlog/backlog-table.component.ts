@@ -8,6 +8,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogRowComponent } from './backlog-row.component';
 
 export interface ClusterGroup {
+  clusterId: string;
   cluster: string;
   items: BacklogItem[];
 }

@@ -4,6 +4,7 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { BacklogTableComponent, ClusterGroup } from './backlog-table.component';
 
 export interface ProductGroup {
+  productId: string;
   product: string;
   clusters: ClusterGroup[];
 }
@@ -35,7 +36,7 @@ export class BacklogProductSectionComponent {
   @Output() editCancel = new EventEmitter<void>();
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
   @Output() deleteItem = new EventEmitter<BacklogItem>();
-  @Output() addItem = new EventEmitter<{ product: string; cluster: string }>();
+  @Output() addItem = new EventEmitter<{ productId: string; clusterId: string }>();
   @Output() moveItemUp = new EventEmitter<BacklogItem>();
   @Output() moveItemDown = new EventEmitter<BacklogItem>();
 }

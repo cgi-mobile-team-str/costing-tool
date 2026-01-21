@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { BacklogItem, Cluster, Product, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService, Lang } from '../../core/services/i18n.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { BacklogRepository } from '../../data/backlog.repository';
+import { ClustersRepository } from '../../data/clusters.repository';
+import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
 import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
@@ -31,6 +33,8 @@ export class SettingsComponent {
   private repo = inject(SettingsRepository);
   private backlogRepo = inject(BacklogRepository);
   private profilesRepo = inject(ProfilesRepository);
+  private productsRepo = inject(ProductsRepository);
+  private clustersRepo = inject(ClustersRepository);
   private storage = inject(LocalStorageService);
   private i18n = inject(I18nService);
   private calc = inject(CalculationService);
@@ -39,6 +43,8 @@ export class SettingsComponent {
   showImportModal = signal(false);
   itemsToImport = signal<BacklogItem[]>([]);
   profilesToImport = signal<Profile[]>([]);
+  productsToImport = signal<Product[]>([]);
+  clustersToImport = signal<Cluster[]>([]);
   importedProjectName = signal('');
 
   settings = signal(this.repo.get());
@@ -78,9 +84,14 @@ export class SettingsComponent {
     const s = this.repo.get();
     const items = this.backlogRepo.getAll();
     const profiles = this.profilesRepo.getAll();
+    const products = this.productsRepo.getAll();
+    const clusters = this.clustersRepo.getAll();
+
     const data = {
       projectName: s.projectName,
       exportDate: new Date().toISOString(),
+      products,
+      clusters,
       items,
       profiles,
     };
@@ -107,13 +118,18 @@ export class SettingsComponent {
         const content = JSON.parse(e.target.result);
         let items: BacklogItem[] = [];
         let profiles: Profile[] = [];
+        let products: Product[] = [];
+        let clusters: Cluster[] = [];
         let projectName = '';
 
         if (content.items && content.projectName) {
           items = content.items as BacklogItem[];
           profiles = (content.profiles || []) as Profile[];
+          products = (content.products || []) as Product[];
+          clusters = (content.clusters || []) as Cluster[];
           projectName = content.projectName;
         } else if (Array.isArray(content)) {
+          // Legacy handling or error? assuming basic import
           items = content as BacklogItem[];
           projectName = 'Project Imported';
         }
@@ -121,6 +137,8 @@ export class SettingsComponent {
         if (Array.isArray(items)) {
           this.itemsToImport.set(items);
           this.profilesToImport.set(profiles);
+          this.productsToImport.set(products);
+          this.clustersToImport.set(clusters);
           this.importedProjectName.set(projectName);
           this.showImportModal.set(true);
         } else {
@@ -138,6 +156,8 @@ export class SettingsComponent {
   handleImportAction(event: { type: 'add' | 'replace' | 'cancel'; projectName: string }) {
     const items = this.itemsToImport();
     const profiles = this.profilesToImport();
+    const products = this.productsToImport();
+    const clusters = this.clustersToImport();
 
     if (event.type !== 'cancel') {
       const current = this.repo.get();
@@ -152,11 +172,30 @@ export class SettingsComponent {
             this.profilesRepo.save(p);
           }
         });
+
+        // Add products and clusters similarly (or just overwrite if conflicting? Safe to add if ID not exists)
+        const existingProducts = this.productsRepo.getAll();
+        products.forEach((p) => {
+          if (!existingProducts.some((ep) => ep.id === p.id)) {
+            this.productsRepo.save(p);
+          }
+        });
+
+        const existingClusters = this.clustersRepo.getAll();
+        clusters.forEach((c) => {
+          if (!existingClusters.some((ec) => ec.id === c.id)) {
+            this.clustersRepo.save(c);
+          }
+        });
+
         items.forEach((item) => this.backlogRepo.save(item));
       } else if (event.type === 'replace') {
         if (profiles.length > 0) {
           this.profilesRepo.saveBulk(profiles);
         }
+        if (products.length > 0) this.productsRepo.saveBulk(products);
+        if (clusters.length > 0) this.clustersRepo.saveBulk(clusters);
+
         this.backlogRepo.saveBulk(items);
       }
       alert('Importation réussie');
@@ -164,6 +203,9 @@ export class SettingsComponent {
 
     this.showImportModal.set(false);
     this.itemsToImport.set([]);
+    this.profilesToImport.set([]);
+    this.productsToImport.set([]);
+    this.clustersToImport.set([]);
   }
 
   changeLang(e: Event) {

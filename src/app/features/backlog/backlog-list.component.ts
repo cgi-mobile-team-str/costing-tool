@@ -13,6 +13,8 @@ import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
+import { ClustersRepository } from '../../data/clusters.repository';
+import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
 import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
@@ -47,6 +49,8 @@ import { ColumnSelectorComponent } from './column-selector.component';
 })
 export class BacklogListComponent {
   private repo = inject(BacklogRepository);
+  private productsRepo = inject(ProductsRepository);
+  private clustersRepo = inject(ClustersRepository);
   private profilesRepo = inject(ProfilesRepository);
   private settingsRepo = inject(SettingsRepository);
   private calc = inject(CalculationService);
@@ -92,6 +96,7 @@ export class BacklogListComponent {
   ]);
 
   constructor() {
+    this.profiles = this.profilesRepo.getAll();
     this.profiles = this.profilesRepo.getAll();
     this.refresh();
 
@@ -160,6 +165,8 @@ export class BacklogListComponent {
   // Grouping logic
   groupedItems = computed(() => {
     let res = this.items();
+    const allProducts = this.productsRepo.getAll();
+    const allClusters = this.clustersRepo.getAll();
 
     // Filtering
     const term = this.searchTerm().toLowerCase();
@@ -177,26 +184,60 @@ export class BacklogListComponent {
     }
 
     // Grouping
-    const products = new Set(res.map((i) => i.product || 'Other Products'));
-    const sortedProducts = Array.from(products).sort();
+    // We group by Product ID now
+    const productMap = new Map<string, BacklogItem[]>();
+    // Handle items with no product ID (legacy or error) - maybe group under "Unknown"
+
+    res.forEach((item) => {
+      const pid = item.productId || 'unknown';
+      if (!productMap.has(pid)) {
+        productMap.set(pid, []);
+      }
+      productMap.get(pid)!.push(item);
+    });
 
     const result: ProductGroup[] = [];
 
-    for (const prod of sortedProducts) {
-      const prodItems = res.filter((i) => (i.product || 'Other Products') === prod);
-      const clusters = new Set(prodItems.map((i) => i.cluster || 'General'));
-      const sortedClusters = Array.from(clusters).sort();
+    // Sort products by name
+    const sortedProductIds = Array.from(productMap.keys()).sort((a, b) => {
+      const nameA = allProducts.find((p) => p.id === a)?.name || 'Unknown';
+      const nameB = allProducts.find((p) => p.id === b)?.name || 'Unknown';
+      return nameA.localeCompare(nameB);
+    });
+
+    for (const pid of sortedProductIds) {
+      const prodItems = productMap.get(pid)!;
+      const productName = allProducts.find((p) => p.id === pid)?.name || 'Unknown Product';
+
+      // Group by Cluster ID
+      const clusterMap = new Map<string, BacklogItem[]>();
+      prodItems.forEach((item) => {
+        const cid = item.clusterId || 'unknown';
+        if (!clusterMap.has(cid)) {
+          clusterMap.set(cid, []);
+        }
+        clusterMap.get(cid)!.push(item);
+      });
+
+      const sortedClusterIds = Array.from(clusterMap.keys()).sort((a, b) => {
+        const nameA = allClusters.find((c) => c.id === a)?.name || 'General';
+        const nameB = allClusters.find((c) => c.id === b)?.name || 'General';
+        return nameA.localeCompare(nameB);
+      });
 
       const clusterGroups = [];
-      for (const clust of sortedClusters) {
+      for (const cid of sortedClusterIds) {
+        const clusterName = allClusters.find((c) => c.id === cid)?.name || 'General';
         clusterGroups.push({
-          cluster: clust,
-          items: prodItems.filter((i) => (i.cluster || 'General') === clust),
+          clusterId: cid,
+          cluster: clusterName,
+          items: clusterMap.get(cid)!, // items are already filtered by product and cluster
         });
       }
 
       result.push({
-        product: prod,
+        productId: pid,
+        product: productName,
         clusters: clusterGroups,
       });
     }
@@ -263,7 +304,7 @@ export class BacklogListComponent {
     });
   }
 
-  openBacklogSheet(item?: BacklogItem, defaults?: { product: string; cluster: string }) {
+  openBacklogSheet(item?: BacklogItem, defaults?: { productId: string; clusterId: string }) {
     this.sheetService.create({
       zTitle: item
         ? this.i18n.translate('backlog.edit_title')
@@ -284,7 +325,7 @@ export class BacklogListComponent {
     });
   }
 
-  openAddItemWithDefaults(defaults: { product: string; cluster: string }) {
+  openAddItemWithDefaults(defaults: { productId: string; clusterId: string }) {
     this.openBacklogSheet(undefined, defaults);
   }
 
@@ -313,46 +354,50 @@ export class BacklogListComponent {
   }
 
   onMoveItemUp(item: BacklogItem) {
-    const allItems = this.items();
+    const allItems = this.repo.getAll();
     const index = allItems.findIndex((i) => i.id === item.id);
     if (index <= 0) return;
 
-    // Find the item above it in the same context (same product/cluster)
-    // The flat list order represents the display order essentially, but we need to be careful
-    // if the list is sorted by other means.
-    // Assuming the repo returns items in display order (saved order).
+    // Find the previous item *in the same group* (fragmented list support)
+    let prevIndex = -1;
+    for (let i = index - 1; i >= 0; i--) {
+      if (allItems[i].productId === item.productId && allItems[i].clusterId === item.clusterId) {
+        prevIndex = i;
+        break;
+      }
+    }
 
-    // Simple swap with previous item for now - treating the array as the source of truth for order
-    const prevIndex = index - 1;
-    const prevItem = allItems[prevIndex];
-
-    // Only swap if they belong to the same group to avoid jumping clusters/products weirdly
-    // or if the user intends to reorder across groups (which might change the group?)
-    // For now, restrict to same Cluster and Product for safety and logic simplicity
-    if (prevItem.product === item.product && prevItem.cluster === item.cluster) {
+    if (prevIndex !== -1) {
       const newItems = [...allItems];
+      // Swap
+      newItems[index] = newItems[prevIndex];
       newItems[prevIndex] = item;
-      newItems[index] = prevItem;
-      // We need to save the new order.
-      // Since the repo typically saves items individually, we might need a way to save the whole list or update indices?
-      // If the repo is just a local storage wrapper of an array:
+
       this.repo.saveBulk(newItems);
       this.refresh();
     }
   }
 
   onMoveItemDown(item: BacklogItem) {
-    const allItems = this.items();
+    const allItems = this.repo.getAll();
     const index = allItems.findIndex((i) => i.id === item.id);
     if (index === -1 || index >= allItems.length - 1) return;
 
-    const nextIndex = index + 1;
-    const nextItem = allItems[nextIndex];
+    // Find the next item *in the same group*
+    let nextIndex = -1;
+    for (let i = index + 1; i < allItems.length; i++) {
+      if (allItems[i].productId === item.productId && allItems[i].clusterId === item.clusterId) {
+        nextIndex = i;
+        break;
+      }
+    }
 
-    if (nextItem.product === item.product && nextItem.cluster === item.cluster) {
+    if (nextIndex !== -1) {
       const newItems = [...allItems];
+      // Swap
+      newItems[index] = newItems[nextIndex];
       newItems[nextIndex] = item;
-      newItems[index] = nextItem;
+
       this.repo.saveBulk(newItems);
       this.refresh();
     }

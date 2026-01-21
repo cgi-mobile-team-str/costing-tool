@@ -12,11 +12,25 @@ export type Risk = 'low' | 'medium' | 'high';
 export type Moscow = 'MUST' | 'SHOULD' | 'COULD' | 'WONT';
 export type ChargeType = 'days' | 'ratio';
 
+export interface Product {
+  id: string;
+  name: string;
+}
+
+export interface Cluster {
+  id: string;
+  name: string;
+  productId: string;
+}
+
 export interface BacklogItem {
   id: string;
   title: string; // Used as 'Feature'
-  product: string; // Level 1 grouping
-  cluster: string; // Level 2 grouping (was Category)
+
+  // Relational links
+  productId: string;
+  clusterId: string;
+
   description?: string;
   hypotheses?: string;
   comments?: string;

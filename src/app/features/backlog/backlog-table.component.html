@@ -39,11 +39,11 @@
       </tr>
     </thead>
     <tbody>
-      @for (clusterGroup of clusterGroups; track clusterGroup.cluster) {
+      @for (clusterGroup of clusterGroups; track clusterGroup.clusterId) {
         <tr class="cluster-header">
           <td [attr.colspan]="visibleColumnCount + 3">{{ clusterGroup.cluster }}</td>
         </tr>
-        @for (item of clusterGroup.items; track item.id) {
+        @for (item of clusterGroup.items; track item.id; let first = $first; let last = $last) {
           <app-backlog-row
             [item]="item"
             [profiles]="profiles"
@@ -51,6 +51,8 @@
             [editingCell]="editingCell"
             [itemCost]="getItemCost(item)"
             [visibleColumns]="visibleColumns"
+            [isFirst]="first"
+            [isLast]="last"
             (selectionToggle)="selectionToggle.emit($event)"
             (editStart)="editStart.emit($event)"
             (editSave)="editSave.emit($event)"
@@ -76,7 +78,7 @@
                 zType="ghost"
                 zSize="xs"
                 class="!w-[34px] bg-zinc-500 text-white hover:bg-zinc-600"
-                (click)="addItemToCluster.emit(clusterGroup.cluster)"
+                (click)="addItemToCluster.emit(clusterGroup.clusterId)"
                 title="Ajouter un élément à ce cluster"
               >
                 <z-icon zType="plus" class="h-4 w-4" />

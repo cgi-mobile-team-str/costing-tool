@@ -35,7 +35,10 @@ export class BacklogRowComponent {
   @Input() isSelected = false;
   @Input() editingCell: { itemId: string; field: string } | null = null;
   @Input() visibleColumns: string[] = [];
+
   @Input() itemCost = 0;
+  @Input() isFirst = false;
+  @Input() isLast = false;
 
   @Output() selectionToggle = new EventEmitter<string>();
   @Output() editStart = new EventEmitter<{ itemId: string; field: string }>();

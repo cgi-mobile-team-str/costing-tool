@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BacklogItem } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
+import { ClustersRepository } from '../../data/clusters.repository';
+import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
+import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardSheetRef } from '../../shared/components/sheet/sheet-ref';
 import { Z_SHEET_DATA } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -14,7 +17,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-backlog-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    TranslatePipe,
+    FormsModule,
+    ZardButtonComponent,
+  ],
   templateUrl: './backlog-form.component.html',
   styleUrls: ['./backlog-form.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
@@ -23,6 +33,8 @@ export class BacklogFormComponent {
   private fb = inject(FormBuilder);
   private repo = inject(BacklogRepository);
   private profilesRepo = inject(ProfilesRepository);
+  private productsRepo = inject(ProductsRepository);
+  private clustersRepo = inject(ClustersRepository);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private idService = inject(IdService);
@@ -35,8 +47,8 @@ export class BacklogFormComponent {
   form = this.fb.group({
     id: [''],
     title: ['', Validators.required],
-    product: ['', Validators.required],
-    cluster: ['', Validators.required],
+    productId: ['', Validators.required],
+    clusterId: ['', Validators.required],
     description: [''],
     hypotheses: [''],
     comments: [''],
@@ -53,38 +65,31 @@ export class BacklogFormComponent {
     return this.currentCost();
   });
 
-  // Autocomplete data
-  existingProducts = computed(() => {
-    const items = this.repo.getAll();
-    return [...new Set(items.map((i) => i.product).filter((p) => !!p))].sort();
+  // Data sources
+  private refreshSignal = signal(0);
+
+  allProducts = computed(() => {
+    this.refreshSignal();
+    return this.productsRepo.getAll().sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  existingClusters = computed(() => {
-    const items = this.repo.getAll();
-    const prod = this.currentProductInput();
-    const filtered = prod ? items.filter((i) => i.product === prod) : items;
-    return [...new Set(filtered.map((i) => i.cluster).filter((c) => !!c))].sort();
+  availableClusters = computed(() => {
+    this.refreshSignal();
+    const pid = this.currentProductId();
+    if (!pid) return [];
+    return this.clustersRepo.getByProductId(pid).sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  existingTitles = computed(() => {
-    const items = this.repo.getAll();
-    const prod = this.currentProductInput();
-    const clust = this.currentClusterInput();
+  // Inputs for new creation
+  newProductName = signal('');
+  newClusterName = signal('');
 
-    let filtered = items;
-    if (prod) filtered = filtered.filter((i) => i.product === prod);
-    if (clust) filtered = filtered.filter((i) => i.cluster === clust);
-
-    return [...new Set(filtered.map((i) => i.title).filter((t) => !!t))].sort();
-  });
-
-  currentProductInput = signal('');
-  currentClusterInput = signal('');
+  currentProductId = signal('');
+  currentClusterId = signal('');
   private currentCost = signal(0);
 
   isProductInputMode = signal(false);
   isClusterInputMode = signal(false);
-  isTitleInputMode = signal(false);
 
   constructor() {
     // Set default profile if available
@@ -103,18 +108,25 @@ export class BacklogFormComponent {
           this.initForm(item);
         }
       } else {
-        this.isProductInputMode.set(this.existingProducts().length === 0);
-        this.isClusterInputMode.set(true);
-        this.isTitleInputMode.set(true);
+        // Check for defaults passed via openAddItemWithDefaults
+        // passed as zData but typed loosely above
+        // If zData has productId/clusterId but no id, it's defaults
+        const defaults = this.zData as any;
+        if (defaults && (defaults.productId || defaults.clusterId)) {
+          this.form.patchValue({
+            productId: defaults.productId || '',
+            clusterId: defaults.clusterId || '',
+          });
+        }
       }
     }
 
     this.form.valueChanges.subscribe(() => this.updateCost());
-    this.form.controls.product.valueChanges.subscribe((val) =>
-      this.currentProductInput.set(val || ''),
+    this.form.controls.productId.valueChanges.subscribe((val) =>
+      this.currentProductId.set(val || ''),
     );
-    this.form.controls.cluster.valueChanges.subscribe((val) =>
-      this.currentClusterInput.set(val || ''),
+    this.form.controls.clusterId.valueChanges.subscribe((val) =>
+      this.currentClusterId.set(val || ''),
     );
 
     this.updateCost();
@@ -125,36 +137,19 @@ export class BacklogFormComponent {
       this.isEditMode.set(true);
     }
     this.form.patchValue(item as any);
-    this.currentProductInput.set(item.product || '');
-    this.currentClusterInput.set(item.cluster || '');
-
-    if (item.product) {
-      this.isProductInputMode.set(!this.existingProducts().includes(item.product));
-    }
-    if (item.cluster) {
-      this.isClusterInputMode.set(!this.existingClusters().includes(item.cluster));
-    }
-    if (item.title) {
-      this.isTitleInputMode.set(!this.existingTitles().includes(item.title));
-    } else if (!item.id) {
-      // Default to text input for new items
-      this.isTitleInputMode.set(true);
-    }
+    this.currentProductId.set(item.productId || '');
+    this.currentClusterId.set(item.clusterId || '');
   }
 
   onProductSelect(event: Event) {
     const val = (event.target as HTMLSelectElement).value;
     if (val === '__NEW__') {
       this.isProductInputMode.set(true);
-      this.form.controls.product.setValue('');
+      this.form.controls.productId.setValue('');
     } else {
-      // Logic to reset dependent fields if needed
-      // Check if current cluster exists for new product (unlikely, but good to reset)
-      // We rely on existingClusters computed to update based on valueChanges
-      // But we might want to force cluster mode check after a tick or assume false
-      setTimeout(() => {
-        this.isClusterInputMode.set(this.existingClusters().length === 0);
-      });
+      this.isProductInputMode.set(false);
+      // Reset cluster when product changes
+      this.form.controls.clusterId.setValue('');
     }
   }
 
@@ -162,32 +157,52 @@ export class BacklogFormComponent {
     const val = (event.target as HTMLSelectElement).value;
     if (val === '__NEW__') {
       this.isClusterInputMode.set(true);
-      this.form.controls.cluster.setValue('');
+      this.form.controls.clusterId.setValue('');
     } else {
-      setTimeout(() => {
-        this.isTitleInputMode.set(this.existingTitles().length === 0);
-      });
+      this.isClusterInputMode.set(false);
     }
   }
 
-  onTitleSelect(event: Event) {
-    const val = (event.target as HTMLSelectElement).value;
-    if (val === '__NEW__') {
-      this.isTitleInputMode.set(true);
-      this.form.controls.title.setValue('');
+  saveNewProduct() {
+    const name = this.newProductName().trim();
+    if (name) {
+      const p = { id: this.idService.generate(), name };
+      this.productsRepo.save(p);
+      this.refreshSignal.update((v) => v + 1);
+      this.isProductInputMode.set(false);
+      this.form.controls.productId.setValue(p.id);
+      this.newProductName.set('');
+
+      // Auto-trigger new cluster mode
+      this.isClusterInputMode.set(true);
+      this.form.controls.clusterId.setValue('');
     }
   }
 
-  switchToProductSelect() {
+  cancelNewProduct() {
     this.isProductInputMode.set(false);
+    this.newProductName.set('');
+    // If we were on new product and cancelled, we might want to revert to empty or previous?
+    this.form.controls.productId.setValue(''); // Reset selection
   }
 
-  switchToClusterSelect() {
+  saveNewCluster() {
+    const name = this.newClusterName().trim();
+    const pid = this.currentProductId();
+    if (name && pid) {
+      const c = { id: this.idService.generate(), name, productId: pid };
+      this.clustersRepo.save(c);
+      this.refreshSignal.update((v) => v + 1);
+      this.isClusterInputMode.set(false);
+      this.form.controls.clusterId.setValue(c.id);
+      this.newClusterName.set('');
+    }
+  }
+
+  cancelNewCluster() {
     this.isClusterInputMode.set(false);
-  }
-
-  switchToTitleSelect() {
-    this.isTitleInputMode.set(false);
+    this.newClusterName.set('');
+    this.form.controls.clusterId.setValue('');
   }
 
   updateCost() {
@@ -201,6 +216,16 @@ export class BacklogFormComponent {
   }
 
   save(): boolean {
+    if (this.isProductInputMode()) {
+      this.saveNewProduct(); // Auto save if still in input mode? Or block?
+      // If user typed name but didn't click check, let's assume valid if not empty
+      if (this.isProductInputMode()) return false; // Prevent submit if create specific UI is pending
+    }
+    if (this.isClusterInputMode()) {
+      this.saveNewCluster();
+      if (this.isClusterInputMode()) return false;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return false;
