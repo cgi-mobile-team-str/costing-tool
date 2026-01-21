@@ -41,7 +41,22 @@
     <tbody>
       @for (clusterGroup of clusterGroups; track clusterGroup.clusterId) {
         <tr class="cluster-header">
-          <td [attr.colspan]="visibleColumnCount + 3">{{ clusterGroup.cluster }}</td>
+          <td [attr.colspan]="visibleColumnCount + 3">
+            <div class="flex items-center gap-2 group">
+              <span class="font-bold">{{ clusterGroup.cluster }}</span>
+              <z-button
+                zType="ghost"
+                zSize="xs"
+                (click)="
+                  $event.stopPropagation();
+                  openRenameClusterDialog(clusterGroup.cluster, clusterGroup.clusterId)
+                "
+                title="{{ 'common.edit' | translate }}"
+              >
+                <img src="assets/pen-to-square-regular-full.svg" alt="Edit" class="h-4 w-4" />
+              </z-button>
+            </div>
+          </td>
         </tr>
         @for (item of clusterGroup.items; track item.id; let first = $first; let last = $last) {
           <app-backlog-row

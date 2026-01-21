@@ -402,4 +402,25 @@ export class BacklogListComponent {
       this.refresh();
     }
   }
+
+  onRenameProduct(event: { productId: string; newName: string }) {
+    console.log('BacklogList: onRenameProduct', event);
+    const product = this.productsRepo.get(event.productId);
+    console.log('Found product:', product);
+    if (product) {
+      product.name = event.newName;
+      this.productsRepo.save(product);
+      this.refresh();
+      console.log('Product saved');
+    }
+  }
+
+  onRenameCluster(event: { clusterId: string; newName: string }) {
+    const cluster = this.clustersRepo.get(event.clusterId);
+    if (cluster) {
+      cluster.name = event.newName;
+      this.clustersRepo.save(cluster);
+      this.refresh();
+    }
+  }
 }

@@ -1,9 +1,26 @@
 <div class="product-section">
-  <h3 class="product-title" (click)="toggleExpand.emit(productGroup.product)">
-    <span class="chevron" [class.expanded]="isExpanded">▶</span>
-    <span class="product-name">{{ productGroup.product }}</span>
-    <span class="product-effort">{{ productEffort | number: '1.1-1' }} j/h</span>
-    <span class="product-cost">{{ productTotal | currency: 'EUR' }}</span>
+  <h3 class="product-title">
+    <div class="product-title-content" (click)="toggleExpand.emit(productGroup.product)">
+      <span class="chevron" [class.expanded]="isExpanded">▶</span>
+      <span class="product-name">{{ productGroup.product }}</span>
+      <z-button
+        class="edit-btn"
+        zType="ghost"
+        zSize="xs"
+        (click)="$event.stopPropagation(); openRenameDialog()"
+        title="{{ 'common.edit' | translate }}"
+      >
+        <img
+          src="assets/pen-to-square-regular-full.svg"
+          alt="Edit"
+          class="h-5 w-5 invert brightness-0 filter"
+        />
+      </z-button>
+    </div>
+    <div class="product-stats" (click)="toggleExpand.emit(productGroup.product)">
+      <span class="product-effort">{{ productEffort | number: '1.1-1' }} j/h</span>
+      <span class="product-cost">{{ productTotal | currency: 'EUR' }}</span>
+    </div>
   </h3>
   @if (isExpanded) {
     <app-backlog-table
@@ -22,7 +39,10 @@
       (deleteItem)="deleteItem.emit($event)"
       (addItemToCluster)="addItem.emit({ productId: productGroup.productId, clusterId: $event })"
       (moveItemUp)="moveItemUp.emit($event)"
+      (addItemToCluster)="addItem.emit({ productId: productGroup.productId, clusterId: $event })"
+      (moveItemUp)="moveItemUp.emit($event)"
       (moveItemDown)="moveItemDown.emit($event)"
+      (renameCluster)="renameCluster.emit($event)"
     />
   }
 </div>

@@ -1,11 +1,13 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewEncapsulation } from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogRowComponent } from './backlog-row.component';
+import { RenameDialogComponent, RenameDialogData } from './rename-dialog/rename-dialog.component';
 
 export interface ClusterGroup {
   clusterId: string;
@@ -30,6 +32,7 @@ export interface ClusterGroup {
   encapsulation: ViewEncapsulation.Emulated,
 })
 export class BacklogTableComponent {
+  private dialogService = inject(ZardDialogService);
   @Input() clusterGroups: ClusterGroup[] = [];
   @Input() profiles: Profile[] = [];
   @Input() selectedIds: string[] = [];
@@ -47,6 +50,28 @@ export class BacklogTableComponent {
   @Output() addItemToCluster = new EventEmitter<string>();
   @Output() moveItemUp = new EventEmitter<BacklogItem>();
   @Output() moveItemDown = new EventEmitter<BacklogItem>();
+  @Output() renameCluster = new EventEmitter<{ clusterId: string; newName: string }>();
+
+  openRenameClusterDialog(clusterName: string, clusterId: string) {
+    this.dialogService.create({
+      zTitle: 'Renommer le cluster',
+      zContent: RenameDialogComponent,
+      zData: { name: clusterName } as RenameDialogData,
+      zOkText: 'Enregistrer',
+      zOnOk: (instance: RenameDialogComponent) => {
+        if (instance.form.valid) {
+          const newName = instance.form.value.name;
+          if (newName && newName !== clusterName) {
+            this.renameCluster.emit({
+              clusterId: clusterId,
+              newName: newName,
+            });
+          }
+        }
+      },
+      zWidth: '400px',
+    });
+  }
 
   isItemSelected(id: string): boolean {
     return this.selectedIds.includes(id);

@@ -48,6 +48,8 @@
       (addItem)="openAddItemWithDefaults($event)"
       (moveItemUp)="onMoveItemUp($event)"
       (moveItemDown)="onMoveItemDown($event)"
+      (renameProduct)="onRenameProduct($event)"
+      (renameCluster)="onRenameCluster($event)"
     />
   }
   @if (groupedItems().length === 0) {

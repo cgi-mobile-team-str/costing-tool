@@ -25,6 +25,8 @@ const FR = {
   'common.move_up': 'Monter',
   'common.move_down': 'Descendre',
   'common.currency_per_day': '€/j',
+  'common.name_placeholder': 'Ex. Nom',
+  'common.new_title': 'Nouveau titre',
 
   // Navigation
   'nav.backlog': 'Backlog',
@@ -143,6 +145,8 @@ const EN = {
   'common.move_down': 'Move down',
   'common.ok': 'Ok',
   'common.currency_per_day': '€/d',
+  'common.name_placeholder': 'Ex. Name',
+  'common.new_title': 'New title',
 
   // Navigation
   'nav.backlog': 'Backlog',
