@@ -10,9 +10,12 @@ import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
+import { ZardFormImports } from '../../shared/components/form/form.imports';
+import { ZardInputDirective } from '../../shared/components/input';
 import { ZardSheetRef } from '../../shared/components/sheet/sheet-ref';
 import { Z_SHEET_DATA } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { generateId } from '../../shared/utils/merge-classes';
 
 @Component({
   selector: 'app-backlog-form',
@@ -24,12 +27,26 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     TranslatePipe,
     FormsModule,
     ZardButtonComponent,
+    ZardInputDirective,
+    ZardFormImports,
   ],
   templateUrl: './backlog-form.component.html',
   styleUrls: ['./backlog-form.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
 })
 export class BacklogFormComponent {
+  protected readonly idProduct = generateId('product');
+  protected readonly idCluster = generateId('cluster');
+  protected readonly idTitle = generateId('title');
+  protected readonly idDescription = generateId('description');
+  protected readonly idHypotheses = generateId('hypotheses');
+  protected readonly idComments = generateId('comments');
+  protected readonly idScope = generateId('scope');
+  protected readonly idMoscow = generateId('moscow');
+  protected readonly idProfile = generateId('profile');
+  protected readonly idChargeType = generateId('chargeType');
+  protected readonly idEffort = generateId('effort');
+
   private fb = inject(FormBuilder);
   private repo = inject(BacklogRepository);
   private profilesRepo = inject(ProfilesRepository);
@@ -52,11 +69,11 @@ export class BacklogFormComponent {
     description: [''],
     hypotheses: [''],
     comments: [''],
-    scope: ['MVP', Validators.required],
-    moscow: ['MUST', Validators.required],
-    chargeType: ['days', Validators.required],
+    scope: ['MVP'],
+    moscow: ['MUST'],
+    chargeType: ['days'],
     effortDays: [1, [Validators.required, Validators.min(0)]],
-    profileId: ['', Validators.required],
+    profileId: [''],
   });
 
   isEditMode = signal(false);

@@ -1,16 +1,20 @@
 <div class="form-container">
-  <form [formGroup]="form" (ngSubmit)="save()">
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-6">
     <!-- Hierarchy: Product > Cluster > Feature -->
-    <div class="hierarchy-section mb-4">
-      <div class="form-group">
-        <label>{{ 'backlog.product' | translate }}</label>
+    <div class="hierarchy-section flex flex-col gap-4">
+      <z-form-field>
+        <label z-form-label [for]="idProduct" zRequired>{{ 'backlog.product' | translate }}</label>
 
         @if (!isProductInputMode()) {
-          <div class="input-group">
+          <z-form-control>
             <select
+              z-input
+              [id]="idProduct"
               formControlName="productId"
               (change)="onProductSelect($event)"
-              class="form-control"
+              [attr.aria-invalid]="
+                form.controls.productId.invalid && form.controls.productId.touched
+              "
             >
               <option value="" disabled selected>
                 {{ 'backlog.select_placeholder' | translate }}
@@ -20,15 +24,15 @@
               }
               <option value="__NEW__">{{ 'backlog.new_product_option' | translate }}</option>
             </select>
-          </div>
+          </z-form-control>
         } @else {
-          <div class="input-group d-flex gap-2">
+          <div class="flex gap-2">
             <input
+              z-input
               type="text"
               [ngModel]="newProductName()"
               (ngModelChange)="newProductName.set($event)"
               [ngModelOptions]="{ standalone: true }"
-              class="form-control"
               [placeholder]="'backlog.new_product_placeholder' | translate"
             />
             <button z-button size="sm" type="button" (click)="saveNewProduct()">
@@ -39,18 +43,22 @@
             </button>
           </div>
         }
-      </div>
+      </z-form-field>
 
-      <div class="form-group mt-3">
-        <label>{{ 'backlog.cluster' | translate }}</label>
+      <z-form-field>
+        <label z-form-label [for]="idCluster" zRequired>{{ 'backlog.cluster' | translate }}</label>
 
         @if (currentProductId()) {
           @if (!isClusterInputMode()) {
-            <div class="input-group">
+            <z-form-control>
               <select
+                z-input
+                [id]="idCluster"
                 formControlName="clusterId"
                 (change)="onClusterSelect($event)"
-                class="form-control"
+                [attr.aria-invalid]="
+                  form.controls.clusterId.invalid && form.controls.clusterId.touched
+                "
               >
                 <option value="" disabled selected>
                   {{ 'backlog.select_placeholder' | translate }}
@@ -60,15 +68,15 @@
                 }
                 <option value="__NEW__">{{ 'backlog.new_cluster_option' | translate }}</option>
               </select>
-            </div>
+            </z-form-control>
           } @else {
-            <div class="input-group d-flex gap-2">
+            <div class="flex gap-2">
               <input
+                z-input
                 type="text"
                 [ngModel]="newClusterName()"
                 (ngModelChange)="newClusterName.set($event)"
                 [ngModelOptions]="{ standalone: true }"
-                class="form-control"
                 [placeholder]="'backlog.new_cluster_placeholder' | translate"
               />
               <button z-button size="sm" type="button" (click)="saveNewCluster()">
@@ -86,101 +94,161 @@
             </div>
           }
         } @else {
-          <div class="text-sm text-gray-500 italic mt-2">
+          <div class="text-sm text-muted-foreground italic mt-1">
             {{ 'backlog.select_product_first_hint' | translate }}
           </div>
         }
-      </div>
+      </z-form-field>
     </div>
 
-    <div class="form-group">
-      <label>{{ 'backlog.title' | translate }}</label>
-      <input
-        type="text"
-        formControlName="title"
-        class="form-control"
-        [placeholder]="'backlog.title_placeholder' | translate"
-        #titleInput
-      />
-    </div>
+    <!-- Title -->
+    <z-form-field>
+      <label z-form-label [for]="idTitle" zRequired>{{ 'backlog.title' | translate }}</label>
+      <z-form-control>
+        <input
+          z-input
+          type="text"
+          [id]="idTitle"
+          formControlName="title"
+          [placeholder]="'backlog.title_placeholder' | translate"
+          [attr.aria-invalid]="form.controls.title.invalid && form.controls.title.touched"
+          #titleInput
+        />
+      </z-form-control>
+    </z-form-field>
 
     <!-- Description -->
-    <div class="form-group">
-      <label>{{ 'backlog.description' | translate }}</label>
-      <textarea formControlName="description" class="form-control" rows="2"></textarea>
-    </div>
+    <z-form-field>
+      <label z-form-label [for]="idDescription">{{ 'backlog.description' | translate }}</label>
+      <z-form-control>
+        <textarea
+          z-input
+          [id]="idDescription"
+          formControlName="description"
+          rows="5"
+          class="h-80"
+        ></textarea>
+      </z-form-control>
+    </z-form-field>
 
     <!-- Hypotheses & Comments -->
-    <div class="row">
-      <div class="form-group col">
-        <label>{{ 'backlog.hypotheses' | translate }}</label>
-        <textarea formControlName="hypotheses" class="form-control" rows="2"></textarea>
-      </div>
-      <div class="form-group col">
-        <label>{{ 'backlog.comments' | translate }}</label>
-        <textarea formControlName="comments" class="form-control" rows="2"></textarea>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <z-form-field>
+        <label z-form-label [for]="idHypotheses">{{ 'backlog.hypotheses' | translate }}</label>
+        <z-form-control>
+          <textarea
+            z-input
+            [id]="idHypotheses"
+            formControlName="hypotheses"
+            rows="2"
+            class="h-80"
+          ></textarea>
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <label z-form-label [for]="idComments">{{ 'backlog.comments' | translate }}</label>
+        <z-form-control>
+          <textarea
+            z-input
+            [id]="idComments"
+            formControlName="comments"
+            rows="2"
+            class="h-80"
+          ></textarea>
+        </z-form-control>
+      </z-form-field>
     </div>
 
     <!-- Scope & MoSCoW -->
-    <div class="row">
-      <div class="form-group col">
-        <label>{{ 'backlog.scope' | translate }}</label>
-        <select formControlName="scope" class="form-control">
-          <option value="MVP">{{ 'backlog.scope_mvp' | translate }}</option>
-          <option value="V1">{{ 'backlog.scope_v1' | translate }}</option>
-          <option value="V2">{{ 'backlog.scope_v2' | translate }}</option>
-        </select>
-      </div>
-      <div class="form-group col">
-        <label>{{ 'backlog.moscow' | translate }}</label>
-        <select formControlName="moscow" class="form-control">
-          <option value="MUST">{{ 'backlog.moscow_must' | translate }}</option>
-          <option value="SHOULD">{{ 'backlog.moscow_should' | translate }}</option>
-          <option value="COULD">{{ 'backlog.moscow_could' | translate }}</option>
-          <option value="WONT">{{ 'backlog.moscow_wont' | translate }}</option>
-        </select>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <z-form-field>
+        <label z-form-label [for]="idScope">{{ 'backlog.scope' | translate }}</label>
+        <z-form-control>
+          <select z-input [id]="idScope" formControlName="scope">
+            <option value="MVP">{{ 'backlog.scope_mvp' | translate }}</option>
+            <option value="V1">{{ 'backlog.scope_v1' | translate }}</option>
+            <option value="V2">{{ 'backlog.scope_v2' | translate }}</option>
+          </select>
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <label z-form-label [for]="idMoscow">{{ 'backlog.moscow' | translate }}</label>
+        <z-form-control>
+          <select z-input [id]="idMoscow" formControlName="moscow">
+            <option value="MUST">{{ 'backlog.moscow_must' | translate }}</option>
+            <option value="SHOULD">{{ 'backlog.moscow_should' | translate }}</option>
+            <option value="COULD">{{ 'backlog.moscow_could' | translate }}</option>
+            <option value="WONT">{{ 'backlog.moscow_wont' | translate }}</option>
+          </select>
+        </z-form-control>
+      </z-form-field>
     </div>
 
     <!-- Profile, Type, Effort -->
-    <div class="row">
-      <div class="form-group col">
-        <label>{{ 'backlog.profile' | translate }}</label>
-        <select formControlName="profileId" class="form-control">
-          @for (p of profiles(); track p.id) {
-            <option [value]="p.id">
-              {{ p.name }} ({{ p.dailyRate }}{{ 'common.currency_per_day' | translate }})
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <z-form-field>
+        <label z-form-label [for]="idProfile">{{ 'backlog.profile' | translate }}</label>
+        <z-form-control>
+          <select z-input [id]="idProfile" formControlName="profileId">
+            @for (p of profiles(); track p.id) {
+              <option [value]="p.id">
+                {{ p.name }} ({{ p.dailyRate }}{{ 'common.currency_per_day' | translate }})
+              </option>
+            }
+          </select>
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <label z-form-label [for]="idChargeType">
+          {{ 'backlog.chargeType' | translate }}
+        </label>
+        <z-form-control>
+          <select z-input [id]="idChargeType" formControlName="chargeType">
+            <option value="days">{{ 'backlog.rtu' | translate }}</option>
+            <option value="ratio">
+              {{ 'backlog.ratio' | translate }} {{ 'backlog.percent' | translate }}
             </option>
-          }
-        </select>
-      </div>
-      <div class="form-group col">
-        <label>{{ 'backlog.chargeType' | translate }}</label>
-        <select formControlName="chargeType" class="form-control">
-          <option value="days">{{ 'backlog.rtu' | translate }}</option>
-          <option value="ratio">
-            {{ 'backlog.ratio' | translate }} {{ 'backlog.percent' | translate }}
-          </option>
-        </select>
-      </div>
-      <div class="form-group col">
-        <label>{{ 'backlog.effort' | translate }}</label>
-        <input type="number" formControlName="effortDays" class="form-control" step="0.1" />
-      </div>
+          </select>
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <label z-form-label [for]="idEffort" zRequired>
+          {{ 'backlog.effort' | translate }}
+        </label>
+        <z-form-control>
+          <input
+            z-input
+            type="number"
+            [id]="idEffort"
+            formControlName="effortDays"
+            step="0.1"
+            [attr.aria-invalid]="
+              form.controls.effortDays.invalid && form.controls.effortDays.touched
+            "
+          />
+        </z-form-control>
+      </z-form-field>
     </div>
 
-    <div class="cost-preview">
-      <strong>{{ 'backlog.cost' | translate }} {{ 'backlog.cost_ht' | translate }}:</strong>
-      {{ calculatedCost() | currency: 'EUR' }}
+    <div class="mt-3 pt-3 border-t flex justify-between">
+      <span class="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+        {{ 'backlog.cost' | translate }} {{ 'backlog.cost_ht' | translate }}
+      </span>
+      <span class="text-lg font-bold">
+        {{ calculatedCost() | currency: 'EUR' }}
+      </span>
     </div>
 
     @if (!isSheetMode) {
-      <div class="actions">
+      <div class="actions flex justify-end gap-2 pt-4">
         <button z-button zType="secondary" type="button" routerLink="/backlog">
           {{ 'common.cancel' | translate }}
         </button>
-        <button z-button type="submit" [zDisabled]="form.invalid">
+        <button z-button type="submit" [zDisabled]="form.invalid && form.touched">
           {{ 'common.save' | translate }}
         </button>
       </div>
