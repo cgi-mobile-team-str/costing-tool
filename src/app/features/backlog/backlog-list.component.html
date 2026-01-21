@@ -46,6 +46,8 @@
       (duplicateItem)="duplicate($event)"
       (deleteItem)="delete($event)"
       (addItem)="openAddItemWithDefaults($event)"
+      (moveItemUp)="onMoveItemUp($event)"
+      (moveItemDown)="onMoveItemDown($event)"
     />
   }
   @if (groupedItems().length === 0) {

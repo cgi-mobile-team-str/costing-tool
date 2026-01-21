@@ -36,4 +36,6 @@ export class BacklogProductSectionComponent {
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
   @Output() deleteItem = new EventEmitter<BacklogItem>();
   @Output() addItem = new EventEmitter<{ product: string; cluster: string }>();
+  @Output() moveItemUp = new EventEmitter<BacklogItem>();
+  @Output() moveItemDown = new EventEmitter<BacklogItem>();
 }

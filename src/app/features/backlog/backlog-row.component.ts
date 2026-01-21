@@ -7,6 +7,7 @@ import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox
 import { ZardDropdownMenuItemComponent } from '../../shared/components/dropdown/dropdown-item.component';
 import { ZardDropdownMenuContentComponent } from '../../shared/components/dropdown/dropdown-menu-content.component';
 import { ZardDropdownDirective } from '../../shared/components/dropdown/dropdown-trigger.directive';
+import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
@@ -21,6 +22,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     ZardDropdownMenuContentComponent,
     ZardDropdownMenuContentComponent,
     ZardDropdownDirective,
+    ZardIconComponent,
     TranslatePipe,
   ],
   templateUrl: './backlog-row.component.html',
@@ -41,6 +43,8 @@ export class BacklogRowComponent {
   @Output() editCancel = new EventEmitter<void>();
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
   @Output() deleteItem = new EventEmitter<BacklogItem>();
+  @Output() moveItemUp = new EventEmitter<BacklogItem>();
+  @Output() moveItemDown = new EventEmitter<BacklogItem>();
 
   isEditing(field: string): boolean {
     return (

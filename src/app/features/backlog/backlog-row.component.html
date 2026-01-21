@@ -5,162 +5,163 @@
   <!-- Title -->
   <td class="title-col" (dblclick)="startEdit('title')">
     @if (isEditing('title')) {
-    <input
-      type="text"
-      class="inline-edit"
-      [(ngModel)]="item.title"
-      (blur)="saveEdit()"
-      (keydown.enter)="saveEdit()"
-      (keydown.escape)="cancelEdit()"
-    />
+      <input
+        type="text"
+        class="inline-edit"
+        [(ngModel)]="item.title"
+        (blur)="saveEdit()"
+        (keydown.enter)="saveEdit()"
+        (keydown.escape)="cancelEdit()"
+      />
     } @else {
-    <strong class="item-title-text">{{ item.title }}</strong>
+      <strong class="item-title-text">{{ item.title }}</strong>
     }
   </td>
   <!-- Description -->
   @if (visibleColumns.includes('description')) {
-  <td class="text-small" (dblclick)="startEdit('description')">
-    @if (isEditing('description')) {
-    <textarea
-      class="inline-edit"
-      [(ngModel)]="item.description"
-      (blur)="saveEdit()"
-      (keydown.escape)="cancelEdit()"
-      rows="2"
-    ></textarea>
-    } @else {
-    {{ item.description || '-' }}
-    }
-  </td>
+    <td class="text-small" (dblclick)="startEdit('description')">
+      @if (isEditing('description')) {
+        <textarea
+          class="inline-edit"
+          [(ngModel)]="item.description"
+          (blur)="saveEdit()"
+          (keydown.escape)="cancelEdit()"
+          rows="2"
+        ></textarea>
+      } @else {
+        {{ item.description || '-' }}
+      }
+    </td>
   }
   <!-- Hypotheses -->
   @if (visibleColumns.includes('hypotheses')) {
-  <td class="text-small" (dblclick)="startEdit('hypotheses')">
-    @if (isEditing('hypotheses')) {
-    <textarea
-      class="inline-edit"
-      [(ngModel)]="item.hypotheses"
-      (blur)="saveEdit()"
-      (keydown.escape)="cancelEdit()"
-      rows="2"
-    ></textarea>
-    } @else {
-    {{ item.hypotheses || '-' }}
-    }
-  </td>
+    <td class="text-small" (dblclick)="startEdit('hypotheses')">
+      @if (isEditing('hypotheses')) {
+        <textarea
+          class="inline-edit"
+          [(ngModel)]="item.hypotheses"
+          (blur)="saveEdit()"
+          (keydown.escape)="cancelEdit()"
+          rows="2"
+        ></textarea>
+      } @else {
+        {{ item.hypotheses || '-' }}
+      }
+    </td>
   }
   <!-- Comments -->
   @if (visibleColumns.includes('comments')) {
-  <td class="text-small" (dblclick)="startEdit('comments')">
-    @if (isEditing('comments')) {
-    <textarea
-      class="inline-edit"
-      [(ngModel)]="item.comments"
-      (blur)="saveEdit()"
-      (keydown.escape)="cancelEdit()"
-      rows="2"
-    ></textarea>
-    } @else {
-    {{ item.comments || '-' }}
-    }
-  </td>
+    <td class="text-small" (dblclick)="startEdit('comments')">
+      @if (isEditing('comments')) {
+        <textarea
+          class="inline-edit"
+          [(ngModel)]="item.comments"
+          (blur)="saveEdit()"
+          (keydown.escape)="cancelEdit()"
+          rows="2"
+        ></textarea>
+      } @else {
+        {{ item.comments || '-' }}
+      }
+    </td>
   }
   <!-- Moscow -->
   @if (visibleColumns.includes('moscow')) {
-  <td (dblclick)="startEdit('moscow')">
-    @if (isEditing('moscow')) {
-    <select
-      class="inline-edit-select"
-      [(ngModel)]="item.moscow"
-      (blur)="cancelEdit()"
-      (change)="saveEdit()"
-    >
-      <option value="MUST">{{ 'backlog.moscow_must' | translate }}</option>
-      <option value="SHOULD">{{ 'backlog.moscow_should' | translate }}</option>
-      <option value="COULD">{{ 'backlog.moscow_could' | translate }}</option>
-      <option value="WONT">{{ 'backlog.moscow_wont' | translate }}</option>
-    </select>
-    } @else {
-    <span class="badge moscow">{{ (getMoscowLabel(item.moscow) | translate) || '-' }}</span>
-    }
-  </td>
+    <td (dblclick)="startEdit('moscow')">
+      @if (isEditing('moscow')) {
+        <select
+          class="inline-edit-select"
+          [(ngModel)]="item.moscow"
+          (blur)="cancelEdit()"
+          (change)="saveEdit()"
+        >
+          <option value="MUST">{{ 'backlog.moscow_must' | translate }}</option>
+          <option value="SHOULD">{{ 'backlog.moscow_should' | translate }}</option>
+          <option value="COULD">{{ 'backlog.moscow_could' | translate }}</option>
+          <option value="WONT">{{ 'backlog.moscow_wont' | translate }}</option>
+        </select>
+      } @else {
+        <span class="badge moscow">{{ (getMoscowLabel(item.moscow) | translate) || '-' }}</span>
+      }
+    </td>
   }
   <!-- Scope -->
   @if (visibleColumns.includes('scope')) {
-  <td (dblclick)="startEdit('scope')">
-    @if (isEditing('scope')) {
-    <select
-      class="inline-edit-select"
-      [(ngModel)]="item.scope"
-      (blur)="cancelEdit()"
-      (change)="saveEdit()"
-    >
-      <option value="MVP">{{ 'backlog.scope_mvp' | translate }}</option>
-      <option value="V1">{{ 'backlog.scope_v1' | translate }}</option>
-      <option value="V2">{{ 'backlog.scope_v2' | translate }}</option>
-    </select>
-    } @else {
-    <span class="badge" [class]="item.scope">{{ getScopeLabel(item.scope) | translate }}</span>
-    }
-  </td>
+    <td (dblclick)="startEdit('scope')">
+      @if (isEditing('scope')) {
+        <select
+          class="inline-edit-select"
+          [(ngModel)]="item.scope"
+          (blur)="cancelEdit()"
+          (change)="saveEdit()"
+        >
+          <option value="MVP">{{ 'backlog.scope_mvp' | translate }}</option>
+          <option value="V1">{{ 'backlog.scope_v1' | translate }}</option>
+          <option value="V2">{{ 'backlog.scope_v2' | translate }}</option>
+        </select>
+      } @else {
+        <span class="badge" [class]="item.scope">{{ getScopeLabel(item.scope) | translate }}</span>
+      }
+    </td>
   }
   <!-- Profile -->
   @if (visibleColumns.includes('profile')) {
-  <td (dblclick)="startEdit('profileId')">
-    @if (isEditing('profileId')) {
-    <select
-      class="inline-edit-select"
-      [(ngModel)]="item.profileId"
-      (blur)="cancelEdit()"
-      (change)="saveEdit()"
-    >
-      @for (p of profiles; track p.id) {
-      <option [value]="p.id">{{ p.name }}</option>
+    <td (dblclick)="startEdit('profileId')">
+      @if (isEditing('profileId')) {
+        <select
+          class="inline-edit-select"
+          [(ngModel)]="item.profileId"
+          (blur)="cancelEdit()"
+          (change)="saveEdit()"
+        >
+          @for (p of profiles; track p.id) {
+            <option [value]="p.id">{{ p.name }}</option>
+          }
+        </select>
+      } @else {
+        {{ getProfileName(item.profileId) }}
       }
-    </select>
-    } @else {
-    {{ getProfileName(item.profileId) }}
-    }
-  </td>
+    </td>
   }
   <!-- Charge Type -->
   @if (visibleColumns.includes('chargeType')) {
-  <td (dblclick)="startEdit('chargeType')">
-    @if (isEditing('chargeType')) {
-    <select
-      class="inline-edit-select"
-      [(ngModel)]="item.chargeType"
-      (blur)="cancelEdit()"
-      (change)="saveEdit()"
-    >
-      <option value="days">{{ 'backlog.rtu' | translate }}</option>
-      <option value="ratio">{{ 'backlog.ratio' | translate }}</option>
-    </select>
-    } @else {
-    {{ (item.chargeType === 'ratio' ? 'backlog.ratio' : 'backlog.rtu') | translate }}
-    }
-  </td>
+    <td (dblclick)="startEdit('chargeType')">
+      @if (isEditing('chargeType')) {
+        <select
+          class="inline-edit-select"
+          [(ngModel)]="item.chargeType"
+          (blur)="cancelEdit()"
+          (change)="saveEdit()"
+        >
+          <option value="days">{{ 'backlog.rtu' | translate }}</option>
+          <option value="ratio">{{ 'backlog.ratio' | translate }}</option>
+        </select>
+      } @else {
+        {{ (item.chargeType === 'ratio' ? 'backlog.ratio' : 'backlog.rtu') | translate }}
+      }
+    </td>
   }
   <!-- Effort -->
   @if (visibleColumns.includes('effort')) {
-  <td class="effort-cell" (dblclick)="startEdit('effortDays')">
-    @if (isEditing('effortDays')) {
-    <input
-      type="number"
-      class="inline-edit"
-      [(ngModel)]="item.effortDays"
-      (blur)="saveEdit()"
-      (keydown.enter)="saveEdit()"
-      (keydown.escape)="cancelEdit()"
-      step="0.5"
-      min="0"
-    />
-    } @else {
-    {{ item.effortDays | number : '1.1-1' }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}
-    }
-  </td>
-  } @if (visibleColumns.includes('cost')) {
-  <td>{{ itemCost | currency : 'EUR' }}</td>
+    <td class="effort-cell" (dblclick)="startEdit('effortDays')">
+      @if (isEditing('effortDays')) {
+        <input
+          type="number"
+          class="inline-edit"
+          [(ngModel)]="item.effortDays"
+          (blur)="saveEdit()"
+          (keydown.enter)="saveEdit()"
+          (keydown.escape)="cancelEdit()"
+          step="0.5"
+          min="0"
+        />
+      } @else {
+        {{ item.effortDays | number: '1.1-1' }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}
+      }
+    </td>
+  }
+  @if (visibleColumns.includes('cost')) {
+    <td>{{ itemCost | currency: 'EUR' }}</td>
   }
   <td class="actions">
     <div class="actions-container">
@@ -196,6 +197,14 @@
             style="margin-right: 0.5rem"
           />
           {{ 'common.duplicate' | translate }}
+        </z-dropdown-menu-item>
+        <z-dropdown-menu-item (click)="moveItemUp.emit(item)">
+          <z-icon zType="arrow-up" class="h-4 w-4 mr-2" />
+          {{ 'common.move_up' | translate }}
+        </z-dropdown-menu-item>
+        <z-dropdown-menu-item (click)="moveItemDown.emit(item)">
+          <z-icon zType="arrow-down" class="h-4 w-4 mr-2" />
+          {{ 'common.move_down' | translate }}
         </z-dropdown-menu-item>
         <z-dropdown-menu-item (click)="deleteItem.emit(item)">
           <img

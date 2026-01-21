@@ -1,6 +1,7 @@
 import {
   Activity,
   Archive,
+  ArrowDown,
   ArrowLeft,
   ArrowRight,
   ArrowUp,
@@ -134,6 +135,7 @@ export const ZARD_ICONS = {
   'chevrons-up-down': ChevronsUpDown,
   'move-right': MoveRight,
   'arrow-right': ArrowRight,
+  'arrow-down': ArrowDown,
   'arrow-up': ArrowUp,
   'arrow-up-right': ArrowUpRight,
   folder: Folder,

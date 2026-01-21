@@ -311,4 +311,50 @@ export class BacklogListComponent {
     this.editingCell.set(null);
     this.refresh();
   }
+
+  onMoveItemUp(item: BacklogItem) {
+    const allItems = this.items();
+    const index = allItems.findIndex((i) => i.id === item.id);
+    if (index <= 0) return;
+
+    // Find the item above it in the same context (same product/cluster)
+    // The flat list order represents the display order essentially, but we need to be careful
+    // if the list is sorted by other means.
+    // Assuming the repo returns items in display order (saved order).
+
+    // Simple swap with previous item for now - treating the array as the source of truth for order
+    const prevIndex = index - 1;
+    const prevItem = allItems[prevIndex];
+
+    // Only swap if they belong to the same group to avoid jumping clusters/products weirdly
+    // or if the user intends to reorder across groups (which might change the group?)
+    // For now, restrict to same Cluster and Product for safety and logic simplicity
+    if (prevItem.product === item.product && prevItem.cluster === item.cluster) {
+      const newItems = [...allItems];
+      newItems[prevIndex] = item;
+      newItems[index] = prevItem;
+      // We need to save the new order.
+      // Since the repo typically saves items individually, we might need a way to save the whole list or update indices?
+      // If the repo is just a local storage wrapper of an array:
+      this.repo.saveBulk(newItems);
+      this.refresh();
+    }
+  }
+
+  onMoveItemDown(item: BacklogItem) {
+    const allItems = this.items();
+    const index = allItems.findIndex((i) => i.id === item.id);
+    if (index === -1 || index >= allItems.length - 1) return;
+
+    const nextIndex = index + 1;
+    const nextItem = allItems[nextIndex];
+
+    if (nextItem.product === item.product && nextItem.cluster === item.cluster) {
+      const newItems = [...allItems];
+      newItems[nextIndex] = item;
+      newItems[index] = nextItem;
+      this.repo.saveBulk(newItems);
+      this.refresh();
+    }
+  }
 }

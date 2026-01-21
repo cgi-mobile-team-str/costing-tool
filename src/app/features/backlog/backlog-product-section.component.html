@@ -20,7 +20,11 @@
       (editCancel)="editCancel.emit()"
       (duplicateItem)="duplicateItem.emit($event)"
       (deleteItem)="deleteItem.emit($event)"
+      (duplicateItem)="duplicateItem.emit($event)"
+      (deleteItem)="deleteItem.emit($event)"
       (addItemToCluster)="addItem.emit({ product: productGroup.product, cluster: $event })"
+      (moveItemUp)="moveItemUp.emit($event)"
+      (moveItemDown)="moveItemDown.emit($event)"
     />
   }
 </div>
