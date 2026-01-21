@@ -6,76 +6,76 @@
         <label>{{ 'backlog.product' | translate }}</label>
 
         @if (!isProductInputMode() && existingProducts().length > 0) {
-        <div class="input-group">
-          <select
-            [value]="form.controls.product.value"
-            (change)="onProductSelect($event)"
-            class="form-control"
-          >
-            <option value="" disabled selected>Sélectionner...</option>
-            @for (p of existingProducts(); track p) {
-            <option [value]="p">{{ p }}</option>
-            }
-            <option value="__NEW__">➕ Nouveau Produit...</option>
-          </select>
-        </div>
+          <div class="input-group">
+            <select
+              formControlName="product"
+              (change)="onProductSelect($event)"
+              class="form-control"
+            >
+              <option value="" disabled selected>Sélectionner...</option>
+              @for (p of existingProducts(); track p) {
+                <option [value]="p">{{ p }}</option>
+              }
+              <option value="__NEW__">➕ Nouveau Produit...</option>
+            </select>
+          </div>
         } @else {
-        <div class="input-group d-flex">
-          <input
-            type="text"
-            formControlName="product"
-            class="form-control"
-            placeholder="ex: Mobile App"
-          />
-          @if(existingProducts().length > 0) {
-          <button
-            type="button"
-            (click)="switchToProductSelect()"
-            class="btn btn-sm btn-outline"
-            title="Choisir existant"
-          >
-            📋
-          </button>
-          }
-        </div>
+          <div class="input-group d-flex">
+            <input
+              type="text"
+              formControlName="product"
+              class="form-control"
+              placeholder="ex: Mobile App"
+            />
+            @if (existingProducts().length > 0) {
+              <button
+                type="button"
+                (click)="switchToProductSelect()"
+                class="btn btn-sm btn-outline"
+                title="Choisir existant"
+              >
+                📋
+              </button>
+            }
+          </div>
         }
       </div>
 
       <div class="form-group col">
         <label>{{ 'backlog.cluster' | translate }}</label>
         @if (!isClusterInputMode() && existingClusters().length > 0) {
-        <div class="input-group">
-          <select
-            [value]="form.controls.cluster.value"
-            (change)="onClusterSelect($event)"
-            class="form-control"
-          >
-            <option value="" disabled selected>Sélectionner...</option>
-            @for (c of existingClusters(); track c) {
-            <option [value]="c">{{ c }}</option>
-            }
-            <option value="__NEW__">➕ Nouveau Cluster...</option>
-          </select>
-        </div>
+          <div class="input-group">
+            <select
+              formControlName="cluster"
+              (change)="onClusterSelect($event)"
+              class="form-control"
+            >
+              <option value="" disabled selected>Sélectionner...</option>
+              @for (c of existingClusters(); track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+              <option value="__NEW__">➕ Nouveau Cluster...</option>
+            </select>
+          </div>
         } @else {
-        <div class="input-group d-flex">
-          <input
-            type="text"
-            formControlName="cluster"
-            class="form-control"
-            placeholder="ex: Auth, Profile"
-          />
-          @if(existingClusters().length > 0) {
-          <button
-            type="button"
-            (click)="switchToClusterSelect()"
-            class="btn btn-sm btn-outline"
-            title="Choisir existant"
-          >
-            📋
-          </button>
-          }
-        </div>
+          <div class="input-group d-flex">
+            <input
+              type="text"
+              formControlName="cluster"
+              class="form-control"
+              placeholder="ex: Auth, Profile"
+            />
+            @if (existingClusters().length > 0) {
+              <button
+                type="button"
+                (click)="switchToClusterSelect()"
+                class="btn btn-sm btn-outline"
+                title="Choisir existant"
+              >
+                📋
+              </button>
+            }
+          </div>
         }
       </div>
     </div>
@@ -83,38 +83,34 @@
     <div class="form-group">
       <label>{{ 'backlog.title' | translate }}</label>
       @if (!isTitleInputMode() && existingTitles().length > 0) {
-      <div class="input-group">
-        <select
-          [value]="form.controls.title.value"
-          (change)="onTitleSelect($event)"
-          class="form-control"
-        >
-          <option value="" disabled selected>Sélectionner...</option>
-          @for (t of existingTitles(); track t) {
-          <option [value]="t">{{ t }}</option>
-          }
-          <option value="__NEW__">➕ Nouvelle Feature...</option>
-        </select>
-      </div>
+        <div class="input-group">
+          <select formControlName="title" (change)="onTitleSelect($event)" class="form-control">
+            <option value="" disabled selected>Sélectionner...</option>
+            @for (t of existingTitles(); track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+            <option value="__NEW__">➕ Nouvelle Feature...</option>
+          </select>
+        </div>
       } @else {
-      <div class="input-group d-flex">
-        <input
-          type="text"
-          formControlName="title"
-          class="form-control"
-          placeholder="ex: Login Screen"
-        />
-        @if(existingTitles().length > 0) {
-        <button
-          type="button"
-          (click)="switchToTitleSelect()"
-          class="btn btn-sm btn-outline"
-          title="Choisir existant"
-        >
-          📋
-        </button>
-        }
-      </div>
+        <div class="input-group d-flex">
+          <input
+            type="text"
+            formControlName="title"
+            class="form-control"
+            placeholder="ex: Login Screen"
+          />
+          @if (existingTitles().length > 0) {
+            <button
+              type="button"
+              (click)="switchToTitleSelect()"
+              class="btn btn-sm btn-outline"
+              title="Choisir existant"
+            >
+              📋
+            </button>
+          }
+        </div>
       }
     </div>
 
@@ -163,7 +159,7 @@
         <label>{{ 'backlog.profile' | translate }}</label>
         <select formControlName="profileId" class="form-control">
           @for (p of profiles(); track p.id) {
-          <option [value]="p.id">{{ p.name }} ({{ p.dailyRate }}€/j)</option>
+            <option [value]="p.id">{{ p.name }} ({{ p.dailyRate }}€/j)</option>
           }
         </select>
       </div>
@@ -182,18 +178,18 @@
 
     <div class="cost-preview">
       <strong>{{ 'backlog.cost' | translate }} (HT):</strong>
-      {{ calculatedCost() | currency : 'EUR' }}
+      {{ calculatedCost() | currency: 'EUR' }}
     </div>
 
     @if (!isSheetMode) {
-    <div class="actions">
-      <button type="button" routerLink="/backlog" class="btn btn-secondary">
-        {{ 'common.cancel' | translate }}
-      </button>
-      <button type="submit" [disabled]="form.invalid" class="btn btn-primary">
-        {{ 'common.save' | translate }}
-      </button>
-    </div>
+      <div class="actions">
+        <button type="button" routerLink="/backlog" class="btn btn-secondary">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button type="submit" [disabled]="form.invalid" class="btn btn-primary">
+          {{ 'common.save' | translate }}
+        </button>
+      </div>
     }
   </form>
 </div>

@@ -136,11 +136,14 @@ export class BacklogFormComponent {
     if (val === '__NEW__') {
       this.isProductInputMode.set(true);
       this.form.controls.product.setValue('');
-      this.currentProductInput.set('');
     } else {
-      this.form.controls.product.setValue(val);
-      this.currentProductInput.set(val);
-      this.isClusterInputMode.set(this.existingClusters().length === 0);
+      // Logic to reset dependent fields if needed
+      // Check if current cluster exists for new product (unlikely, but good to reset)
+      // We rely on existingClusters computed to update based on valueChanges
+      // But we might want to force cluster mode check after a tick or assume false
+      setTimeout(() => {
+        this.isClusterInputMode.set(this.existingClusters().length === 0);
+      });
     }
   }
 
@@ -149,11 +152,10 @@ export class BacklogFormComponent {
     if (val === '__NEW__') {
       this.isClusterInputMode.set(true);
       this.form.controls.cluster.setValue('');
-      this.currentClusterInput.set('');
     } else {
-      this.form.controls.cluster.setValue(val);
-      this.currentClusterInput.set(val);
-      this.isTitleInputMode.set(this.existingTitles().length === 0);
+      setTimeout(() => {
+        this.isTitleInputMode.set(this.existingTitles().length === 0);
+      });
     }
   }
 
@@ -162,8 +164,6 @@ export class BacklogFormComponent {
     if (val === '__NEW__') {
       this.isTitleInputMode.set(true);
       this.form.controls.title.setValue('');
-    } else {
-      this.form.controls.title.setValue(val);
     }
   }
 
