@@ -1,6 +1,10 @@
 <tr>
   <td class="select-col">
-    <z-checkbox [checked]="isSelected" (checkChange)="selectionToggle.emit(item.id)" />
+    <div
+      style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%"
+    >
+      <z-checkbox [checked]="isSelected" (checkChange)="selectionToggle.emit(item.id)" />
+    </div>
   </td>
   <!-- Title -->
   <td class="title-col" (dblclick)="startEdit('title')">
@@ -67,7 +71,7 @@
   }
   <!-- Moscow -->
   @if (visibleColumns.includes('moscow')) {
-    <td (dblclick)="startEdit('moscow')">
+    <td class="text-center" (dblclick)="startEdit('moscow')">
       @if (isEditing('moscow')) {
         <select
           class="inline-edit-select"
@@ -87,7 +91,7 @@
   }
   <!-- Scope -->
   @if (visibleColumns.includes('scope')) {
-    <td (dblclick)="startEdit('scope')">
+    <td class="text-center" (dblclick)="startEdit('scope')">
       @if (isEditing('scope')) {
         <select
           class="inline-edit-select"
@@ -106,7 +110,7 @@
   }
   <!-- Profile -->
   @if (visibleColumns.includes('profile')) {
-    <td (dblclick)="startEdit('profileId')">
+    <td class="text-center" (dblclick)="startEdit('profileId')">
       @if (isEditing('profileId')) {
         <select
           class="inline-edit-select"
@@ -143,7 +147,7 @@
   }
   <!-- Effort -->
   @if (visibleColumns.includes('effort')) {
-    <td class="effort-cell" (dblclick)="startEdit('effortDays')">
+    <td class="effort-cell text-center" (dblclick)="startEdit('effortDays')">
       @if (isEditing('effortDays')) {
         <input
           type="number"
@@ -156,7 +160,7 @@
           min="0"
         />
       } @else {
-        {{ item.effortDays | number: '1.1-1' }}{{ item.chargeType === 'ratio' ? '%' : 'j' }}
+        {{ item.effortDays | number: '1.1-1' }}{{ item.chargeType === 'ratio' ? '%' : ' j/h' }}
       }
     </td>
   }

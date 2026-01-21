@@ -54,6 +54,9 @@
 }
 
 .effort-cell {
+  text-align: center !important;
+}
+.effort-cell .inline-edit {
   text-align: center;
 }
 .inline-edit:focus,
@@ -115,17 +118,30 @@ td[dblclick]:hover {
 }
 
 .select-col {
-  width: 50px !important;
-  min-width: 50px;
-  padding-right: 0;
+  width: 40px !important;
+  min-width: 40px;
+  padding: 0 !important;
+  vertical-align: middle;
 }
 
 .title-col {
   width: 250px !important;
   min-width: 250px;
-  padding-left: 0.5rem;
+  padding-left: 0.25rem !important;
 }
 
 .item-title-text {
   font-size: 0.8125rem;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+/* Fix vertical alignment of checkbox */
+z-checkbox {
+  display: inline-flex;
+  align-items: center;
+  line-height: normal;
+  vertical-align: middle;
 }

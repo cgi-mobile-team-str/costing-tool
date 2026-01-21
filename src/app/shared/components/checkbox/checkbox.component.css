@@ -11,3 +11,7 @@ z-checkbox label {
   display: flex;
   align-items: center;
 }
+
+z-checkbox label:empty {
+  display: none !important;
+}

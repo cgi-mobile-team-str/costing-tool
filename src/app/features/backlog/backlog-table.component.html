@@ -3,7 +3,9 @@
     <thead>
       <tr>
         <th class="select-col">
-          <z-checkbox [checked]="allSelected" (checkChange)="toggleAllItems($event)" />
+          <div class="center-content">
+            <z-checkbox [checked]="allSelected" (checkChange)="toggleAllItems($event)" />
+          </div>
         </th>
         <th class="title-col">{{ 'backlog.title' | translate }}</th>
         @if (visibleColumns.includes('description')) {
@@ -16,19 +18,19 @@
           <th>{{ 'backlog.comments' | translate }}</th>
         }
         @if (visibleColumns.includes('moscow')) {
-          <th>{{ 'backlog.moscow' | translate }}</th>
+          <th class="text-center">{{ 'backlog.moscow' | translate }}</th>
         }
         @if (visibleColumns.includes('scope')) {
-          <th>{{ 'backlog.scope' | translate }}</th>
+          <th class="text-center">{{ 'backlog.scope' | translate }}</th>
         }
         @if (visibleColumns.includes('profile')) {
-          <th>{{ 'backlog.profile' | translate }}</th>
+          <th class="text-center">{{ 'backlog.profile' | translate }}</th>
         }
         @if (visibleColumns.includes('chargeType')) {
           <th>{{ 'backlog.chargeType' | translate }}</th>
         }
         @if (visibleColumns.includes('effort')) {
-          <th>{{ 'backlog.effort' | translate }}</th>
+          <th class="text-center">{{ 'backlog.effort' | translate }}</th>
         }
         @if (visibleColumns.includes('cost')) {
           <th>{{ 'backlog.cost' | translate }} {{ 'backlog.cost_ht' | translate }}</th>
@@ -61,9 +63,7 @@
         }
         <!-- Cluster Total -->
         <tr class="cluster-total">
-          <td [attr.colspan]="visibleColumnCount" class="total-label">
-            {{ 'common.total' | translate }} {{ clusterGroup.cluster }}:
-          </td>
+          <td [attr.colspan]="visibleColumnCount"></td>
           <td class="total-effort">
             {{ getClusterEffort(clusterGroup.items) | number: '1.1-1' }} j/h
           </td>
