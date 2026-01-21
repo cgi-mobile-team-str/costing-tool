@@ -7,6 +7,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './main-layout.component.html',
+  styleUrls: ['./main-layout.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class MainLayoutComponent {

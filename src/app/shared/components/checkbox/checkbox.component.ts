@@ -36,6 +36,7 @@ type OnChangeType = (value: boolean) => void;
   selector: 'z-checkbox, [z-checkbox]',
   imports: [ZardIconComponent, ZardIdDirective],
   templateUrl: './checkbox.component.html',
+  styleUrls: ['./checkbox.component.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

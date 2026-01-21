@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
@@ -26,7 +26,7 @@ import { ProfileFormComponent } from './profile-form.component';
     ...ZardTableImports,
   ],
   templateUrl: './profiles-list.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./profiles-list.component.css'],
 })
 export class ProfilesListComponent {
   private repo = inject(ProfilesRepository);

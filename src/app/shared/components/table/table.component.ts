@@ -24,6 +24,7 @@ import { mergeClasses } from '@/shared/utils/merge-classes';
 @Component({
   selector: 'table[z-table]',
   templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -42,14 +43,15 @@ export class ZardTableComponent {
         zType: this.zType(),
         zSize: this.zSize(),
       }),
-      this.class()
-    )
+      this.class(),
+    ),
   );
 }
 
 @Component({
   selector: 'thead[z-table-header]',
   templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -66,6 +68,7 @@ export class ZardTableHeaderComponent {
 @Component({
   selector: 'tbody[z-table-body]',
   templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -82,6 +85,7 @@ export class ZardTableBodyComponent {
 @Component({
   selector: 'tr[z-table-row]',
   templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -98,6 +102,7 @@ export class ZardTableRowComponent {
 @Component({
   selector: 'th[z-table-head]',
   templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -114,6 +119,7 @@ export class ZardTableHeadComponent {
 @Component({
   selector: 'td[z-table-cell]',
   templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -130,6 +136,7 @@ export class ZardTableCellComponent {
 @Component({
   selector: 'caption[z-table-caption]',
   templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {

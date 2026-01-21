@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
@@ -24,7 +24,7 @@ import { ImportModalComponent } from '../backlog/import-modal.component';
     ZardButtonComponent,
   ],
   templateUrl: './settings.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./settings.component.css'],
 })
 export class SettingsComponent {
   private fb = inject(FormBuilder);

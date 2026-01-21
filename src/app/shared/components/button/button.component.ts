@@ -28,6 +28,7 @@ import { mergeClasses } from '@/shared/utils/merge-classes';
   selector: 'z-button, button[z-button], a[z-button]',
   imports: [ZardIconComponent],
   templateUrl: './button.component.html',
+  styleUrls: ['./button.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -107,8 +108,8 @@ export class ZardButtonComponent implements OnDestroy {
         zLoading: this.zLoading(),
         zDisabled: this.zDisabled(),
       }),
-      this.class()
-    )
+      this.class(),
+    ),
   );
 
   protected readonly isNotInsideOfButtonOrLink = computed(() => {

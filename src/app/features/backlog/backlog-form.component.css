@@ -1,24 +1,24 @@
-app-backlog-form .form-container {
+.form-container {
   padding: 1rem;
 }
-app-backlog-form .form-group {
+.form-group {
   margin-bottom: 1rem;
 }
-app-backlog-form .row {
+.row {
   display: flex;
   gap: 1rem;
 }
-app-backlog-form .col {
+.col {
   flex: 1;
 }
-app-backlog-form label {
+label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
   font-size: 0.875rem;
   color: var(--foreground);
 }
-app-backlog-form .form-control {
+.form-control {
   width: 100%;
   padding: 0.5rem;
   border: 1px solid #ced4da;
@@ -26,10 +26,10 @@ app-backlog-form .form-control {
   font-family: inherit;
   font-size: 0.875rem;
 }
-app-backlog-form textarea.form-control {
+textarea.form-control {
   resize: vertical;
 }
-app-backlog-form .cost-preview {
+.cost-preview {
   background: #f8f9fa;
   padding: 1rem;
   border-radius: 4px;
@@ -38,16 +38,16 @@ app-backlog-form .cost-preview {
   font-size: 1.1rem;
   border: 1px solid #e9ecef;
 }
-app-backlog-form .actions {
+.actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
 }
-app-backlog-form .d-flex {
+.d-flex {
   display: flex;
   gap: 0.5rem;
 }
-app-backlog-form .btn-outline {
+.btn-outline {
   background: white;
   border: 1px solid #ced4da;
   color: #6c757d;

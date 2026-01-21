@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BacklogItem, Scope } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
@@ -14,7 +14,7 @@ import { DashboardProfilesStatsComponent } from './dashboard-profiles-stats/dash
   standalone: true,
   imports: [CommonModule, TranslatePipe, RouterLink, DashboardProfilesStatsComponent],
   templateUrl: './dashboard.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent {
   private backlogRepo = inject(BacklogRepository);

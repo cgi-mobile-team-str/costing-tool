@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Profile } from '../../core/models/domain.model';
 import { IdService } from '../../core/services/id.service';
@@ -13,7 +13,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslatePipe, ZardInputDirective],
   templateUrl: './profile-form.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./profile-form.component.css'],
 })
 export class ProfileFormComponent {
   private fb = inject(FormBuilder);
@@ -49,7 +49,7 @@ export class ProfileFormComponent {
     // Check name uniqueness (naive impl)
     const all = this.repo.getAll();
     const exists = all.find(
-      (p) => p.name.toLowerCase() === val.name.toLowerCase() && p.id !== val.id
+      (p) => p.name.toLowerCase() === val.name.toLowerCase() && p.id !== val.id,
     );
     if (exists) {
       this.form.setErrors({ nameExists: true });

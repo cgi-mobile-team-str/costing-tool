@@ -1,18 +1,18 @@
-app-backlog-table .table-container {
+.table-container {
   width: 100%;
   overflow-x: auto;
 }
 
-app-backlog-table table {
+table {
   width: 100%;
 }
 
-app-backlog-table th,
-app-backlog-table td {
+th,
+td {
   padding: 0.75rem 1rem;
 }
 
-app-backlog-table .cluster-header td {
+.cluster-header td {
   background: #e5e7eb;
   font-weight: 600;
   color: #374151;
@@ -21,7 +21,7 @@ app-backlog-table .cluster-header td {
   border-bottom: 1px solid var(--border);
 }
 
-app-backlog-table .cluster-total td {
+.cluster-total td {
   background: #f3f4f6;
   font-weight: 600;
   color: #374151;
@@ -41,21 +41,21 @@ app-backlog-table .cluster-total td {
   padding-left: 0.5rem;
 }
 
-app-backlog-table .total-label {
+.total-label {
   text-align: right;
   font-weight: 600;
 }
 
-app-backlog-table .total-value {
+.total-value {
   font-weight: 600;
 }
 
-app-backlog-table .total-effort {
+.total-effort {
   font-weight: 600;
   text-align: center;
   color: #6b7280;
 }
 
-app-backlog-table th:last-child {
+th:last-child {
   text-align: center;
 }

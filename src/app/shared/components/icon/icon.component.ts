@@ -19,6 +19,7 @@ import { mergeClasses } from '@/shared/utils/merge-classes';
   imports: [LucideAngularModule],
   standalone: true,
   templateUrl: './icon.component.html',
+  styleUrls: ['./icon.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
@@ -33,8 +34,8 @@ export class ZardIconComponent {
     mergeClasses(
       iconVariants({ zSize: this.zSize() }),
       this.class(),
-      this.zStrokeWidth() === 0 ? 'stroke-none' : ''
-    )
+      this.zStrokeWidth() === 0 ? 'stroke-none' : '',
+    ),
   );
 
   protected readonly icon = computed(() => {

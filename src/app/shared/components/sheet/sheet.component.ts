@@ -60,6 +60,7 @@ export class ZardSheetOptions<T, U> {
   selector: 'z-sheet',
   imports: [OverlayModule, PortalModule, ZardButtonComponent, ZardIconComponent],
   templateUrl: './sheet.component.html',
+  styleUrls: ['./sheet.component.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -81,7 +82,7 @@ export class ZardSheetComponent<T, U> extends BasePortalOutlet {
         zSide: this.config.zSide,
         zSize,
       }),
-      this.config.zCustomClasses
+      this.config.zCustomClasses,
     );
   });
 

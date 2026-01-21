@@ -1,11 +1,11 @@
-app-column-selector .column-visibility-toolbar {
+.column-visibility-toolbar {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
 }
 
-app-column-selector .filter-label {
+.filter-label {
   font-size: 0.75rem;
   font-weight: 600;
   color: #4a5568;
@@ -14,13 +14,13 @@ app-column-selector .filter-label {
   margin: 0;
 }
 
-app-column-selector .column-toggles {
+.column-toggles {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-app-column-selector .column-badge {
+.column-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -32,11 +32,11 @@ app-column-selector .column-badge {
   transition: all 0.2s ease;
 }
 
-app-column-selector .column-badge:hover {
+.column-badge:hover {
   background: var(--muted);
 }
 
-app-column-selector .column-badge.selected {
+.column-badge.selected {
   background: var(--brand-red);
   color: white;
   border-color: var(--brand-red);

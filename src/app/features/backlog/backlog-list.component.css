@@ -1,15 +1,15 @@
-app-backlog-list .backlog-container {
+.backlog-container {
   width: 100%;
   max-width: 100%;
 }
-app-backlog-list .header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 2.5rem;
   padding-top: 1rem;
 }
-app-backlog-list .context-label {
+.context-label {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -18,7 +18,7 @@ app-backlog-list .context-label {
   margin-bottom: 0.25rem;
   display: block;
 }
-app-backlog-list .header h2 {
+.header h2 {
   margin: 0;
   font-size: 2.5rem;
   font-weight: 800;
@@ -29,7 +29,7 @@ app-backlog-list .header h2 {
   letter-spacing: -0.03em;
   line-height: 1.1;
 }
-app-backlog-list .btn {
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -49,6 +49,3 @@ app-backlog-list .btn {
   padding: 3rem;
   color: var(--muted-foreground);
 }
-
-
-
