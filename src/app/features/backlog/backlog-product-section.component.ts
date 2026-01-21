@@ -35,4 +35,5 @@ export class BacklogProductSectionComponent {
   @Output() editCancel = new EventEmitter<void>();
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
   @Output() deleteItem = new EventEmitter<BacklogItem>();
+  @Output() addItem = new EventEmitter<{ product: string; cluster: string }>();
 }

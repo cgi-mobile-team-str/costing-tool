@@ -120,15 +120,26 @@ export class BacklogFormComponent {
     this.updateCost();
   }
 
-  private initForm(item: BacklogItem) {
-    this.isEditMode.set(true);
+  private initForm(item: Partial<BacklogItem>) {
+    if (item.id) {
+      this.isEditMode.set(true);
+    }
     this.form.patchValue(item as any);
     this.currentProductInput.set(item.product || '');
     this.currentClusterInput.set(item.cluster || '');
 
-    this.isProductInputMode.set(!this.existingProducts().includes(item.product));
-    this.isClusterInputMode.set(!this.existingClusters().includes(item.cluster));
-    this.isTitleInputMode.set(!this.existingTitles().includes(item.title));
+    if (item.product) {
+      this.isProductInputMode.set(!this.existingProducts().includes(item.product));
+    }
+    if (item.cluster) {
+      this.isClusterInputMode.set(!this.existingClusters().includes(item.cluster));
+    }
+    if (item.title) {
+      this.isTitleInputMode.set(!this.existingTitles().includes(item.title));
+    } else if (!item.id) {
+      // Default to text input for new items
+      this.isTitleInputMode.set(true);
+    }
   }
 
   onProductSelect(event: Event) {

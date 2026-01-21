@@ -2,24 +2,25 @@
   <h3 class="product-title" (click)="toggleExpand.emit(productGroup.product)">
     <span class="chevron" [class.expanded]="isExpanded">▶</span>
     <span class="product-name">{{ productGroup.product }}</span>
-    <span class="product-effort">{{ productEffort | number : '1.1-1' }} j/h</span>
-    <span class="product-cost">{{ productTotal | currency : 'EUR' }}</span>
+    <span class="product-effort">{{ productEffort | number: '1.1-1' }} j/h</span>
+    <span class="product-cost">{{ productTotal | currency: 'EUR' }}</span>
   </h3>
   @if (isExpanded) {
-  <app-backlog-table
-    [clusterGroups]="productGroup.clusters"
-    [profiles]="profiles"
-    [selectedIds]="selectedIds"
-    [editingCell]="editingCell"
-    [visibleColumns]="visibleColumns"
-    [getItemCost]="getItemCost"
-    (toggleAll)="toggleAll.emit($event)"
-    (selectionToggle)="selectionToggle.emit($event)"
-    (editStart)="editStart.emit($event)"
-    (editSave)="editSave.emit($event)"
-    (editCancel)="editCancel.emit()"
-    (duplicateItem)="duplicateItem.emit($event)"
-    (deleteItem)="deleteItem.emit($event)"
-  />
+    <app-backlog-table
+      [clusterGroups]="productGroup.clusters"
+      [profiles]="profiles"
+      [selectedIds]="selectedIds"
+      [editingCell]="editingCell"
+      [visibleColumns]="visibleColumns"
+      [getItemCost]="getItemCost"
+      (toggleAll)="toggleAll.emit($event)"
+      (selectionToggle)="selectionToggle.emit($event)"
+      (editStart)="editStart.emit($event)"
+      (editSave)="editSave.emit($event)"
+      (editCancel)="editCancel.emit()"
+      (duplicateItem)="duplicateItem.emit($event)"
+      (deleteItem)="deleteItem.emit($event)"
+      (addItemToCluster)="addItem.emit({ product: productGroup.product, cluster: $event })"
+    />
   }
 </div>

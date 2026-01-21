@@ -263,14 +263,14 @@ export class BacklogListComponent {
     });
   }
 
-  openBacklogSheet(item?: BacklogItem) {
+  openBacklogSheet(item?: BacklogItem, defaults?: { product: string; cluster: string }) {
     this.sheetService.create({
       zTitle: item
         ? this.i18n.translate('backlog.edit_title')
         : this.i18n.translate('backlog.create_title'),
       zDescription: item ? item.title : this.i18n.translate('backlog.create_desc'),
       zContent: BacklogFormComponent,
-      zData: item,
+      zData: item || defaults,
       zOkText: this.i18n.translate('common.save'),
       zCancelText: this.i18n.translate('common.cancel'),
       zWidth: '800px',
@@ -282,6 +282,10 @@ export class BacklogListComponent {
         return false;
       },
     });
+  }
+
+  openAddItemWithDefaults(defaults: { product: string; cluster: string }) {
+    this.openBacklogSheet(undefined, defaults);
   }
 
   // Inline editing

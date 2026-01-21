@@ -45,6 +45,7 @@
       (editCancel)="cancelEdit()"
       (duplicateItem)="duplicate($event)"
       (deleteItem)="delete($event)"
+      (addItem)="openAddItemWithDefaults($event)"
     />
   }
   @if (groupedItems().length === 0) {

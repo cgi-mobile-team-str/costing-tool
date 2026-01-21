@@ -1,7 +1,9 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogRowComponent } from './backlog-row.component';
 
@@ -13,7 +15,15 @@ export interface ClusterGroup {
 @Component({
   selector: 'app-backlog-table',
   standalone: true,
-  imports: [CommonModule, BacklogRowComponent, CurrencyPipe, TranslatePipe, ZardCheckboxComponent],
+  imports: [
+    CommonModule,
+    BacklogRowComponent,
+    CurrencyPipe,
+    TranslatePipe,
+    ZardCheckboxComponent,
+    ZardButtonComponent,
+    ZardIconComponent,
+  ],
   templateUrl: './backlog-table.component.html',
   styleUrls: ['./backlog-table.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
@@ -33,6 +43,7 @@ export class BacklogTableComponent {
   @Output() editCancel = new EventEmitter<void>();
   @Output() duplicateItem = new EventEmitter<BacklogItem>();
   @Output() deleteItem = new EventEmitter<BacklogItem>();
+  @Output() addItemToCluster = new EventEmitter<string>();
 
   isItemSelected(id: string): boolean {
     return this.selectedIds.includes(id);
