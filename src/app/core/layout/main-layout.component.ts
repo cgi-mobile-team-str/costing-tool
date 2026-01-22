@@ -1,6 +1,7 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { LocalStorageService } from '../services/local-storage.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -11,9 +12,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   encapsulation: ViewEncapsulation.None,
 })
 export class MainLayoutComponent {
-  isCollapsed = false;
+  private storage = inject(LocalStorageService);
+  private readonly STORAGE_KEY = 'sidebar_collapsed';
+
+  isCollapsed = this.storage.getItem<boolean>(this.STORAGE_KEY) || false;
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
+    this.storage.setItem(this.STORAGE_KEY, this.isCollapsed);
   }
 }
