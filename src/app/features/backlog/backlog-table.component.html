@@ -42,19 +42,39 @@
       @for (clusterGroup of clusterGroups; track clusterGroup.clusterId) {
         <tr class="cluster-header">
           <td [attr.colspan]="visibleColumnCount + 3">
-            <div class="flex items-center gap-2 group">
+            <div class="cluster-header-content">
               <span class="font-bold">{{ clusterGroup.cluster }}</span>
-              <z-button
-                zType="ghost"
-                zSize="xs"
-                (click)="
-                  $event.stopPropagation();
-                  openRenameClusterDialog(clusterGroup.cluster, clusterGroup.clusterId)
-                "
-                title="{{ 'common.edit' | translate }}"
-              >
-                <img src="assets/pen-to-square-regular-full.svg" alt="Edit" class="h-4 w-4" />
-              </z-button>
+              <div class="cluster-actions">
+                <z-button
+                  zType="ghost"
+                  zSize="xs"
+                  (click)="
+                    $event.stopPropagation();
+                    openRenameClusterDialog(clusterGroup.cluster, clusterGroup.clusterId)
+                  "
+                  title="{{ 'common.edit' | translate }}"
+                >
+                  <img src="assets/pen-to-square-regular-full.svg" alt="Edit" class="h-4 w-4" />
+                </z-button>
+                <z-button
+                  class="move-btn"
+                  zType="ghost"
+                  zSize="xs"
+                  (click)="$event.stopPropagation(); moveClusterUp.emit(clusterGroup.clusterId)"
+                  title="{{ 'common.move_up' | translate }}"
+                >
+                  <img src="assets/circle-up-regular-full.svg" alt="Move Up" class="h-4 w-4" />
+                </z-button>
+                <z-button
+                  class="move-btn"
+                  zType="ghost"
+                  zSize="xs"
+                  (click)="$event.stopPropagation(); moveClusterDown.emit(clusterGroup.clusterId)"
+                  title="{{ 'common.move_down' | translate }}"
+                >
+                  <img src="assets/circle-down-regular-full.svg" alt="Move Down" class="h-4 w-4" />
+                </z-button>
+              </div>
             </div>
           </td>
         </tr>

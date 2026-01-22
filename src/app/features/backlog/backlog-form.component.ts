@@ -87,14 +87,14 @@ export class BacklogFormComponent {
 
   allProducts = computed(() => {
     this.refreshSignal();
-    return this.productsRepo.getAll().sort((a, b) => a.name.localeCompare(b.name));
+    return this.productsRepo.getAll();
   });
 
   availableClusters = computed(() => {
     this.refreshSignal();
     const pid = this.currentProductId();
     if (!pid) return [];
-    return this.clustersRepo.getByProductId(pid).sort((a, b) => a.name.localeCompare(b.name));
+    return this.clustersRepo.getByProductId(pid);
   });
 
   // Inputs for new creation

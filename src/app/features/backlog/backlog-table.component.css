@@ -79,3 +79,23 @@ th:last-child {
 .text-center {
   text-align: center !important;
 }
+
+.cluster-header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cluster-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.move-btn img {
+  transition: filter 0.2s ease;
+}
+
+.move-btn:hover img {
+  filter: brightness(0) !important;
+}

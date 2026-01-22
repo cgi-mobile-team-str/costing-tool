@@ -45,6 +45,10 @@ export class BacklogProductSectionComponent {
   @Output() addItem = new EventEmitter<{ productId: string; clusterId: string }>();
   @Output() moveItemUp = new EventEmitter<BacklogItem>();
   @Output() moveItemDown = new EventEmitter<BacklogItem>();
+  @Output() moveProductUp = new EventEmitter<string>();
+  @Output() moveProductDown = new EventEmitter<string>();
+  @Output() moveClusterUp = new EventEmitter<string>();
+  @Output() moveClusterDown = new EventEmitter<string>();
   @Output() renameProduct = new EventEmitter<{ productId: string; newName: string }>();
   @Output() renameCluster = new EventEmitter<{ clusterId: string; newName: string }>();
 

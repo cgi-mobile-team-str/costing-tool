@@ -10,7 +10,19 @@ export class ClustersRepository {
   private storage = inject(LocalStorageService);
 
   getAll(): Cluster[] {
-    return this.storage.getItem<Cluster[]>(this.key) || [];
+    const list = this.storage.getItem<Cluster[]>(this.key) || [];
+    // Ensure all clusters have an order
+    let changed = false;
+    list.forEach((c, i) => {
+      if (c.order === undefined) {
+        c.order = i;
+        changed = true;
+      }
+    });
+    if (changed) {
+      this.saveBulk(list);
+    }
+    return list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }
 
   getByProductId(productId: string): Cluster[] {
@@ -23,6 +35,11 @@ export class ClustersRepository {
     if (index >= 0) {
       list[index] = cluster;
     } else {
+      // Assign order as the last + 1 within the same product?
+      // Actually global order is fine too if we sort by product then order,
+      // but repository getAll returns all.
+      const maxOrder = list.reduce((max, c) => Math.max(max, c.order ?? 0), -1);
+      cluster.order = maxOrder + 1;
       list.push(cluster);
     }
     this.storage.setItem(this.key, list);

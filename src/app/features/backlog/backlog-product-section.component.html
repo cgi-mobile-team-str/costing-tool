@@ -16,6 +16,32 @@
           class="h-5 w-5 invert brightness-0 filter"
         />
       </z-button>
+      <z-button
+        class="move-btn"
+        zType="ghost"
+        zSize="xs"
+        (click)="$event.stopPropagation(); moveProductUp.emit(productGroup.productId)"
+        title="{{ 'common.move_up' | translate }}"
+      >
+        <img
+          src="assets/circle-up-regular-full.svg"
+          alt="Move Up"
+          class="h-4 w-4 invert brightness-0 filter"
+        />
+      </z-button>
+      <z-button
+        class="move-btn"
+        zType="ghost"
+        zSize="xs"
+        (click)="$event.stopPropagation(); moveProductDown.emit(productGroup.productId)"
+        title="{{ 'common.move_down' | translate }}"
+      >
+        <img
+          src="assets/circle-down-regular-full.svg"
+          alt="Move Down"
+          class="h-4 w-4 invert brightness-0 filter"
+        />
+      </z-button>
     </div>
     <div class="product-stats" (click)="toggleExpand.emit(productGroup.product)">
       <span class="product-effort">{{ productEffort | number: '1.1-1' }} j/h</span>
@@ -39,9 +65,9 @@
       (deleteItem)="deleteItem.emit($event)"
       (addItemToCluster)="addItem.emit({ productId: productGroup.productId, clusterId: $event })"
       (moveItemUp)="moveItemUp.emit($event)"
-      (addItemToCluster)="addItem.emit({ productId: productGroup.productId, clusterId: $event })"
-      (moveItemUp)="moveItemUp.emit($event)"
       (moveItemDown)="moveItemDown.emit($event)"
+      (moveClusterUp)="moveClusterUp.emit($event)"
+      (moveClusterDown)="moveClusterDown.emit($event)"
       (renameCluster)="renameCluster.emit($event)"
     />
   }

@@ -50,6 +50,8 @@ export class BacklogTableComponent {
   @Output() addItemToCluster = new EventEmitter<string>();
   @Output() moveItemUp = new EventEmitter<BacklogItem>();
   @Output() moveItemDown = new EventEmitter<BacklogItem>();
+  @Output() moveClusterUp = new EventEmitter<string>();
+  @Output() moveClusterDown = new EventEmitter<string>();
   @Output() renameCluster = new EventEmitter<{ clusterId: string; newName: string }>();
 
   openRenameClusterDialog(clusterName: string, clusterId: string) {

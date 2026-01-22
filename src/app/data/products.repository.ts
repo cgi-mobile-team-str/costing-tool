@@ -10,7 +10,19 @@ export class ProductsRepository {
   private storage = inject(LocalStorageService);
 
   getAll(): Product[] {
-    return this.storage.getItem<Product[]>(this.key) || [];
+    const list = this.storage.getItem<Product[]>(this.key) || [];
+    // Ensure all products have an order
+    let changed = false;
+    list.forEach((p, i) => {
+      if (p.order === undefined) {
+        p.order = i;
+        changed = true;
+      }
+    });
+    if (changed) {
+      this.saveBulk(list);
+    }
+    return list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }
 
   save(product: Product): void {
@@ -19,6 +31,9 @@ export class ProductsRepository {
     if (index >= 0) {
       list[index] = product;
     } else {
+      // Assign order as the last + 1
+      const maxOrder = list.reduce((max, p) => Math.max(max, p.order ?? 0), -1);
+      product.order = maxOrder + 1;
       list.push(product);
     }
     this.storage.setItem(this.key, list);

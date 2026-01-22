@@ -48,6 +48,10 @@
       (addItem)="openAddItemWithDefaults($event)"
       (moveItemUp)="onMoveItemUp($event)"
       (moveItemDown)="onMoveItemDown($event)"
+      (moveProductUp)="onMoveProductUp($any($event))"
+      (moveProductDown)="onMoveProductDown($any($event))"
+      (moveClusterUp)="onMoveClusterUp($any($event))"
+      (moveClusterDown)="onMoveClusterDown($any($event))"
       (renameProduct)="onRenameProduct($event)"
       (renameCluster)="onRenameCluster($event)"
     />

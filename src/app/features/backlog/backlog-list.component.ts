@@ -198,11 +198,11 @@ export class BacklogListComponent {
 
     const result: ProductGroup[] = [];
 
-    // Sort products by name
+    // Sort products by order
     const sortedProductIds = Array.from(productMap.keys()).sort((a, b) => {
-      const nameA = allProducts.find((p) => p.id === a)?.name || 'Unknown';
-      const nameB = allProducts.find((p) => p.id === b)?.name || 'Unknown';
-      return nameA.localeCompare(nameB);
+      const prodA = allProducts.find((p) => p.id === a);
+      const prodB = allProducts.find((p) => p.id === b);
+      return (prodA?.order ?? 0) - (prodB?.order ?? 0);
     });
 
     for (const pid of sortedProductIds) {
@@ -220,9 +220,9 @@ export class BacklogListComponent {
       });
 
       const sortedClusterIds = Array.from(clusterMap.keys()).sort((a, b) => {
-        const nameA = allClusters.find((c) => c.id === a)?.name || 'General';
-        const nameB = allClusters.find((c) => c.id === b)?.name || 'General';
-        return nameA.localeCompare(nameB);
+        const clusterA = allClusters.find((c) => c.id === a);
+        const clusterB = allClusters.find((c) => c.id === b);
+        return (clusterA?.order ?? 0) - (clusterB?.order ?? 0);
       });
 
       const clusterGroups = [];
@@ -404,15 +404,46 @@ export class BacklogListComponent {
   }
 
   onRenameProduct(event: { productId: string; newName: string }) {
-    console.log('BacklogList: onRenameProduct', event);
     const product = this.productsRepo.get(event.productId);
-    console.log('Found product:', product);
     if (product) {
       product.name = event.newName;
       this.productsRepo.save(product);
       this.refresh();
-      console.log('Product saved');
     }
+  }
+
+  onMoveProductUp(productId: string) {
+    const allProducts = this.productsRepo.getAll();
+    const index = allProducts.findIndex((p) => p.id === productId);
+    if (index <= 0) return;
+
+    const currentProduct = allProducts[index];
+    const prevProduct = allProducts[index - 1];
+
+    // Swap orders
+    const tempOrder = currentProduct.order;
+    currentProduct.order = prevProduct.order;
+    prevProduct.order = tempOrder;
+
+    this.productsRepo.saveBulk(allProducts);
+    this.refresh();
+  }
+
+  onMoveProductDown(productId: string) {
+    const allProducts = this.productsRepo.getAll();
+    const index = allProducts.findIndex((p) => p.id === productId);
+    if (index === -1 || index >= allProducts.length - 1) return;
+
+    const currentProduct = allProducts[index];
+    const nextProduct = allProducts[index + 1];
+
+    // Swap orders
+    const tempOrder = currentProduct.order;
+    currentProduct.order = nextProduct.order;
+    nextProduct.order = tempOrder;
+
+    this.productsRepo.saveBulk(allProducts);
+    this.refresh();
   }
 
   onRenameCluster(event: { clusterId: string; newName: string }) {
@@ -422,5 +453,49 @@ export class BacklogListComponent {
       this.clustersRepo.save(cluster);
       this.refresh();
     }
+  }
+
+  onMoveClusterUp(clusterId: string) {
+    const cluster = this.clustersRepo.get(clusterId);
+    if (!cluster) return;
+
+    const allClusters = this.clustersRepo.getByProductId(cluster.productId);
+    const index = allClusters.findIndex((c) => c.id === clusterId);
+    if (index <= 0) return;
+
+    const currentCluster = allClusters[index];
+    const prevCluster = allClusters[index - 1];
+
+    // Swap orders
+    const tempOrder = currentCluster.order;
+    currentCluster.order = prevCluster.order;
+    prevCluster.order = tempOrder;
+
+    // We need to save all clusters of the product to ensure consistency
+    // Simple save of the two modified clusters is enough since they have IDs
+    this.clustersRepo.save(currentCluster);
+    this.clustersRepo.save(prevCluster);
+    this.refresh();
+  }
+
+  onMoveClusterDown(clusterId: string) {
+    const cluster = this.clustersRepo.get(clusterId);
+    if (!cluster) return;
+
+    const allClusters = this.clustersRepo.getByProductId(cluster.productId);
+    const index = allClusters.findIndex((c) => c.id === clusterId);
+    if (index === -1 || index >= allClusters.length - 1) return;
+
+    const currentCluster = allClusters[index];
+    const nextCluster = allClusters[index + 1];
+
+    // Swap orders
+    const tempOrder = currentCluster.order;
+    currentCluster.order = nextCluster.order;
+    nextCluster.order = tempOrder;
+
+    this.clustersRepo.save(currentCluster);
+    this.clustersRepo.save(nextCluster);
+    this.refresh();
   }
 }

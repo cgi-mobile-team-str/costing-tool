@@ -15,12 +15,14 @@ export type ChargeType = 'days' | 'ratio';
 export interface Product {
   id: string;
   name: string;
+  order?: number;
 }
 
 export interface Cluster {
   id: string;
   name: string;
   productId: string;
+  order?: number;
 }
 
 export interface BacklogItem {
