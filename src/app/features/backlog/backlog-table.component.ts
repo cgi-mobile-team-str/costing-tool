@@ -104,6 +104,30 @@ export class BacklogTableComponent {
     return this.visibleColumns.includes(columnId);
   }
 
+  readonly columnsOrder = [
+    'description',
+    'hypotheses',
+    'comments',
+    'moscow',
+    'scope',
+    'profile',
+    'chargeType',
+    'effort',
+    'cost',
+  ];
+
+  get sortedVisibleColumns(): string[] {
+    return this.columnsOrder.filter((col) => this.visibleColumns.includes(col));
+  }
+
+  get firstVisibleColumn(): string | null {
+    return (
+      this.columnsOrder
+        .slice(0, 7) // Columns before effort/cost
+        .find((col) => this.visibleColumns.includes(col)) || null
+    );
+  }
+
   getColumnClass(columnId: string): string {
     switch (columnId) {
       case 'description':
