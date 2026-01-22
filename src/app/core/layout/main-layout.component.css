@@ -5,7 +5,7 @@
 }
 
 .sidebar {
-  width: 240px;
+  width: 220px;
   background: #18181b;
   color: #fafafa;
   display: flex;
@@ -37,6 +37,10 @@
   font-weight: 600;
   font-size: 1.125rem;
   white-space: nowrap;
+}
+
+.logo-red {
+  color: var(--brand-red);
 }
 
 .logo svg {
