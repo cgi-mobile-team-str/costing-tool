@@ -23,7 +23,7 @@
   </td>
   <!-- Description -->
   @if (visibleColumns.includes('description')) {
-    <td class="text-small" (dblclick)="startEdit('description')">
+    <td class="desc-col text-small" (dblclick)="startEdit('description')">
       @if (isEditing('description')) {
         <textarea
           class="inline-edit"
@@ -39,7 +39,7 @@
   }
   <!-- Hypotheses -->
   @if (visibleColumns.includes('hypotheses')) {
-    <td class="text-small" (dblclick)="startEdit('hypotheses')">
+    <td class="hyp-col text-small" (dblclick)="startEdit('hypotheses')">
       @if (isEditing('hypotheses')) {
         <textarea
           class="inline-edit"
@@ -55,7 +55,7 @@
   }
   <!-- Comments -->
   @if (visibleColumns.includes('comments')) {
-    <td class="text-small" (dblclick)="startEdit('comments')">
+    <td class="comm-col text-small" (dblclick)="startEdit('comments')">
       @if (isEditing('comments')) {
         <textarea
           class="inline-edit"
@@ -71,7 +71,7 @@
   }
   <!-- Moscow -->
   @if (visibleColumns.includes('moscow')) {
-    <td class="text-center" (dblclick)="startEdit('moscow')">
+    <td class="moscow-col text-center" (dblclick)="startEdit('moscow')">
       @if (isEditing('moscow')) {
         <select
           class="inline-edit-select"
@@ -91,7 +91,7 @@
   }
   <!-- Scope -->
   @if (visibleColumns.includes('scope')) {
-    <td class="text-center" (dblclick)="startEdit('scope')">
+    <td class="scope-col text-center" (dblclick)="startEdit('scope')">
       @if (isEditing('scope')) {
         <select
           class="inline-edit-select"
@@ -110,7 +110,7 @@
   }
   <!-- Profile -->
   @if (visibleColumns.includes('profile')) {
-    <td class="text-center" (dblclick)="startEdit('profileId')">
+    <td class="profile-col text-center" (dblclick)="startEdit('profileId')">
       @if (isEditing('profileId')) {
         <select
           class="inline-edit-select"
@@ -129,7 +129,7 @@
   }
   <!-- Charge Type -->
   @if (visibleColumns.includes('chargeType')) {
-    <td (dblclick)="startEdit('chargeType')">
+    <td class="type-col" (dblclick)="startEdit('chargeType')">
       @if (isEditing('chargeType')) {
         <select
           class="inline-edit-select"
@@ -147,7 +147,7 @@
   }
   <!-- Effort -->
   @if (visibleColumns.includes('effort')) {
-    <td class="effort-cell text-center" (dblclick)="startEdit('effortDays')">
+    <td class="effort-col effort-cell text-center" (dblclick)="startEdit('effortDays')">
       @if (isEditing('effortDays')) {
         <input
           type="number"
@@ -165,9 +165,9 @@
     </td>
   }
   @if (visibleColumns.includes('cost')) {
-    <td>{{ itemCost | currency: 'EUR' }}</td>
+    <td class="cost-col">{{ itemCost | currency: 'EUR' }}</td>
   }
-  <td class="actions">
+  <td class="actions actions-col">
     <div class="actions-container">
       <button
         type="button"

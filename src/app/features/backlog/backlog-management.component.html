@@ -1,0 +1,55 @@
+<div class="management-container">
+  <div class="management-section">
+    <h3 class="section-title">{{ 'management.products_clusters' | translate }}</h3>
+
+    <div class="product-list">
+      @for (product of products(); track product.id) {
+        <div class="product-item">
+          <div class="product-header">
+            <span class="product-name">{{ product.name }}</span>
+            <z-button
+              zType="ghost"
+              zSize="xs"
+              (click)="deleteProduct(product)"
+              [zDisabled]="isProductUsed(product.id)"
+              [title]="'management.delete_product_title' | translate"
+            >
+              <z-icon
+                zType="trash"
+                class="h-4 w-4"
+                [class.opacity-20]="isProductUsed(product.id)"
+              />
+            </z-button>
+          </div>
+
+          <div class="cluster-list">
+            @for (cluster of getClustersByProduct(product.id); track cluster.id) {
+              <div class="cluster-item">
+                <span class="cluster-name">{{ cluster.name }}</span>
+                <z-button
+                  zType="ghost"
+                  zSize="xs"
+                  (click)="deleteCluster(cluster)"
+                  [zDisabled]="isClusterUsed(cluster.id)"
+                  [title]="'management.delete_cluster_title' | translate"
+                >
+                  <z-icon
+                    zType="trash"
+                    class="h-3 w-3"
+                    [class.opacity-20]="isClusterUsed(cluster.id)"
+                  />
+                </z-button>
+              </div>
+            }
+            @if (getClustersByProduct(product.id).length === 0) {
+              <div class="empty-hint">{{ 'management.empty_clusters' | translate }}</div>
+            }
+          </div>
+        </div>
+      }
+      @if (products().length === 0) {
+        <div class="empty-state">{{ 'management.empty_products' | translate }}</div>
+      }
+    </div>
+  </div>
+</div>

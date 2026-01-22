@@ -103,4 +103,29 @@ export class BacklogTableComponent {
   isColumnVisible(columnId: string): boolean {
     return this.visibleColumns.includes(columnId);
   }
+
+  getColumnClass(columnId: string): string {
+    switch (columnId) {
+      case 'description':
+        return 'desc-col';
+      case 'hypotheses':
+        return 'hyp-col';
+      case 'comments':
+        return 'comm-col';
+      case 'moscow':
+        return 'moscow-col';
+      case 'scope':
+        return 'scope-col';
+      case 'profile':
+        return 'profile-col';
+      case 'chargeType':
+        return 'type-col';
+      case 'effort':
+        return 'effort-col';
+      case 'cost':
+        return 'cost-col';
+      default:
+        return '';
+    }
+  }
 }

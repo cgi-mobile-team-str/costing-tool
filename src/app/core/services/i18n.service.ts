@@ -120,6 +120,22 @@ const FR = {
   'backlog.new_cluster_placeholder': 'Ex. Cluster ABC',
   'backlog.title_placeholder': 'Ex. Fonctionnalité ABC',
   'backlog.select_placeholder': 'Sélectionnez...',
+
+  // Management
+  'management.title': 'Gérer les produits et clusters',
+  'management.desc': 'Supprimer les produits ou clusters inutilisés',
+  'management.products_clusters': 'Produits et Clusters',
+  'management.delete_blocked': 'Suppression bloquée',
+  'management.product_used_desc': 'Ce produit est utilisé et ne peut pas être supprimé.',
+  'management.cluster_used_desc': 'Ce cluster est utilisé et ne peut pas être supprimé.',
+  'management.delete_product': 'Supprimer le produit',
+  'management.confirm_delete_product': 'Voulez-vous vraiment supprimer le produit {name} ?',
+  'management.delete_cluster': 'Supprimer le cluster',
+  'management.confirm_delete_cluster': 'Voulez-vous vraiment supprimer le cluster {name} ?',
+  'management.empty_clusters': 'Aucun cluster défini',
+  'management.empty_products': 'Aucun produit défini',
+  'management.delete_product_title': 'Supprimer le produit',
+  'management.delete_cluster_title': 'Supprimer le cluster',
 };
 
 const EN = {
@@ -239,6 +255,22 @@ const EN = {
   'backlog.new_cluster_placeholder': 'Ex. Cluster ABC',
   'backlog.title_placeholder': 'Ex. Feature ABC',
   'backlog.select_placeholder': 'Select...',
+
+  // Management
+  'management.title': 'Manage products and clusters',
+  'management.desc': 'Delete unused products or clusters',
+  'management.products_clusters': 'Products and Clusters',
+  'management.delete_blocked': 'Deletion blocked',
+  'management.product_used_desc': 'This product is in use and cannot be deleted.',
+  'management.cluster_used_desc': 'This cluster is in use and cannot be deleted.',
+  'management.delete_product': 'Delete product',
+  'management.confirm_delete_product': 'Are you sure you want to delete product {name}?',
+  'management.delete_cluster': 'Delete cluster',
+  'management.confirm_delete_cluster': 'Are you sure you want to delete cluster {name}?',
+  'management.empty_clusters': 'No clusters defined',
+  'management.empty_products': 'No products defined',
+  'management.delete_product_title': 'Delete product',
+  'management.delete_cluster_title': 'Delete cluster',
 };
 
 @Injectable({

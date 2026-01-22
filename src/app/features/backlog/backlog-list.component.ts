@@ -25,6 +25,7 @@ import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogFormComponent } from './backlog-form.component';
+import { BacklogManagementComponent } from './backlog-management.component';
 import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
 import { BulkActionsToastComponent } from './bulk-actions-toast.component';
 import { ColumnSelectorComponent } from './column-selector.component';
@@ -321,6 +322,18 @@ export class BacklogListComponent {
           return;
         }
         return false;
+      },
+    });
+  }
+
+  openManagementSheet() {
+    this.sheetService.create({
+      zTitle: this.i18n.translate('management.title'),
+      zDescription: this.i18n.translate('management.desc'),
+      zContent: BacklogManagementComponent,
+      zWidth: '600px',
+      zOnOk: () => {
+        this.refresh();
       },
     });
   }

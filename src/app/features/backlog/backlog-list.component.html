@@ -4,10 +4,15 @@
       <span class="context-label">{{ 'nav.backlog' | translate }}</span>
       <h2>{{ settings().projectName }}</h2>
     </div>
-    <button z-button (click)="openBacklogSheet()">
-      <z-icon zType="plus" />
-      {{ 'common.add' | translate }}
-    </button>
+    <div class="flex gap-2">
+      <z-button zType="outline" (click)="openManagementSheet()">
+        <z-icon zType="settings" />
+      </z-button>
+      <button z-button (click)="openBacklogSheet()">
+        <z-icon zType="plus" />
+        {{ 'common.add' | translate }}
+      </button>
+    </div>
   </div>
 
   <app-backlog-filters
