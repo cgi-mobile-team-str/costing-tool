@@ -105,10 +105,10 @@ td[dblclick]:hover {
   color: var(--brand-red);
 }
 .actions {
-  padding: 0 1rem;
+  padding: 0;
   white-space: nowrap;
-  min-width: 80px;
   vertical-align: middle;
+  text-align: center !important;
 }
 .actions-container {
   display: flex;

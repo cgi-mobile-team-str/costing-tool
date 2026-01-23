@@ -33,6 +33,7 @@ export class BacklogProductSectionComponent {
   @Input() productEffort = 0;
   @Input() visibleColumns: string[] = [];
   @Input() getItemCost!: (item: BacklogItem) => number;
+  @Input() getItemEffort!: (item: BacklogItem) => number;
 
   @Output() toggleExpand = new EventEmitter<string>();
   @Output() toggleAll = new EventEmitter<boolean>();

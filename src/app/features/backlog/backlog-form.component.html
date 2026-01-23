@@ -1,7 +1,7 @@
 <div class="form-container">
-  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-6">
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
     <!-- Hierarchy: Product > Cluster > Feature -->
-    <div class="hierarchy-section flex flex-col gap-4">
+    <div class="hierarchy-section flex flex-col gap-3">
       <z-form-field>
         <label z-form-label [for]="idProduct" zRequired>{{ 'backlog.product' | translate }}</label>
 
@@ -161,7 +161,7 @@
     </div>
 
     <!-- Scope & MoSCoW -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <z-form-field>
         <label z-form-label [for]="idScope">{{ 'backlog.scope' | translate }}</label>
         <z-form-control>
@@ -186,10 +186,19 @@
       </z-form-field>
     </div>
 
-    <!-- Profile, Type, Effort -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <z-form-field>
-        <label z-form-label [for]="idProfile">{{ 'backlog.profile' | translate }}</label>
+        <label z-form-label [for]="idType" zRequired>{{ 'backlog.itemType' | translate }}</label>
+        <z-form-control>
+          <select z-input [id]="idType" formControlName="type">
+            <option value="build">{{ 'backlog.type_build' | translate }}</option>
+            <option value="other">{{ 'backlog.type_other' | translate }}</option>
+          </select>
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <label z-form-label [for]="idProfile" zRequired>{{ 'backlog.profile' | translate }}</label>
         <z-form-control>
           <select z-input [id]="idProfile" formControlName="profileId">
             @for (p of profiles(); track p.id) {
@@ -200,7 +209,9 @@
           </select>
         </z-form-control>
       </z-form-field>
+    </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <z-form-field>
         <label z-form-label [for]="idChargeType">
           {{ 'backlog.chargeType' | translate }}
@@ -208,9 +219,11 @@
         <z-form-control>
           <select z-input [id]="idChargeType" formControlName="chargeType">
             <option value="days">{{ 'backlog.rtu' | translate }}</option>
-            <option value="ratio">
-              {{ 'backlog.ratio' | translate }} {{ 'backlog.percent' | translate }}
-            </option>
+            @if (form.get('type')?.value === 'other') {
+              <option value="ratio">
+                {{ 'backlog.ratio' | translate }} {{ 'backlog.percent' | translate }}
+              </option>
+            }
           </select>
         </z-form-control>
       </z-form-field>

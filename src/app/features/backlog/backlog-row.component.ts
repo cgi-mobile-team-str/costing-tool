@@ -37,6 +37,7 @@ export class BacklogRowComponent {
   @Input() visibleColumns: string[] = [];
 
   @Input() itemCost = 0;
+  @Input() itemEffort = 0;
   @Input() isFirst = false;
   @Input() isLast = false;
 

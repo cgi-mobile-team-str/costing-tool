@@ -11,10 +11,18 @@ table {
 
 th,
 td {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+thead th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  font-weight: 700;
 }
 
 .cluster-header td {
@@ -74,16 +82,18 @@ td {
   width: 110px !important;
 }
 .type-col {
-  width: 70px !important;
+  width: 85px !important;
 }
 .effort-col {
   width: 100px !important;
 }
 .cost-col {
   width: 110px !important;
+  text-align: center !important;
 }
 .actions-col {
-  width: 90px !important;
+  width: 60px !important;
+  text-align: center !important;
 }
 
 .total-label {

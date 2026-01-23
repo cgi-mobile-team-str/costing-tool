@@ -37,7 +37,21 @@
             {{ 'backlog.cost' | translate }} {{ 'backlog.cost_ht' | translate }}
           </th>
         }
-        <th class="actions-col">{{ 'common.actions' | translate }}</th>
+        <th class="actions-col">
+          <div class="center-content">
+            <img
+              src="assets/cat-solid-full.svg"
+              alt="Actions"
+              width="16"
+              height="16"
+              style="
+                filter: brightness(0) saturate(100%) invert(40%) sepia(5%) saturate(50%)
+                  hue-rotate(200deg) brightness(85%) contrast(90%);
+                opacity: 0.95;
+              "
+            />
+          </div>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -87,6 +101,7 @@
             [isSelected]="isItemSelected(item.id)"
             [editingCell]="editingCell"
             [itemCost]="getItemCost(item)"
+            [itemEffort]="getItemEffort(item)"
             [visibleColumns]="visibleColumns"
             [isFirst]="first"
             [isLast]="last"
@@ -110,7 +125,7 @@
                 {{ getClusterEffort(clusterGroup.items) | number: '1.1-1' }} j/h
               </td>
             } @else if (col === 'cost') {
-              <td class="cost-col total-value">
+              <td class="cost-col total-value text-center">
                 {{ getClusterTotal(clusterGroup.items) | currency: 'EUR' }}
               </td>
             } @else {

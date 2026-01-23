@@ -42,6 +42,7 @@
       [productEffort]="getProductEffort(prodGroup)"
       [visibleColumns]="visibleColumns()"
       [getItemCost]="getItemCost.bind(this)"
+      [getItemEffort]="getItemEffort.bind(this)"
       (toggleExpand)="toggleProduct($event)"
       (toggleAll)="toggleAllProduct($event, prodGroup)"
       (selectionToggle)="toggleSelection($event)"

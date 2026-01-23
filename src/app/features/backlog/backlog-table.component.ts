@@ -39,6 +39,7 @@ export class BacklogTableComponent {
   @Input() editingCell: { itemId: string; field: string } | null = null;
   @Input() visibleColumns: string[] = [];
   @Input() getItemCost!: (item: BacklogItem) => number;
+  @Input() getItemEffort!: (item: BacklogItem) => number;
 
   @Output() toggleAll = new EventEmitter<boolean>();
   @Output() selectionToggle = new EventEmitter<string>();
@@ -84,7 +85,7 @@ export class BacklogTableComponent {
   }
 
   getClusterEffort(items: BacklogItem[]): number {
-    return items.reduce((sum, item) => sum + (item.effortDays || 0), 0);
+    return items.reduce((sum, item) => sum + this.getItemEffort(item), 0);
   }
 
   get visibleColumnCount(): number {

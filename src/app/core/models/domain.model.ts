@@ -11,6 +11,7 @@ export type Scope = 'MVP' | 'V1' | 'V2';
 export type Risk = 'low' | 'medium' | 'high';
 export type Moscow = 'MUST' | 'SHOULD' | 'COULD' | 'WONT';
 export type ChargeType = 'days' | 'ratio';
+export type BacklogItemType = 'build' | 'other';
 
 export interface Product {
   id: string;
@@ -37,6 +38,7 @@ export interface BacklogItem {
   hypotheses?: string;
   comments?: string;
   moscow: Moscow;
+  type: BacklogItemType;
   chargeType: ChargeType;
 
   scope: Scope;

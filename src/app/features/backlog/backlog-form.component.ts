@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BacklogItem } from '../../core/models/domain.model';
+import { BacklogItem, BacklogItemType, ChargeType } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { IdService } from '../../core/services/id.service';
 import { BacklogRepository } from '../../data/backlog.repository';
@@ -45,6 +45,7 @@ export class BacklogFormComponent {
   protected readonly idMoscow = generateId('moscow');
   protected readonly idProfile = generateId('profile');
   protected readonly idChargeType = generateId('chargeType');
+  protected readonly idType = generateId('type');
   protected readonly idEffort = generateId('effort');
 
   private fb = inject(FormBuilder);
@@ -71,7 +72,8 @@ export class BacklogFormComponent {
     comments: [''],
     scope: ['MVP'],
     moscow: ['MUST'],
-    chargeType: ['days'],
+    type: ['build' as BacklogItemType, Validators.required],
+    chargeType: ['days' as ChargeType, Validators.required],
     effortDays: [1, [Validators.required, Validators.min(0)]],
     profileId: [''],
   });
@@ -145,6 +147,11 @@ export class BacklogFormComponent {
     this.form.controls.clusterId.valueChanges.subscribe((val) =>
       this.currentClusterId.set(val || ''),
     );
+    this.form.controls.type.valueChanges.subscribe((val) => {
+      if (val === 'build' && this.form.controls.chargeType.value === 'ratio') {
+        this.form.controls.chargeType.setValue('days');
+      }
+    });
 
     this.updateCost();
   }

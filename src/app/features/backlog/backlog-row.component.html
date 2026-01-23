@@ -161,11 +161,16 @@
         />
       } @else {
         {{ item.effortDays | number: '1.1-1' }}{{ item.chargeType === 'ratio' ? '%' : ' j/h' }}
+        @if (item.chargeType === 'ratio') {
+          <span class="text-xs text-muted-foreground ml-1"
+            >({{ itemEffort | number: '1.1-1' }} j)</span
+          >
+        }
       }
     </td>
   }
   @if (visibleColumns.includes('cost')) {
-    <td class="cost-col">{{ itemCost | currency: 'EUR' }}</td>
+    <td class="cost-col text-center">{{ itemCost | currency: 'EUR' }}</td>
   }
   <td class="actions actions-col">
     <div class="actions-container">
@@ -178,7 +183,7 @@
         [zDropdownMenu]="actionMenu"
         zAlign="end"
       >
-        <img src="assets/ellipsis-solid-full.svg" alt="Edit" width="16" height="16" />
+        <img src="assets/ellipsis-vertical-solid-full.svg" alt="Edit" width="16" height="16" />
       </button>
 
       <z-dropdown-menu-content #actionMenu="zDropdownMenuContent">
