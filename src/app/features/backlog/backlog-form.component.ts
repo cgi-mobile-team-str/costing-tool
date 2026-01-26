@@ -229,11 +229,20 @@ export class BacklogFormComponent {
     this.form.controls.clusterId.setValue('');
   }
 
+  totalBuildEffort = computed(() => {
+    const allItems = this.repo.getAll();
+    const currentId = this.form.get('id')?.value;
+    const items = currentId ? allItems.filter((i) => i.id !== currentId) : allItems;
+    return this.calc.calculateTotalBuildEffort(items);
+  });
+
   updateCost() {
     const val = this.form.value;
     const profile = this.profiles().find((p) => p.id === val.profileId);
     if (profile && val.effortDays != undefined) {
-      this.currentCost.set(this.calc.calculateItemCost(val.effortDays, profile.dailyRate));
+      this.currentCost.set(
+        this.calc.getItemCost(val as BacklogItem, this.totalBuildEffort(), profile.dailyRate),
+      );
     } else {
       this.currentCost.set(0);
     }

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
+import { BacklogItem } from '../../../core/models/domain.model';
 import { CalculationService } from '../../../core/services/calculation.service';
 import { BacklogRepository } from '../../../data/backlog.repository';
 import { ProfilesRepository } from '../../../data/profiles.repository';
@@ -21,6 +22,14 @@ export class DashboardProfilesStatsComponent {
   private backlog = signal(this.backlogRepo.getAll());
   private profiles = this.profilesRepo.getAll();
 
+  totalBuildEffort = computed(() => {
+    return this.calc.calculateTotalBuildEffort(this.backlog());
+  });
+
+  getItemEffort(item: BacklogItem): number {
+    return this.calc.getItemEffort(item, this.totalBuildEffort());
+  }
+
   profileStats = computed(() => {
     const items = this.backlog();
 
@@ -28,7 +37,7 @@ export class DashboardProfilesStatsComponent {
     return this.profiles
       .map((profile) => {
         const profileItems = items.filter((i) => i.profileId === profile.id);
-        const totalDays = profileItems.reduce((acc, i) => acc + i.effortDays, 0);
+        const totalDays = profileItems.reduce((acc, i) => acc + this.getItemEffort(i), 0);
         const totalCost = this.calc.calculateItemCost(totalDays, profile.dailyRate);
         const totalScrCost = totalDays * (profile.scr || 0);
         const margin = totalCost > 0 ? 1 - totalScrCost / totalCost : 0;
@@ -42,7 +51,7 @@ export class DashboardProfilesStatsComponent {
           itemCount: profileItems.length,
         };
       })
-      .filter((p) => p.totalDays > 0) // Only show active profiles in stats? Or all? Let's show all or maybe just active ones. Let's start with ones that have cost > 0 or days > 0
-      .sort((a, b) => b.totalCost - a.totalCost); // Sort by cost desc
+      .filter((p) => p.totalDays > 0)
+      .sort((a, b) => b.totalCost - a.totalCost);
   });
 }

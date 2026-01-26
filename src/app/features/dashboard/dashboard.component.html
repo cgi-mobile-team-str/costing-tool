@@ -10,23 +10,23 @@
   <div class="dashboard-stats-grid">
     <div class="dashboard-card dashboard-stat-card total">
       <h3>{{ 'dash.global' | translate }}</h3>
-      <div class="dashboard-value">{{ globalStats().totalTtc | currency : 'EUR' }}</div>
+      <div class="dashboard-value">{{ globalStats().totalTtc | currency: 'EUR' }}</div>
       <div class="dashboard-sub">
-        {{ 'dash.ht_label' | translate }}: {{ globalStats().totalHt | currency : 'EUR' }}
+        {{ 'dash.ht_label' | translate }}: {{ globalStats().totalHt | currency: 'EUR' }}
       </div>
       <div class="dashboard-sub">
-        {{ 'dash.margin' | translate }}: {{ globalStats().margin | currency : 'EUR' }}
+        {{ 'dash.margin' | translate }}: {{ globalStats().margin | currency: 'EUR' }}
       </div>
     </div>
 
     @for (scope of scopes; track scope) {
-    <div class="dashboard-card dashboard-stat-card">
-      <h3>{{ scope }}</h3>
-      <div class="dashboard-value">{{ scopeStats()(scope).totalTtc | currency : 'EUR' }}</div>
-      <div class="dashboard-sub">
-        {{ 'dash.ht_label' | translate }}: {{ scopeStats()(scope).totalHt | currency : 'EUR' }}
+      <div class="dashboard-card dashboard-stat-card">
+        <h3>{{ scope }}</h3>
+        <div class="dashboard-value">{{ scopeStats()(scope).totalTtc | currency: 'EUR' }}</div>
+        <div class="dashboard-sub">
+          {{ 'dash.ht_label' | translate }}: {{ scopeStats()(scope).totalHt | currency: 'EUR' }}
+        </div>
       </div>
-    </div>
     }
   </div>
 
@@ -37,23 +37,23 @@
       <div class="dashboard-chart-container">
         <!-- Simple CSS Bar Chart -->
         @for (scope of scopes; track scope) {
-        <div class="dashboard-bar-group">
-          <div class="dashboard-bar-label">{{ scope }}</div>
-          <div class="dashboard-bar-track">
-            <svg width="100%" height="100%" preserveAspectRatio="none">
-              <rect
-                class="dashboard-bar ht"
-                x="0"
-                y="0"
-                [attr.width]="getBarWidth(scopeStats()(scope).totalHt) + '%'"
-                height="100%"
-              ></rect>
-            </svg>
+          <div class="dashboard-bar-group">
+            <div class="dashboard-bar-label">{{ scope }}</div>
+            <div class="dashboard-bar-track">
+              <svg width="100%" height="100%" preserveAspectRatio="none">
+                <rect
+                  class="dashboard-bar ht"
+                  x="0"
+                  y="0"
+                  [attr.width]="getBarWidth(scopeStats()(scope).totalHt) + '%'"
+                  height="100%"
+                ></rect>
+              </svg>
+            </div>
+            <div class="dashboard-bar-value">
+              {{ scopeStats()(scope).totalTtc | currency: 'EUR' : 'symbol' : '1.0-0' }}
+            </div>
           </div>
-          <div class="dashboard-bar-value">
-            {{ scopeStats()(scope).totalTtc | currency : 'EUR' : 'symbol' : '1.0-0' }}
-          </div>
-        </div>
         }
       </div>
     </div>
@@ -62,16 +62,18 @@
       <h3>{{ 'dash.top_expensive' | translate }}</h3>
       <div class="dashboard-top-list">
         @for (item of topItems(); track item.id) {
-        <div class="dashboard-top-item">
-          <div class="dashboard-top-info">
-            <div class="dashboard-top-title">{{ item.title }}</div>
-            <div class="dashboard-top-meta">{{ item.scope }} • {{ item.effortDays }}j</div>
+          <div class="dashboard-top-item">
+            <div class="dashboard-top-info">
+              <div class="dashboard-top-title">{{ item.title }}</div>
+              <div class="dashboard-top-meta">
+                {{ item.scope }} • {{ getItemEffort(item) | number: '1.1-1' }}j
+              </div>
+            </div>
+            <div class="dashboard-top-cost">
+              {{ getItemCost(item) | currency: 'EUR' }}
+              <a [routerLink]="['/backlog', item.id]">✏️</a>
+            </div>
           </div>
-          <div class="dashboard-top-cost">
-            {{ getItemCost(item) | currency : 'EUR' }}
-            <a [routerLink]="['/backlog', item.id]">✏️</a>
-          </div>
-        </div>
         }
       </div>
     </div>

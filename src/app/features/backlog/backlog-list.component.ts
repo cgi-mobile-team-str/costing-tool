@@ -116,9 +116,7 @@ export class BacklogListComponent {
   }
 
   totalBuildEffort = computed(() => {
-    return this.items()
-      .filter((i) => i.type === 'build' || !i.type)
-      .reduce((sum, i) => sum + (i.effortDays || 0), 0);
+    return this.calc.calculateTotalBuildEffort(this.items());
   });
 
   refresh() {
@@ -146,13 +144,11 @@ export class BacklogListComponent {
   getItemCost(item: BacklogItem): number {
     const p = this.profiles.find((x) => x.id === item.profileId);
     if (!p) return 0;
-    return this.calc.calculateItemCost(this.getItemEffort(item), p.dailyRate);
+    return this.calc.getItemCost(item, this.totalBuildEffort(), p.dailyRate);
   }
 
   getItemEffort(item: BacklogItem): number {
-    return item.chargeType === 'ratio'
-      ? (this.totalBuildEffort() * (item.effortDays || 0)) / 100
-      : item.effortDays || 0;
+    return this.calc.getItemEffort(item, this.totalBuildEffort());
   }
 
   getClusterTotal(items: BacklogItem[]): number {
@@ -170,11 +166,7 @@ export class BacklogListComponent {
       return (
         sum +
         cluster.items.reduce((itemSum: number, item: BacklogItem) => {
-          const effort =
-            item.chargeType === 'ratio'
-              ? (this.totalBuildEffort() * (item.effortDays || 0)) / 100
-              : item.effortDays || 0;
-          return itemSum + effort;
+          return itemSum + this.calc.getItemEffort(item, this.totalBuildEffort());
         }, 0)
       );
     }, 0);

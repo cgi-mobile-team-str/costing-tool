@@ -33,9 +33,18 @@ export class DashboardComponent {
   }
 
   // Helpers
+  totalBuildEffort = computed(() => {
+    return this.calc.calculateTotalBuildEffort(this.backlog());
+  });
+
+  getItemEffort(item: BacklogItem): number {
+    return this.calc.getItemEffort(item, this.totalBuildEffort());
+  }
+
   getItemCost(item: BacklogItem): number {
     const p = this.profiles.find((x) => x.id === item.profileId);
-    return p ? this.calc.calculateItemCost(item.effortDays, p.dailyRate) : 0;
+    if (!p) return 0;
+    return this.calc.getItemCost(item, this.totalBuildEffort(), p.dailyRate);
   }
 
   scopeStats = computed(() => {
