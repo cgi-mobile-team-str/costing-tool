@@ -9,6 +9,8 @@ import { SettingsRepository } from '../../data/settings.repository';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { DashboardProfilesStatsComponent } from './dashboard-profiles-stats/dashboard-profiles-stats.component';
 
+import { ApiService } from '../../core/services/api.service';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -17,6 +19,8 @@ import { DashboardProfilesStatsComponent } from './dashboard-profiles-stats/dash
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent {
+  private apiService = inject(ApiService);
+  apiResult = signal<string | null>(null);
   private backlogRepo = inject(BacklogRepository);
   private profilesRepo = inject(ProfilesRepository);
   private settingsRepo = inject(SettingsRepository);
@@ -83,4 +87,17 @@ export class DashboardComponent {
       .sort((a, b) => this.getItemCost(b) - this.getItemCost(a))
       .slice(0, 5);
   });
+
+  testApi() {
+    this.apiResult.set('Chargement...');
+    this.apiService.getTestData().subscribe({
+      next: (res) => this.apiResult.set(`Succès: ${res}`),
+      error: (err) => {
+        console.error(err);
+        this.apiResult.set(
+          `Erreur: ${err.message}. Vérifiez la console et si votre API accepte les requêtes CORS.`,
+        );
+      },
+    });
+  }
 }

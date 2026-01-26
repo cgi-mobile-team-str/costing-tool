@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
+import { MsalGuard } from '@azure/msal-angular';
 import { MainLayoutComponent } from './core/layout/main-layout.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [MsalGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -16,7 +18,7 @@ export const routes: Routes = [
         path: 'profiles',
         loadComponent: () =>
           import('./features/profiles/profiles-list.component').then(
-            (m) => m.ProfilesListComponent
+            (m) => m.ProfilesListComponent,
           ),
       },
       {
