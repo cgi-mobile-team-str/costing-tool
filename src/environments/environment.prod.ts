@@ -2,8 +2,8 @@ export const environment = {
   production: true,
   msalConfig: {
     auth: {
-      clientId: 'YOUR_PROD_CLIENT_ID',
-      authority: 'https://login.microsoftonline.com/YOUR_PROD_TENANT_ID',
+      clientId: '2da3ef99-4acb-4a7a-a84b-4f85904bdf65',
+      authority: 'https://login.microsoftonline.com/b037a886-4b8f-4119-a8a9-1bdce833249a',
       redirectUri: '/',
       postLogoutRedirectUri: '/',
     },
