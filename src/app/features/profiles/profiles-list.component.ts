@@ -25,7 +25,6 @@ import { ProjectImportSelectorComponent } from './project-import-selector.compon
     FormsModule,
     ZardButtonComponent,
     ZardIconComponent,
-    ProjectImportSelectorComponent,
     ...ZardTableImports,
   ],
   templateUrl: './profiles-list.component.html',

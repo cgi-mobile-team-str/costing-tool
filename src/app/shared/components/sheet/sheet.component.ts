@@ -67,6 +67,8 @@ export class ZardSheetOptions<T, U> {
     'data-slot': 'sheet',
     '[class]': 'classes()',
     '[attr.data-state]': 'state()',
+    '[style.width]': 'config.zWidth',
+    '[style.height]': 'config.zHeight',
   },
   exportAs: 'zSheet',
 })

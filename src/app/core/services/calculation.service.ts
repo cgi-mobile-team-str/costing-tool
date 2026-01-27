@@ -8,13 +8,13 @@ export class CalculationService {
   calculateTotalBuildEffort(items: BacklogItem[]): number {
     return items
       .filter((i) => i.type === 'build' || !i.type)
-      .reduce((sum, i) => sum + (i.effortDays || 0), 0);
+      .reduce((sum, i) => sum + Number(i.effortDays || 0), 0);
   }
 
   getItemEffort(item: BacklogItem, totalBuildEffort: number): number {
     return item.chargeType === 'ratio'
-      ? (totalBuildEffort * (item.effortDays || 0)) / 100
-      : item.effortDays || 0;
+      ? (totalBuildEffort * Number(item.effortDays || 0)) / 100
+      : Number(item.effortDays || 0);
   }
 
   getItemCost(item: BacklogItem, totalBuildEffort: number, dailyRate: number): number {

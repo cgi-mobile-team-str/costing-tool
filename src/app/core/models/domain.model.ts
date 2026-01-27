@@ -35,6 +35,7 @@ export interface Cluster {
 export interface BacklogItem {
   id: string;
   title: string; // Used as 'Feature'
+  order?: number;
 
   // Relational links
   productId: string;

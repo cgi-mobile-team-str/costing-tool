@@ -13,7 +13,7 @@ export interface RenameDialogData {
   standalone: true,
   imports: [ReactiveFormsModule, ZardInputDirective, TranslatePipe],
   template: `
-    <form [formGroup]="form" class="grid gap-4">
+    <form [formGroup]="form" class="grid gap-4" (submit)="$event.preventDefault()">
       <div class="grid gap-3">
         <label
           for="name"

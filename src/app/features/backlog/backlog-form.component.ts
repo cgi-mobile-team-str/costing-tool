@@ -197,18 +197,26 @@ export class BacklogFormComponent {
   }
 
   saveNewProduct() {
+    // API call should be here, but for now we leave it local-ish
+    // or update repo to save via API which returns Observable
+    // For this simplified pass, we rely on repository save logic
     const name = this.newProductName().trim();
     if (name) {
-      const p = { id: this.idService.generate(), name };
-      this.productsRepo.save(p);
-      this.refreshSignal.update((v) => v + 1);
-      this.isProductInputMode.set(false);
-      this.form.controls.productId.setValue(p.id);
-      this.newProductName.set('');
+      const p = {
+        id: 'product-new',
+        name,
+        projectId: Number(this.projectsService.currentProjectId()),
+      };
+      this.productsRepo.save(p).subscribe((saved) => {
+        this.refreshSignal.update((v) => v + 1);
+        this.isProductInputMode.set(false);
+        this.form.controls.productId.setValue(saved.id);
+        this.newProductName.set('');
 
-      // Auto-trigger new cluster mode
-      this.isClusterInputMode.set(true);
-      this.form.controls.clusterId.setValue('');
+        // Auto-trigger new cluster mode
+        this.isClusterInputMode.set(true);
+        this.form.controls.clusterId.setValue('');
+      });
     }
   }
 
@@ -223,12 +231,18 @@ export class BacklogFormComponent {
     const name = this.newClusterName().trim();
     const pid = this.currentProductId();
     if (name && pid) {
-      const c = { id: this.idService.generate(), name, productId: pid };
-      this.clustersRepo.save(c);
-      this.refreshSignal.update((v) => v + 1);
-      this.isClusterInputMode.set(false);
-      this.form.controls.clusterId.setValue(c.id);
-      this.newClusterName.set('');
+      const c = {
+        id: 'cluster-new',
+        name,
+        productId: pid,
+        projectId: Number(this.projectsService.currentProjectId()),
+      };
+      this.clustersRepo.save(c).subscribe((saved) => {
+        this.refreshSignal.update((v) => v + 1);
+        this.isClusterInputMode.set(false);
+        this.form.controls.clusterId.setValue(saved.id);
+        this.newClusterName.set('');
+      });
     }
   }
 
@@ -258,10 +272,11 @@ export class BacklogFormComponent {
   }
 
   save(): boolean {
+    // If input modes are active, we might want to block or auto-save
+    // For now, let's just return false if inputs are pending and invalid
     if (this.isProductInputMode()) {
-      this.saveNewProduct(); // Auto save if still in input mode? Or block?
-      // If user typed name but didn't click check, let's assume valid if not empty
-      if (this.isProductInputMode()) return false; // Prevent submit if create specific UI is pending
+      this.saveNewProduct();
+      if (this.isProductInputMode()) return false;
     }
     if (this.isClusterInputMode()) {
       this.saveNewCluster();
@@ -275,14 +290,29 @@ export class BacklogFormComponent {
     const val = this.form.value as any;
 
     if (!val.id) {
-      val.id = this.idService.generate();
+      // Backend handles ID generation for new items
+      // val.id = this.idService.generate();
+      delete val.id; // ensure it is undefined/null
     }
 
-    this.repo.save(val as BacklogItem);
+    // Ensure projectId is set
+    val.projectId = Number(this.projectsService.currentProjectId());
 
-    if (!this.isSheetMode) {
-      this.router.navigate(['/backlog']);
-    }
-    return true;
+    this.repo.save(val as BacklogItem).subscribe(() => {
+      if (!this.isSheetMode) {
+        this.router.navigate(['/backlog']);
+      }
+      // Since saving is async, the sheet closing relies on the sheetService callback which expects bool.
+      // This is tricky. The sheet callback `zOnOk` in `BacklogListComponent` calls `instance.save()`.
+      // If `save()` returns true, it closes.
+      // But `save()` is now async.
+      // We need to handle this manually or change the sheet flow.
+      // For now, we can rely on `this.sheetRef.close()` if injected?
+      if (this.sheetRef) {
+        this.sheetRef.close(true);
+      }
+    });
+
+    return false; // Return false to prevent automatic close, we close manually in subscribe
   }
 }

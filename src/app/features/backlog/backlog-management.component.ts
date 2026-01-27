@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { BacklogItem, Cluster, Product } from '../../core/models/domain.model';
+import { Component, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { Cluster, Product } from '../../core/models/domain.model';
 import { I18nService } from '../../core/services/i18n.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
@@ -9,7 +10,9 @@ import { ZardAlertDialogService } from '../../shared/components/alert-dialog/ale
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 
+import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RenameDialogComponent, RenameDialogData } from './rename-dialog/rename-dialog.component';
 
 @Component({
   selector: 'app-backlog-management',
@@ -23,21 +26,12 @@ export class BacklogManagementComponent {
   private clustersRepo = inject(ClustersRepository);
   private backlogRepo = inject(BacklogRepository);
   private alertDialog = inject(ZardAlertDialogService);
+  private dialogService = inject(ZardDialogService);
   private i18n = inject(I18nService);
 
-  products = signal<Product[]>([]);
-  clusters = signal<Cluster[]>([]);
-  items = signal<BacklogItem[]>([]);
-
-  constructor() {
-    this.refresh();
-  }
-
-  refresh() {
-    this.products.set(this.productsRepo.getAll());
-    this.clusters.set(this.clustersRepo.getAll());
-    this.items.set(this.backlogRepo.getAll());
-  }
+  products = this.productsRepo.items;
+  clusters = this.clustersRepo.items;
+  items = this.backlogRepo.items;
 
   getClustersByProduct(productId: string): Cluster[] {
     return this.clusters().filter((c) => c.productId === productId);
@@ -74,8 +68,7 @@ export class BacklogManagementComponent {
       zOkText: this.i18n.translate('common.delete') || 'Supprimer',
       zOkDestructive: true,
       zOnOk: () => {
-        this.productsRepo.delete(product.id);
-        this.refresh();
+        this.productsRepo.delete(product.id).subscribe();
       },
     });
   }
@@ -101,9 +94,102 @@ export class BacklogManagementComponent {
       zOkText: this.i18n.translate('common.delete') || 'Supprimer',
       zOkDestructive: true,
       zOnOk: () => {
-        this.clustersRepo.delete(cluster.id);
-        this.refresh();
+        this.clustersRepo.delete(cluster.id).subscribe();
       },
     });
+  }
+
+  async renameProduct(product: Product) {
+    const ref = this.dialogService.create({
+      zContent: RenameDialogComponent,
+      zData: { name: product.name } as RenameDialogData,
+      zOkText: this.i18n.translate('common.save') || 'Enregistrer',
+      zOnOk: (component: RenameDialogComponent) => {
+        if (component.form.valid) {
+          return component.form.value;
+        }
+        return false;
+      },
+    });
+
+    const res = await firstValueFrom(ref.afterClosed$);
+    console.log('Rename Dialog Result:', res);
+
+    if (res && res.name) {
+      console.log('Proceeding to save with name:', res.name);
+      const updated = { ...product, name: res.name };
+      try {
+        await firstValueFrom(this.productsRepo.save(updated));
+        console.log('Product save success');
+      } catch (err) {
+        console.error('Product save error', err);
+      }
+    }
+  }
+
+  async renameCluster(cluster: Cluster) {
+    const ref = this.dialogService.create({
+      zContent: RenameDialogComponent,
+      zData: { name: cluster.name } as RenameDialogData,
+      zOkText: this.i18n.translate('common.save') || 'Enregistrer',
+      zOnOk: (component: RenameDialogComponent) => {
+        if (component.form.valid) {
+          return component.form.value;
+        }
+        return false;
+      },
+    });
+
+    const res = await firstValueFrom(ref.afterClosed$);
+
+    if (res && res.name) {
+      const updated = { ...cluster, name: res.name };
+      await firstValueFrom(this.clustersRepo.save(updated));
+    }
+  }
+
+  moveProduct(product: Product, direction: number) {
+    const products = [...this.products()];
+    const index = products.findIndex((p) => p.id === product.id);
+    if (index === -1) return;
+
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= products.length) return;
+
+    [products[index], products[newIndex]] = [products[newIndex], products[index]];
+
+    // Update order property
+    products.forEach((p, i) => (p.order = i));
+
+    this.productsRepo.saveBulk(products).subscribe();
+  }
+
+  moveCluster(cluster: Cluster, direction: number) {
+    const allClusters = [...this.clusters()];
+    const siblings = allClusters
+      .filter((c) => c.productId === cluster.productId)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    const index = siblings.findIndex((c) => c.id === cluster.id);
+    if (index === -1) return;
+
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= siblings.length) return;
+
+    // Swap in siblings array
+    [siblings[index], siblings[newIndex]] = [siblings[newIndex], siblings[index]];
+
+    // Update order
+    siblings.forEach((c, i) => (c.order = i));
+
+    this.clustersRepo.saveBulk(siblings).subscribe();
+  }
+
+  isFirst(item: any, list: any[]): boolean {
+    return list.indexOf(item) === 0;
+  }
+
+  isLast(item: any, list: any[]): boolean {
+    return list.indexOf(item) === list.length - 1;
   }
 }

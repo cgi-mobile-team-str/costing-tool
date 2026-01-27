@@ -7,38 +7,99 @@
         <div class="product-item">
           <div class="product-header">
             <span class="product-name">{{ product.name }}</span>
-            <z-button
-              zType="ghost"
-              zSize="xs"
-              (click)="deleteProduct(product)"
-              [zDisabled]="isProductUsed(product.id)"
-              [title]="'management.delete_product_title' | translate"
-            >
-              <z-icon
-                zType="trash"
-                class="h-4 w-4"
-                [class.opacity-20]="isProductUsed(product.id)"
-              />
-            </z-button>
+            <div class="flex items-center gap-1">
+              <z-button
+                zType="ghost"
+                zSize="xs"
+                (click)="moveProduct(product, -1)"
+                [zDisabled]="isFirst(product, products())"
+                [title]="'management.move_up' | translate"
+              >
+                <z-icon zType="arrow-up" class="h-4 w-4" />
+              </z-button>
+              <z-button
+                zType="ghost"
+                zSize="xs"
+                (click)="moveProduct(product, 1)"
+                [zDisabled]="isLast(product, products())"
+                [title]="'management.move_down' | translate"
+              >
+                <z-icon zType="arrow-down" class="h-4 w-4" />
+              </z-button>
+              <z-button
+                zType="ghost"
+                zSize="xs"
+                (click)="renameProduct(product)"
+                [title]="'management.rename' | translate"
+              >
+                <z-icon zType="pencil" class="h-4 w-4" />
+              </z-button>
+              <z-button
+                zType="ghost"
+                zSize="xs"
+                (click)="deleteProduct(product)"
+                [zDisabled]="isProductUsed(product.id)"
+                [title]="'management.delete_product_title' | translate"
+              >
+                <z-icon
+                  zType="trash"
+                  class="h-4 w-4"
+                  [class.opacity-20]="isProductUsed(product.id)"
+                />
+              </z-button>
+            </div>
           </div>
 
           <div class="cluster-list">
-            @for (cluster of getClustersByProduct(product.id); track cluster.id) {
+            @for (
+              cluster of getClustersByProduct(product.id);
+              track cluster.id;
+              let first = $first;
+              let last = $last
+            ) {
               <div class="cluster-item">
                 <span class="cluster-name">{{ cluster.name }}</span>
-                <z-button
-                  zType="ghost"
-                  zSize="xs"
-                  (click)="deleteCluster(cluster)"
-                  [zDisabled]="isClusterUsed(cluster.id)"
-                  [title]="'management.delete_cluster_title' | translate"
-                >
-                  <z-icon
-                    zType="trash"
-                    class="h-3 w-3"
-                    [class.opacity-20]="isClusterUsed(cluster.id)"
-                  />
-                </z-button>
+                <div class="flex items-center gap-1">
+                  <z-button
+                    zType="ghost"
+                    zSize="xs"
+                    (click)="moveCluster(cluster, -1)"
+                    [zDisabled]="first"
+                    [title]="'management.move_up' | translate"
+                  >
+                    <z-icon zType="arrow-up" class="h-3 w-3" />
+                  </z-button>
+                  <z-button
+                    zType="ghost"
+                    zSize="xs"
+                    (click)="moveCluster(cluster, 1)"
+                    [zDisabled]="last"
+                    [title]="'management.move_down' | translate"
+                  >
+                    <z-icon zType="arrow-down" class="h-3 w-3" />
+                  </z-button>
+                  <z-button
+                    zType="ghost"
+                    zSize="xs"
+                    (click)="renameCluster(cluster)"
+                    [title]="'management.rename' | translate"
+                  >
+                    <z-icon zType="pencil" class="h-3 w-3" />
+                  </z-button>
+                  <z-button
+                    zType="ghost"
+                    zSize="xs"
+                    (click)="deleteCluster(cluster)"
+                    [zDisabled]="isClusterUsed(cluster.id)"
+                    [title]="'management.delete_cluster_title' | translate"
+                  >
+                    <z-icon
+                      zType="trash"
+                      class="h-3 w-3"
+                      [class.opacity-20]="isClusterUsed(cluster.id)"
+                    />
+                  </z-button>
+                </div>
               </div>
             }
             @if (getClustersByProduct(product.id).length === 0) {

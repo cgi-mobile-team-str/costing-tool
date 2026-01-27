@@ -8,7 +8,9 @@ import {
   signal,
   ViewEncapsulation,
 } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { BacklogService } from '../../core/services/backlog.service';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { IdService } from '../../core/services/id.service';
@@ -61,9 +63,11 @@ export class BacklogListComponent {
   private dropdownService = inject(ZardDropdownService);
   private alertDialogService = inject(ZardAlertDialogService);
   private projectsService = inject(ProjectsService);
+  private backlogService = inject(BacklogService);
   i18n = inject(I18nService);
 
-  items = signal<BacklogItem[]>([]);
+  // items = signal<BacklogItem[]>([]); // Replaced by repo signal
+  items = this.repo.items;
   settings = signal(this.settingsRepo.get());
   currentProjectName = this.projectsService.currentProjectName;
   profiles = signal<Profile[]>([]);
@@ -100,7 +104,16 @@ export class BacklogListComponent {
   ]);
 
   constructor() {
-    this.refresh();
+    effect(
+      () => {
+        // React to project change
+        const projectId = this.projectsService.currentProjectId();
+        if (projectId) {
+          this.refresh();
+        }
+      },
+      { allowSignalWrites: true },
+    );
 
     // Auto-focus input when editing starts
     effect(() => {
@@ -121,13 +134,15 @@ export class BacklogListComponent {
   });
 
   refresh() {
-    this.items.set(this.repo.getAll());
-    this.selectedIds.set([]);
-
     const projectId = this.projectsService.currentProjectId();
     if (projectId) {
-      this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
-        this.profiles.set(p);
+      this.backlogService.loadProjectData(Number(projectId)).subscribe(() => {
+        // this.items.set(this.repo.getAll()); // Handled by signal connection
+        this.selectedIds.set([]);
+
+        this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+          this.profiles.set(p);
+        });
       });
     }
   }
@@ -185,20 +200,23 @@ export class BacklogListComponent {
     let res = this.items();
     const allProducts = this.productsRepo.getAll();
     const allClusters = this.clustersRepo.getAll();
+    const sortedItems = [...res].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
     // Filtering
     const term = this.searchTerm().toLowerCase();
     const scope = this.scopeFilter();
     const profiles = this.profileFilter();
 
+    let itemsToProcess = sortedItems;
+
     if (term) {
-      res = res.filter((i) => i.title.toLowerCase().includes(term));
+      itemsToProcess = itemsToProcess.filter((i) => i.title.toLowerCase().includes(term));
     }
     if (scope) {
-      res = res.filter((i) => i.scope === scope);
+      itemsToProcess = itemsToProcess.filter((i) => i.scope === scope);
     }
     if (profiles.length > 0) {
-      res = res.filter((i) => profiles.includes(i.profileId));
+      itemsToProcess = itemsToProcess.filter((i) => profiles.includes(i.profileId));
     }
 
     // Grouping
@@ -206,7 +224,7 @@ export class BacklogListComponent {
     const productMap = new Map<string, BacklogItem[]>();
     // Handle items with no product ID (legacy or error) - maybe group under "Unknown"
 
-    res.forEach((item) => {
+    itemsToProcess.forEach((item) => {
       const pid = item.productId || 'unknown';
       if (!productMap.has(pid)) {
         productMap.set(pid, []);
@@ -383,7 +401,7 @@ export class BacklogListComponent {
     this.refresh();
   }
 
-  onMoveItemUp(item: BacklogItem) {
+  async onMoveItemUp(item: BacklogItem) {
     const allItems = this.repo.getAll();
     const index = allItems.findIndex((i) => i.id === item.id);
     if (index <= 0) return;
@@ -403,12 +421,12 @@ export class BacklogListComponent {
       newItems[index] = newItems[prevIndex];
       newItems[prevIndex] = item;
 
-      this.repo.saveBulk(newItems);
+      await firstValueFrom(this.repo.saveBulk(newItems));
       this.refresh();
     }
   }
 
-  onMoveItemDown(item: BacklogItem) {
+  async onMoveItemDown(item: BacklogItem) {
     const allItems = this.repo.getAll();
     const index = allItems.findIndex((i) => i.id === item.id);
     if (index === -1 || index >= allItems.length - 1) return;
@@ -428,21 +446,21 @@ export class BacklogListComponent {
       newItems[index] = newItems[nextIndex];
       newItems[nextIndex] = item;
 
-      this.repo.saveBulk(newItems);
+      await firstValueFrom(this.repo.saveBulk(newItems));
       this.refresh();
     }
   }
 
-  onRenameProduct(event: { productId: string; newName: string }) {
+  async onRenameProduct(event: { productId: string; newName: string }) {
     const product = this.productsRepo.get(event.productId);
     if (product) {
       product.name = event.newName;
-      this.productsRepo.save(product);
+      await firstValueFrom(this.productsRepo.save(product));
       this.refresh();
     }
   }
 
-  onMoveProductUp(productId: string) {
+  async onMoveProductUp(productId: string) {
     const allProducts = this.productsRepo.getAll();
     const index = allProducts.findIndex((p) => p.id === productId);
     if (index <= 0) return;
@@ -455,11 +473,11 @@ export class BacklogListComponent {
     currentProduct.order = prevProduct.order;
     prevProduct.order = tempOrder;
 
-    this.productsRepo.saveBulk(allProducts);
+    await firstValueFrom(this.productsRepo.saveBulk(allProducts));
     this.refresh();
   }
 
-  onMoveProductDown(productId: string) {
+  async onMoveProductDown(productId: string) {
     const allProducts = this.productsRepo.getAll();
     const index = allProducts.findIndex((p) => p.id === productId);
     if (index === -1 || index >= allProducts.length - 1) return;
@@ -472,20 +490,20 @@ export class BacklogListComponent {
     currentProduct.order = nextProduct.order;
     nextProduct.order = tempOrder;
 
-    this.productsRepo.saveBulk(allProducts);
+    await firstValueFrom(this.productsRepo.saveBulk(allProducts));
     this.refresh();
   }
 
-  onRenameCluster(event: { clusterId: string; newName: string }) {
+  async onRenameCluster(event: { clusterId: string; newName: string }) {
     const cluster = this.clustersRepo.get(event.clusterId);
     if (cluster) {
       cluster.name = event.newName;
-      this.clustersRepo.save(cluster);
+      await firstValueFrom(this.clustersRepo.save(cluster));
       this.refresh();
     }
   }
 
-  onMoveClusterUp(clusterId: string) {
+  async onMoveClusterUp(clusterId: string) {
     const cluster = this.clustersRepo.get(clusterId);
     if (!cluster) return;
 
@@ -503,12 +521,12 @@ export class BacklogListComponent {
 
     // We need to save all clusters of the product to ensure consistency
     // Simple save of the two modified clusters is enough since they have IDs
-    this.clustersRepo.save(currentCluster);
-    this.clustersRepo.save(prevCluster);
+    await firstValueFrom(this.clustersRepo.save(currentCluster));
+    await firstValueFrom(this.clustersRepo.save(prevCluster));
     this.refresh();
   }
 
-  onMoveClusterDown(clusterId: string) {
+  async onMoveClusterDown(clusterId: string) {
     const cluster = this.clustersRepo.get(clusterId);
     if (!cluster) return;
 
@@ -524,8 +542,8 @@ export class BacklogListComponent {
     currentCluster.order = nextCluster.order;
     nextCluster.order = tempOrder;
 
-    this.clustersRepo.save(currentCluster);
-    this.clustersRepo.save(nextCluster);
+    await firstValueFrom(this.clustersRepo.save(currentCluster));
+    await firstValueFrom(this.clustersRepo.save(nextCluster));
     this.refresh();
   }
 }
