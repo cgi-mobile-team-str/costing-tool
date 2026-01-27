@@ -106,29 +106,33 @@ export class SettingsComponent {
   exportJson() {
     const s = this.repo.get();
     const items = this.backlogRepo.getAll();
-    const profiles = this.profilesRepo.getAll();
     const products = this.productsRepo.getAll();
     const clusters = this.clustersRepo.getAll();
+    const projectId = this.projectsService.currentProjectId();
 
-    const data = {
-      projectName: s.projectName,
-      exportDate: new Date().toISOString(),
-      products,
-      clusters,
-      items,
-      profiles,
-    };
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    const date = new Date().toISOString().split('T')[0];
-    link.href = url;
-    link.download = `${(s.projectName || 'export')
-      .toLowerCase()
-      .replace(/\s+/g, '-')}-export-${date}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+    if (projectId) {
+      this.profilesRepo.getAll(Number(projectId)).subscribe((profiles) => {
+        const data = {
+          projectName: s.projectName,
+          exportDate: new Date().toISOString(),
+          products,
+          clusters,
+          items,
+          profiles,
+        };
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
+        link.href = url;
+        link.download = `${(s.projectName || 'export')
+          .toLowerCase()
+          .replace(/\s+/g, '-')}-export-${date}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    }
   }
 
   importJson(event: any) {
@@ -182,6 +186,12 @@ export class SettingsComponent {
     const products = this.productsToImport();
     const clusters = this.clustersToImport();
 
+    const projectId = this.projectsService.currentProjectId();
+    if (!projectId && event.type !== 'cancel') {
+      alert('Aucun projet sélectionné.');
+      return;
+    }
+
     if (event.type !== 'cancel') {
       const current = this.repo.get();
       this.repo.save({ ...current, projectName: event.projectName });
@@ -189,14 +199,15 @@ export class SettingsComponent {
 
       if (event.type === 'add') {
         // Add profiles if they don't exist by ID
-        const existingProfiles = this.profilesRepo.getAll();
-        profiles.forEach((p) => {
-          if (!existingProfiles.some((ep: Profile) => ep.id === p.id)) {
-            this.profilesRepo.save(p);
-          }
+        this.profilesRepo.getAll(Number(projectId)).subscribe((existingProfiles) => {
+          profiles.forEach((p) => {
+            if (!existingProfiles.some((ep: Profile) => ep.id === p.id)) {
+              this.profilesRepo.save(p, Number(projectId)).subscribe();
+            }
+          });
         });
 
-        // Add products and clusters similarly (or just overwrite if conflicting? Safe to add if ID not exists)
+        // Add products and clusters similarly
         const existingProducts = this.productsRepo.getAll();
         products.forEach((p) => {
           if (!existingProducts.some((ep) => ep.id === p.id)) {
@@ -213,9 +224,12 @@ export class SettingsComponent {
 
         items.forEach((item) => this.backlogRepo.save(item));
       } else if (event.type === 'replace') {
-        if (profiles.length > 0) {
-          this.profilesRepo.saveBulk(profiles);
-        }
+        // Since we don't have a clear "delete all profiles for project" yet,
+        // we'll just save them. If ID conflicts, it updates.
+        profiles.forEach((p) => {
+          this.profilesRepo.save(p, Number(projectId)).subscribe();
+        });
+
         if (products.length > 0) this.productsRepo.saveBulk(products);
         if (clusters.length > 0) this.clustersRepo.saveBulk(clusters);
 

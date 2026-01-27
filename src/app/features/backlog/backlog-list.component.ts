@@ -66,7 +66,7 @@ export class BacklogListComponent {
   items = signal<BacklogItem[]>([]);
   settings = signal(this.settingsRepo.get());
   currentProjectName = this.projectsService.currentProjectName;
-  profiles: Profile[] = [];
+  profiles = signal<Profile[]>([]);
 
   // Filters
   searchTerm = signal('');
@@ -100,8 +100,6 @@ export class BacklogListComponent {
   ]);
 
   constructor() {
-    this.profiles = this.profilesRepo.getAll();
-    this.profiles = this.profilesRepo.getAll();
     this.refresh();
 
     // Auto-focus input when editing starts
@@ -125,6 +123,13 @@ export class BacklogListComponent {
   refresh() {
     this.items.set(this.repo.getAll());
     this.selectedIds.set([]);
+
+    const projectId = this.projectsService.currentProjectId();
+    if (projectId) {
+      this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+        this.profiles.set(p);
+      });
+    }
   }
 
   // Product section management
@@ -145,7 +150,7 @@ export class BacklogListComponent {
 
   // Calculations
   getItemCost(item: BacklogItem): number {
-    const p = this.profiles.find((x) => x.id === item.profileId);
+    const p = this.profiles().find((x) => x.id === item.profileId);
     if (!p) return 0;
     return this.calc.getItemCost(item, this.totalBuildEffort(), p.dailyRate);
   }

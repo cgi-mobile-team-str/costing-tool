@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BacklogItem, Scope } from '../../core/models/domain.model';
+import { BacklogItem, Profile, Scope } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
@@ -29,14 +29,23 @@ export class DashboardComponent {
   private projectsService = inject(ProjectsService);
 
   private backlog = signal(this.backlogRepo.getAll());
-  private profiles = this.profilesRepo.getAll(); // Static for calc, fine if refreshed
+  profiles = signal<Profile[]>([]);
   settings = signal(this.settingsRepo.get());
   currentProjectName = this.projectsService.currentProjectName;
 
   scopes: Scope[] = ['MVP', 'V1', 'V2'];
 
   constructor() {
-    // Refresh data on init
+    this.refresh();
+  }
+
+  refresh() {
+    const projectId = this.projectsService.currentProjectId();
+    if (projectId) {
+      this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+        this.profiles.set(p);
+      });
+    }
   }
 
   // Helpers
@@ -49,7 +58,7 @@ export class DashboardComponent {
   }
 
   getItemCost(item: BacklogItem): number {
-    const p = this.profiles.find((x) => x.id === item.profileId);
+    const p = this.profiles().find((x) => x.id === item.profileId);
     if (!p) return 0;
     return this.calc.getItemCost(item, this.totalBuildEffort(), p.dailyRate);
   }

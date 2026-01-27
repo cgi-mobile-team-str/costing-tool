@@ -16,7 +16,7 @@
   </div>
 
   <app-backlog-filters
-    [profiles]="profiles"
+    [profiles]="profiles()"
     [searchTerm]="searchTerm()"
     [scopeFilter]="scopeFilter()"
     [profileFilter]="profileFilter()"
@@ -34,7 +34,7 @@
   @for (prodGroup of groupedItems(); track prodGroup.product) {
     <app-backlog-product-section
       [productGroup]="prodGroup"
-      [profiles]="profiles"
+      [profiles]="profiles()"
       [isExpanded]="isProductExpanded(prodGroup.product)"
       [selectedIds]="selectedIds()"
       [editingCell]="editingCell()"

@@ -22,11 +22,13 @@ const FR = {
   'common.yes': 'Oui',
   'common.no': 'Non',
   'common.ok': 'Ok',
+  'common.clear_search': 'Réinitialiser la recherche',
   'common.move_up': 'Monter',
   'common.move_down': 'Descendre',
   'common.currency_per_day': '€/j',
   'common.name_placeholder': 'Ex. Nom',
   'common.new_title': 'Nouveau titre',
+  'common.import': 'Importer',
 
   // Navigation
   'nav.backlog': 'Backlog',
@@ -50,7 +52,7 @@ const FR = {
   'dash.no_data': 'Aucune donnée à afficher',
 
   // Profiles
-  'profiles.name': 'Rôle', // Was Nom, renamed for clarity
+  'profiles.name': 'Rôle',
   'profiles.username': 'Nom du collaborateur',
   'profiles.rate': 'TJM',
   'profiles.scr': 'SCR',
@@ -64,6 +66,16 @@ const FR = {
   'profiles.global_margin': 'Marge Global (%)',
   'profiles.search_placeholder': 'Rechercher un profil...',
   'profiles.no_results': 'Aucun profil trouvé pour',
+  'profiles.empty_title': 'Aucun profil pour ce projet',
+  'profiles.empty_description':
+    "Gagnez du temps en important les profils d'un autre projet ou ajoutez-les manuellement.",
+  'profiles.import_from_project': "Importer d'un autre projet",
+  'profiles.add_manually': 'Ajouter manuellement',
+  'profiles.add_first': 'Ajouter mon premier profil',
+  'profiles.import_title': 'Importer des profils',
+  'profiles.import_desc': 'Sélectionnez un projet source pour copier ses profils.',
+  'profiles.import_select_desc': 'Projets avec des profils disponibles :',
+  'profiles.no_projects_to_import': 'Aucun autre projet avec des profils trouvé.',
 
   // Settings
   'settings.project_section': 'Projet',
@@ -84,7 +96,7 @@ const FR = {
   'settings.example': 'Ex:',
 
   // Backlog
-  'backlog.title': 'Feature', // Renamed from Titre
+  'backlog.title': 'Feature',
   'backlog.product': 'Produit',
   'backlog.cluster': 'Cluster',
   'backlog.scope': 'Périmètre',
@@ -162,12 +174,14 @@ const EN = {
   'common.duplicate': 'Duplicate',
   'common.yes': 'Yes',
   'common.no': 'No',
+  'common.ok': 'Ok',
+  'common.clear_search': 'Clear search',
   'common.move_up': 'Move up',
   'common.move_down': 'Move down',
-  'common.ok': 'Ok',
   'common.currency_per_day': '€/d',
   'common.name_placeholder': 'Ex. Name',
   'common.new_title': 'New title',
+  'common.import': 'Import',
 
   // Navigation
   'nav.backlog': 'Backlog',
@@ -191,7 +205,7 @@ const EN = {
   'dash.no_data': 'No data to display',
 
   // Profiles
-  'profiles.name': 'Role', // Was Name
+  'profiles.name': 'Role',
   'profiles.username': 'Collaborator Name',
   'profiles.rate': 'Daily Rate',
   'profiles.scr': 'SCR',
@@ -205,6 +219,16 @@ const EN = {
   'profiles.global_margin': 'Global Margin (%)',
   'profiles.search_placeholder': 'Search profile...',
   'profiles.no_results': 'No profile found for',
+  'profiles.empty_title': 'No profiles for this project',
+  'profiles.empty_description':
+    'Save time by importing profiles from another project or add them manually.',
+  'profiles.import_from_project': 'Import from another project',
+  'profiles.add_manually': 'Add manually',
+  'profiles.add_first': 'Add my first profile',
+  'profiles.import_title': 'Import profiles',
+  'profiles.import_desc': 'Select a source project to copy its profiles.',
+  'profiles.import_select_desc': 'Projects with available profiles:',
+  'profiles.no_projects_to_import': 'No other projects with profiles found.',
 
   // Settings
   'settings.project_section': 'Project',

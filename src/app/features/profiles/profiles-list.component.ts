@@ -14,6 +14,7 @@ import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { ZardTableImports } from '../../shared/components/table/table.imports';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ProfileFormComponent } from './profile-form.component';
+import { ProjectImportSelectorComponent } from './project-import-selector.component';
 
 @Component({
   selector: 'app-profiles-list',
@@ -24,6 +25,7 @@ import { ProfileFormComponent } from './profile-form.component';
     FormsModule,
     ZardButtonComponent,
     ZardIconComponent,
+    ProjectImportSelectorComponent,
     ...ZardTableImports,
   ],
   templateUrl: './profiles-list.component.html',
@@ -40,6 +42,7 @@ export class ProfilesListComponent {
 
   profiles = signal<Profile[]>([]);
   searchTerm = signal('');
+  hasNoProfiles = computed(() => this.profiles().length === 0);
   settings = signal(this.settingsRepo.get());
   currentProjectName = this.projectsService.currentProjectName;
   marginPercent = 0;
@@ -57,7 +60,12 @@ export class ProfilesListComponent {
   }
 
   refresh() {
-    this.profiles.set(this.repo.getAll());
+    const projectId = this.projectsService.currentProjectId();
+    if (projectId) {
+      this.repo.getAll(Number(projectId)).subscribe((profiles) => {
+        this.profiles.set(profiles);
+      });
+    }
   }
 
   updateMargin() {
@@ -75,7 +83,7 @@ export class ProfilesListComponent {
   }
 
   openProfileSheet(profile?: Profile) {
-    this.sheetService.create({
+    const sheetRef = this.sheetService.create({
       zTitle: profile
         ? this.i18n.translate('profiles.edit_title')
         : this.i18n.translate('profiles.create_title'),
@@ -86,9 +94,36 @@ export class ProfilesListComponent {
       zCancelText: this.i18n.translate('common.cancel'),
       zWidth: '400px',
       zOnOk: (instance: ProfileFormComponent) => {
-        if (instance.save()) {
-          this.refresh();
-          return;
+        instance.save().subscribe((success) => {
+          if (success) {
+            this.refresh();
+            sheetRef.close();
+          }
+        });
+        return false;
+      },
+    });
+  }
+
+  openImportSheet() {
+    const sheetRef = this.sheetService.create({
+      zTitle: this.i18n.translate('profiles.import_title'),
+      zDescription: this.i18n.translate('profiles.import_desc'),
+      zContent: ProjectImportSelectorComponent,
+      zData: { excludeProjectId: Number(this.projectsService.currentProjectId()) },
+      zOkText: this.i18n.translate('common.import'),
+      zCancelText: this.i18n.translate('common.cancel'),
+      zWidth: '500px',
+      zOnOk: (instance: ProjectImportSelectorComponent) => {
+        const sourceId = instance.getSelectedId();
+        if (sourceId) {
+          const targetId = Number(this.projectsService.currentProjectId());
+          if (targetId) {
+            this.repo.importFromProject(sourceId, targetId).subscribe(() => {
+              this.refresh();
+              sheetRef.close();
+            });
+          }
         }
         return false;
       },
@@ -102,8 +137,9 @@ export class ProfilesListComponent {
       zOkText: this.i18n.translate('common.delete'),
       zOkDestructive: true,
       zOnOk: () => {
-        this.repo.delete(profile.id);
-        this.refresh();
+        this.repo.delete(profile.id).subscribe(() => {
+          this.refresh();
+        });
       },
     });
   }

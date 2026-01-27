@@ -9,4 +9,7 @@ export const environment = {
       scopes: ['api://8b243d6e-5c1c-411e-a387-f44ce9ef0043/access_as_user'],
     },
   },
+  api: {
+    url: 'http://localhost:3000',
+  },
 };

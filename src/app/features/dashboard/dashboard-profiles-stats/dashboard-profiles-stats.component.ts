@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
-import { BacklogItem } from '../../../core/models/domain.model';
+import { BacklogItem, Profile } from '../../../core/models/domain.model';
 import { CalculationService } from '../../../core/services/calculation.service';
+import { ProjectsService } from '../../../core/services/projects.service';
 import { BacklogRepository } from '../../../data/backlog.repository';
 import { ProfilesRepository } from '../../../data/profiles.repository';
 import { ZardTableImports } from '../../../shared/components/table/table.imports';
@@ -19,8 +20,22 @@ export class DashboardProfilesStatsComponent {
   private profilesRepo = inject(ProfilesRepository);
   private calc = inject(CalculationService);
 
+  private projectsService = inject(ProjectsService);
   private backlog = signal(this.backlogRepo.getAll());
-  private profiles = this.profilesRepo.getAll();
+  profiles = signal<Profile[]>([]);
+
+  constructor() {
+    this.refresh();
+  }
+
+  refresh() {
+    const projectId = this.projectsService.currentProjectId();
+    if (projectId) {
+      this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+        this.profiles.set(p);
+      });
+    }
+  }
 
   totalBuildEffort = computed(() => {
     return this.calc.calculateTotalBuildEffort(this.backlog());
@@ -34,7 +49,7 @@ export class DashboardProfilesStatsComponent {
     const items = this.backlog();
 
     // Build stats
-    return this.profiles
+    return this.profiles()
       .map((profile) => {
         const profileItems = items.filter((i) => i.profileId === profile.id);
         const totalDays = profileItems.reduce((acc, i) => acc + this.getItemEffort(i), 0);

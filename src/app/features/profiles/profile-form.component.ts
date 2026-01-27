@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Observable, map, of } from 'rxjs';
 import { Profile } from '../../core/models/domain.model';
-import { IdService } from '../../core/services/id.service';
+import { ProjectsService } from '../../core/services/projects.service';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { ZardInputDirective } from '../../shared/components/input';
 import { Z_SHEET_DATA } from '../../shared/components/sheet/sheet.service';
@@ -18,7 +19,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class ProfileFormComponent {
   private fb = inject(FormBuilder);
   private repo = inject(ProfilesRepository);
-  private idService = inject(IdService);
+  private projectsService = inject(ProjectsService);
   private zData = inject(Z_SHEET_DATA, { optional: true });
 
   form = this.fb.group({
@@ -39,29 +40,17 @@ export class ProfileFormComponent {
     }
   }
 
-  save(): boolean {
+  save(): Observable<boolean> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      return false;
+      return of(false);
     }
+
+    const projectId = this.projectsService.currentProjectId();
+    if (!projectId) return of(false);
 
     const val = this.form.value as Profile;
-    // Check name uniqueness (naive impl)
-    const all = this.repo.getAll();
-    const exists = all.find(
-      (p) => p.name.toLowerCase() === val.name.toLowerCase() && p.id !== val.id,
-    );
-    if (exists) {
-      this.form.setErrors({ nameExists: true });
-      return false;
-    }
-
-    if (!val.id) {
-      val.id = this.idService.generate();
-    }
-
-    this.repo.save(val as Profile);
-    return true;
+    return this.repo.save(val, Number(projectId)).pipe(map(() => true));
   }
 
   toggleActive() {

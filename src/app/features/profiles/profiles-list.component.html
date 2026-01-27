@@ -78,15 +78,44 @@
           </td>
         </tr>
       } @empty {
-        <tr z-table-row>
-          <td z-table-cell colspan="5" class="text-center py-8 text-muted-foreground">
-            {{ 'profiles.no_results' | translate }} "{{ searchTerm() }}"
-          </td>
-        </tr>
+        @if (searchTerm()) {
+          <tr z-table-row>
+            <td z-table-cell colspan="6" class="text-center py-12">
+              <div class="empty-results">
+                <z-icon zType="search" class="mb-2 opacity-20" style="font-size: 3rem" />
+                <p class="text-muted-foreground text-lg">
+                  {{ 'profiles.no_results' | translate }} "{{ searchTerm() }}"
+                </p>
+                <button z-button zType="link" (click)="searchTerm.set('')">
+                  {{ 'common.clear_search' | translate }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
       }
     </tbody>
   </table>
 </div>
+
+@if (hasNoProfiles() && !searchTerm()) {
+  <div class="empty-state-full card shadow-sm">
+    <div class="empty-icon-wrapper">
+      <z-icon zType="users" />
+    </div>
+    <h3>{{ 'profiles.empty_title' | translate }}</h3>
+    <p>{{ 'profiles.empty_description' | translate }}</p>
+    <div class="flex flex-col items-center gap-3">
+      <button z-button (click)="openImportSheet()" zSize="lg">
+        <z-icon zType="copy" />
+        {{ 'profiles.import_from_project' | translate }}
+      </button>
+      <button z-button zType="link" (click)="openProfileSheet()">
+        {{ 'profiles.add_manually' | translate }}
+      </button>
+    </div>
+  </div>
+}
 
 <!-- Floating Action Button for Mobile / Standard for Desktop -->
 <div class="fab-container gap-2 flex flex-col items-end">

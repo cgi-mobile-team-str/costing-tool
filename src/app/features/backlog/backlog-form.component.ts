@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BacklogItem, BacklogItemType, ChargeType } from '../../core/models/domain.model';
+import { BacklogItem, BacklogItemType, ChargeType, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { IdService } from '../../core/services/id.service';
+import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
@@ -57,10 +58,11 @@ export class BacklogFormComponent {
   private route = inject(ActivatedRoute);
   private idService = inject(IdService);
   private calc = inject(CalculationService);
+  private projectsService = inject(ProjectsService);
   private sheetRef = inject(ZardSheetRef, { optional: true });
   private zData = inject(Z_SHEET_DATA, { optional: true });
   isSheetMode = !!this.sheetRef;
-  profiles = signal(this.profilesRepo.getAll().filter((p) => p.active));
+  profiles = signal<Profile[]>([]);
 
   form = this.fb.group({
     id: [''],
@@ -111,10 +113,17 @@ export class BacklogFormComponent {
   isClusterInputMode = signal(false);
 
   constructor() {
-    // Set default profile if available
-    const active = this.profiles();
-    if (active.length > 0) {
-      this.form.patchValue({ profileId: active[0].id });
+    const projectId = this.projectsService.currentProjectId();
+    if (projectId) {
+      this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+        const active = p.filter((x) => x.active);
+        this.profiles.set(active);
+
+        // Set default profile if available and not in edit mode
+        if (active.length > 0 && !this.isEditMode()) {
+          this.form.patchValue({ profileId: active[0].id });
+        }
+      });
     }
 
     if (this.zData) {

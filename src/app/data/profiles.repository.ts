@@ -1,102 +1,51 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { Profile } from '../core/models/domain.model';
-import { IdService } from '../core/services/id.service';
-import { LocalStorageService } from '../core/services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProfilesRepository {
-  private key = 'profiles';
-  private storage = inject(LocalStorageService);
-  private idService = inject(IdService);
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.api.url}/profiles`;
 
-  getAll(): Profile[] {
-    const data = this.storage.getItem<Profile[]>(this.key);
-    if (!data || data.length === 0) {
-      const seed = this.getSeedData();
-      this.storage.setItem(this.key, seed);
-      return seed;
-    }
-    return data;
+  getAll(projectId: number): Observable<Profile[]> {
+    return this.http.get<Profile[]>(`${this.apiUrl}/${projectId}`);
   }
 
-  save(profile: Profile): void {
-    const list = this.getAll();
-    const index = list.findIndex((p) => p.id === profile.id);
-    if (index >= 0) {
-      list[index] = profile;
+  save(profile: Profile, projectId: number): Observable<Profile> {
+    const data = { ...profile, projectId };
+
+    if (profile.id && profile.id.length > 10) {
+      return this.http.patch<Profile>(`${this.apiUrl}/${profile.id}`, data);
     } else {
-      list.push(profile);
+      // Clean up empty ID for creation
+      if (data.id === '') {
+        const { id, ...payload } = data;
+        return this.http.post<Profile>(this.apiUrl, payload as any);
+      }
+      return this.http.post<Profile>(this.apiUrl, data);
     }
-    this.storage.setItem(this.key, list);
   }
 
-  delete(id: string): void {
-    let list = this.getAll();
-    list = list.filter((p) => p.id !== id);
-    this.storage.setItem(this.key, list);
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  saveBulk(profiles: Profile[]): void {
-    this.storage.setItem(this.key, profiles);
+  getById(id: string): Observable<Profile> {
+    return this.http.get<Profile>(`${this.apiUrl}/item/${id}`);
   }
 
-  getById(id: string): Profile | undefined {
-    return this.getAll().find((p) => p.id === id);
+  getAvailableProjects(excludeProjectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/import/available/${excludeProjectId}`);
   }
 
-  private getSeedData(): Profile[] {
-    return [
-      {
-        id: this.idService.generate(),
-        name: 'UX Designer',
-        username: 'Matheus Ribeiro',
-        dailyRate: 550,
-        active: true,
-      },
-      {
-        id: this.idService.generate(),
-        name: 'Business Analyst',
-        username: 'Sarah Jones',
-        dailyRate: 600,
-        active: true,
-      },
-      {
-        id: this.idService.generate(),
-        name: 'Chef de projet',
-        username: 'Jean Dupont',
-        dailyRate: 700,
-        active: true,
-      },
-      {
-        id: this.idService.generate(),
-        name: 'Architecte',
-        username: 'John Doe',
-        dailyRate: 800,
-        active: true,
-      },
-      {
-        id: this.idService.generate(),
-        name: 'Tech Lead Frontend',
-        username: 'Jane Smith',
-        dailyRate: 750,
-        active: true,
-      },
-      {
-        id: this.idService.generate(),
-        name: 'Tech Lead Backend',
-        username: 'Bob Martin',
-        dailyRate: 800,
-        active: true,
-      },
-      {
-        id: this.idService.generate(),
-        name: 'Dév Senior Frontend',
-        username: 'Alice Wonderland',
-        dailyRate: 650,
-        active: true,
-      },
-    ];
+  importFromProject(sourceProjectId: number, targetProjectId: number): Observable<Profile[]> {
+    return this.http.post<Profile[]>(`${this.apiUrl}/import`, {
+      sourceProjectId,
+      targetProjectId,
+    });
   }
 }
