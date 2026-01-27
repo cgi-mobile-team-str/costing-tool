@@ -2,10 +2,14 @@ export const environment = {
   production: false,
   msalConfig: {
     auth: {
-      clientId: '2da3ef99-4acb-4a7a-a84b-4f85904bdf65',
-      authority: 'https://login.microsoftonline.com/b037a886-4b8f-4119-a8a9-1bdce833249a',
+      clientId: '8b243d6e-5c1c-411e-a387-f44ce9ef0043',
+      authority: 'https://login.microsoftonline.com/04bec368-e44a-4659-9029-12eda6658d5d',
       redirectUri: '/',
       postLogoutRedirectUri: '/',
+      scopes: ['api://8b243d6e-5c1c-411e-a387-f44ce9ef0043/access_as_user'],
     },
+  },
+  api: {
+    url: 'http://localhost:3000',
   },
 };

@@ -14,6 +14,8 @@ const enum eTriggerAction {
 export class ZardDialogRef<T = any, R = any, U = any> {
   private destroy$ = new Subject<void>();
   private isClosing = false;
+  private afterClosedSubject = new Subject<R | undefined>();
+  afterClosed$ = this.afterClosedSubject.asObservable();
   protected result?: R;
   componentInstance: T | null = null;
 
@@ -36,7 +38,7 @@ export class ZardDialogRef<T = any, R = any, U = any> {
     if (isPlatformBrowser(this.platformId)) {
       fromEvent<KeyboardEvent>(document, 'keydown')
         .pipe(
-          filter(event => event.key === 'Escape'),
+          filter((event) => event.key === 'Escape'),
           takeUntil(this.destroy$),
         )
         .subscribe(() => this.close());
@@ -65,6 +67,8 @@ export class ZardDialogRef<T = any, R = any, U = any> {
       }
 
       if (!this.destroy$.closed) {
+        this.afterClosedSubject.next(this.result);
+        this.afterClosedSubject.complete();
         this.destroy$.next();
         this.destroy$.complete();
       }

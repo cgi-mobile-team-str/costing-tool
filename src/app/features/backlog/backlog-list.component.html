@@ -2,7 +2,7 @@
   <div class="header">
     <div>
       <span class="context-label">{{ 'nav.backlog' | translate }}</span>
-      <h2>{{ settings().projectName }}</h2>
+      <h2>{{ currentProjectName() }}</h2>
     </div>
     <div class="flex gap-2">
       <z-button zType="outline" (click)="openManagementSheet()">

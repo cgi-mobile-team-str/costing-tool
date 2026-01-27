@@ -2,7 +2,7 @@
   <div class="dashboard-header">
     <div>
       <span class="dashboard-context-label">{{ 'nav.dashboard' | translate }}</span>
-      <h2>{{ settings().projectName }}</h2>
+      <h2>{{ currentProjectName() }}</h2>
     </div>
     <div class="flex items-center gap-4">
       @if (apiResult()) {

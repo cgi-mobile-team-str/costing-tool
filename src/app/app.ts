@@ -26,7 +26,6 @@ export class App implements OnInit, OnDestroy {
   isIframe = false;
   loginDisplay = false;
   private readonly _destroying$ = new Subject<void>();
-
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,

@@ -5,6 +5,7 @@ import { BacklogItem, Cluster, Product, Profile } from '../../core/models/domain
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService, Lang } from '../../core/services/i18n.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
+import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
@@ -39,6 +40,7 @@ export class SettingsComponent {
   private i18n = inject(I18nService);
   private calc = inject(CalculationService);
   private alertDialogService = inject(ZardAlertDialogService);
+  private projectsService = inject(ProjectsService);
 
   showImportModal = signal(false);
   itemsToImport = signal<BacklogItem[]>([]);
@@ -48,6 +50,7 @@ export class SettingsComponent {
   importedProjectName = signal('');
 
   settings = signal(this.repo.get());
+  currentProjectName = this.projectsService.currentProjectName;
 
   form = this.fb.group({
     projectName: ['', Validators.required],
@@ -59,7 +62,7 @@ export class SettingsComponent {
   constructor() {
     const s = this.repo.get();
     this.form.patchValue({
-      projectName: s.projectName || '',
+      projectName: this.currentProjectName() || s.projectName || '',
       currency: s.currency,
     });
   }
@@ -75,6 +78,12 @@ export class SettingsComponent {
       };
       this.repo.save(newSettings);
       this.settings.set(newSettings);
+
+      // Sync with global project name
+      if (val.projectName) {
+        this.projectsService.setProjectName(val.projectName);
+      }
+
       this.form.markAsPristine();
       alert('Settings saved');
     }

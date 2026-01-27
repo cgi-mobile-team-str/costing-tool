@@ -12,6 +12,7 @@ import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { IdService } from '../../core/services/id.service';
+import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
@@ -59,10 +60,12 @@ export class BacklogListComponent {
   private sheetService = inject(ZardSheetService);
   private dropdownService = inject(ZardDropdownService);
   private alertDialogService = inject(ZardAlertDialogService);
+  private projectsService = inject(ProjectsService);
   i18n = inject(I18nService);
 
   items = signal<BacklogItem[]>([]);
   settings = signal(this.settingsRepo.get());
+  currentProjectName = this.projectsService.currentProjectName;
   profiles: Profile[] = [];
 
   // Filters

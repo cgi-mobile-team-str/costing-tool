@@ -1,7 +1,7 @@
 <div class="header">
   <div>
     <span class="context-label">{{ 'nav.profiles' | translate }}</span>
-    <h2>{{ settings().projectName }}</h2>
+    <h2>{{ currentProjectName() }}</h2>
   </div>
 </div>
 
@@ -21,7 +21,7 @@
         />
         <span class="preview"
           >{{ 'settings.example' | translate }} 1000€ ➔
-          {{ calculatePreview() | currency : 'EUR' }}</span
+          {{ calculatePreview() | currency: 'EUR' }}</span
         >
       </div>
     </div>
@@ -56,33 +56,33 @@
     </thead>
     <tbody z-table-body>
       @for (profile of filteredProfiles(); track profile.id) {
-      <tr z-table-row [class.inactive]="!profile.active">
-        <td z-table-cell class="font-medium">{{ profile.name }}</td>
-        <td z-table-cell>{{ profile.username || '-' }}</td>
-        <td z-table-cell>{{ profile.dailyRate | currency : 'EUR' }}</td>
-        <td z-table-cell>{{ profile.scr || 0 | currency : 'EUR' }}</td>
-        <td z-table-cell>
-          <span class="badge" [class.success]="profile.active">{{
-            profile.active ? ('common.yes' | translate) : ('common.no' | translate)
-          }}</span>
-        </td>
-        <td z-table-cell class="text-right">
-          <div class="flex justify-end gap-2">
-            <button z-button zType="outline" zSize="sm" (click)="openProfileSheet(profile)">
-              {{ 'common.edit' | translate }}
-            </button>
-            <button z-button zType="destructive" zSize="sm" (click)="delete(profile)">
-              {{ 'common.delete' | translate }}
-            </button>
-          </div>
-        </td>
-      </tr>
+        <tr z-table-row [class.inactive]="!profile.active">
+          <td z-table-cell class="font-medium">{{ profile.name }}</td>
+          <td z-table-cell>{{ profile.username || '-' }}</td>
+          <td z-table-cell>{{ profile.dailyRate | currency: 'EUR' }}</td>
+          <td z-table-cell>{{ profile.scr || 0 | currency: 'EUR' }}</td>
+          <td z-table-cell>
+            <span class="badge" [class.success]="profile.active">{{
+              profile.active ? ('common.yes' | translate) : ('common.no' | translate)
+            }}</span>
+          </td>
+          <td z-table-cell class="text-right">
+            <div class="flex justify-end gap-2">
+              <button z-button zType="outline" zSize="sm" (click)="openProfileSheet(profile)">
+                {{ 'common.edit' | translate }}
+              </button>
+              <button z-button zType="destructive" zSize="sm" (click)="delete(profile)">
+                {{ 'common.delete' | translate }}
+              </button>
+            </div>
+          </td>
+        </tr>
       } @empty {
-      <tr z-table-row>
-        <td z-table-cell colspan="5" class="text-center py-8 text-muted-foreground">
-          {{ 'profiles.no_results' | translate }} "{{ searchTerm() }}"
-        </td>
-      </tr>
+        <tr z-table-row>
+          <td z-table-cell colspan="5" class="text-center py-8 text-muted-foreground">
+            {{ 'profiles.no_results' | translate }} "{{ searchTerm() }}"
+          </td>
+        </tr>
       }
     </tbody>
   </table>

@@ -3,6 +3,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BacklogItem, Scope } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
+import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
@@ -25,10 +26,12 @@ export class DashboardComponent {
   private profilesRepo = inject(ProfilesRepository);
   private settingsRepo = inject(SettingsRepository);
   private calc = inject(CalculationService);
+  private projectsService = inject(ProjectsService);
 
   private backlog = signal(this.backlogRepo.getAll());
   private profiles = this.profilesRepo.getAll(); // Static for calc, fine if refreshed
   settings = signal(this.settingsRepo.get());
+  currentProjectName = this.projectsService.currentProjectName;
 
   scopes: Scope[] = ['MVP', 'V1', 'V2'];
 

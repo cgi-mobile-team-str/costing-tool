@@ -1,12 +1,21 @@
 import { Routes } from '@angular/router';
 import { MsalGuard } from '@azure/msal-angular';
+import { projectGuard } from './core/guards/project.guard';
 import { MainLayoutComponent } from './core/layout/main-layout.component';
 
 export const routes: Routes = [
   {
+    path: 'select-project',
+    canActivate: [MsalGuard],
+    loadComponent: () =>
+      import('./features/project-selection/project-selection.component').then(
+        (m) => m.ProjectSelectionComponent,
+      ),
+  },
+  {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [MsalGuard],
+    canActivate: [MsalGuard, projectGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {

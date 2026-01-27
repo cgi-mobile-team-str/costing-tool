@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -9,6 +10,6 @@ export class ApiService {
   private http = inject(HttpClient);
 
   getTestData(): Observable<string> {
-    return this.http.get('https://localhost:3000', { responseType: 'text' });
+    return this.http.get(environment.api.url + '/db-test', { responseType: 'text' });
   }
 }

@@ -7,6 +7,12 @@ export interface Profile {
   active: boolean;
 }
 
+export interface Project {
+  id: number;
+  name: string;
+  createdAt: string;
+}
+
 export type Scope = 'MVP' | 'V1' | 'V2';
 export type Risk = 'low' | 'medium' | 'high';
 export type Moscow = 'MUST' | 'SHOULD' | 'COULD' | 'WONT';

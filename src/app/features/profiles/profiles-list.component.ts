@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
+import { ProjectsService } from '../../core/services/projects.service';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
 import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
@@ -35,10 +36,12 @@ export class ProfilesListComponent {
   private sheetService = inject(ZardSheetService);
   private i18n = inject(I18nService);
   private alertDialogService = inject(ZardAlertDialogService);
+  private projectsService = inject(ProjectsService);
 
   profiles = signal<Profile[]>([]);
   searchTerm = signal('');
   settings = signal(this.settingsRepo.get());
+  currentProjectName = this.projectsService.currentProjectName;
   marginPercent = 0;
 
   filteredProfiles = computed(() => {

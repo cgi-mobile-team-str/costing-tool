@@ -2,7 +2,7 @@
   <div class="header">
     <div>
       <span class="context-label">{{ 'nav.settings' | translate }}</span>
-      <h2>{{ settings().projectName }}</h2>
+      <h2>{{ currentProjectName() }}</h2>
     </div>
   </div>
 
@@ -75,10 +75,10 @@
   </div>
 
   @if (showImportModal()) {
-  <app-import-modal
-    [itemCount]="itemsToImport().length"
-    [projectName]="importedProjectName()"
-    (action)="handleImportAction($event)"
-  />
+    <app-import-modal
+      [itemCount]="itemsToImport().length"
+      [projectName]="importedProjectName()"
+      (action)="handleImportAction($event)"
+    />
   }
 </div>

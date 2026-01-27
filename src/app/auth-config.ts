@@ -26,5 +26,5 @@ export const msalConfig: Configuration = {
 };
 
 export const loginRequest = {
-  scopes: ['User.Read'],
+  scopes: environment.msalConfig.auth.scopes,
 };
