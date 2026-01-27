@@ -48,4 +48,20 @@ export class ProjectsService {
     this.storage.setItem('projectName', name);
     this.currentProjectName.set(name);
   }
+
+  updateProject(id: number, name: string): Observable<Project> {
+    const url = `${this.apiUrl}/${id}`;
+    console.log(`ProjectsService.updateProject() calling PATCH ${url}`, { name });
+    return this.http.patch<Project>(url, { name }).pipe(
+      tap({
+        next: (project) => {
+          console.log('ProjectsService SUCCESS: Project updated', project);
+          if (this.currentProjectId() === id.toString()) {
+            this.setProjectName(project.name);
+          }
+        },
+        error: (err) => console.error('ProjectsService ERROR updating project:', err),
+      }),
+    );
+  }
 }

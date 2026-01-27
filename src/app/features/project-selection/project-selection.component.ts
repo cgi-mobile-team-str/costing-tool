@@ -35,11 +35,11 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
           <button
             *ngFor="let project of projects"
             (click)="selectProject(project)"
-            class="w-full text-left p-5 rounded-xl border border-slate-100 bg-slate-50/50 hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-md transition-all group relative overflow-hidden"
+            class="w-full text-left p-5 rounded-xl border border-slate-100 bg-slate-50/50 hover:border-red-200 hover:bg-red-50/50 hover:shadow-md transition-all group relative overflow-hidden"
           >
             <div class="flex justify-between items-center">
               <div>
-                <div class="font-bold text-slate-900 group-hover:text-blue-700 text-lg">
+                <div class="font-bold text-slate-900 group-hover:text-red-700 text-lg">
                   {{ project.name }}
                 </div>
                 <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">
@@ -49,7 +49,7 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
               <div
                 class="opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0"
               >
-                <span class="text-blue-600 text-2xl">→</span>
+                <span class="text-red-600 text-2xl">→</span>
               </div>
             </div>
           </button>
@@ -77,7 +77,7 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
           </div>
           <button
             (click)="loadProjects()"
-            class="mt-2 text-[10px] text-blue-400 hover:text-blue-600 underline"
+            class="mt-2 text-[10px] text-red-400 hover:text-red-600 underline"
           >
             Forcer la recharge
           </button>

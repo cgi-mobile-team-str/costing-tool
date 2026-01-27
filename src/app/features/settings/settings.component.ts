@@ -71,21 +71,35 @@ export class SettingsComponent {
     if (this.form.valid) {
       const val = this.form.value;
       const current = this.repo.get();
-      const newSettings = {
-        ...current,
-        projectName: val.projectName || current.projectName,
-        currency: val.currency || 'EUR',
-      };
-      this.repo.save(newSettings);
-      this.settings.set(newSettings);
 
-      // Sync with global project name
-      if (val.projectName) {
-        this.projectsService.setProjectName(val.projectName);
-      }
+      this.alertDialogService.confirm({
+        zTitle: this.i18n.translate('settings.confirm_save_title'),
+        zDescription: this.i18n.translate('settings.confirm_save_desc'),
+        zOkText: this.i18n.translate('common.save'),
+        zOnOk: () => {
+          const newSettings = {
+            ...current,
+            projectName: val.projectName || current.projectName,
+            currency: val.currency || 'EUR',
+          };
+          this.repo.save(newSettings);
+          this.settings.set(newSettings);
 
-      this.form.markAsPristine();
-      alert('Settings saved');
+          // Sync with global project name and backend
+          if (val.projectName) {
+            const projectId = this.projectsService.currentProjectId();
+            if (projectId) {
+              this.projectsService.updateProject(Number(projectId), val.projectName).subscribe();
+            } else {
+              // Fallback if no project ID (should not happen in main app)
+              this.projectsService.setProjectName(val.projectName);
+            }
+          }
+
+          this.form.markAsPristine();
+          // Removed alert('Settings saved') for better UX with dialog
+        },
+      });
     }
   }
 
