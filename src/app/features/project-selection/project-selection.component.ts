@@ -1,6 +1,7 @@
 import { ProjectsService } from '@/core/services/projects.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, NgZone, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Project } from '../../core/models/domain.model';
 import { LocalStorageService } from '../../core/services/local-storage.service';
@@ -8,7 +9,7 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
 @Component({
   selector: 'app-project-selection',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div
@@ -69,6 +70,50 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
           </div>
         </div>
 
+        <!-- Create New Project Section -->
+        <div class="mb-8 pt-4 border-t border-slate-100">
+          <div *ngIf="!isCreating">
+            <button
+              (click)="isCreating = true"
+              class="w-full py-3 px-4 bg-white border-2 border-dashed border-slate-300 text-slate-500 rounded-xl hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all font-medium flex items-center justify-center gap-2"
+            >
+              <span class="text-xl leading-none">+</span> Créer un nouveau projet
+            </button>
+          </div>
+
+          <div
+            *ngIf="isCreating"
+            class="bg-slate-50 p-4 rounded-xl border border-slate-200 animate-in fade-in slide-in-from-top-2"
+          >
+            <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide"
+              >Nom du projet</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newProjectName"
+              (keydown.enter)="createProject()"
+              placeholder="Ex: Mon Super Projet"
+              class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all mb-3 text-sm"
+              autofocus
+            />
+            <div class="flex gap-2">
+              <button
+                (click)="createProject()"
+                [disabled]="!newProjectName.trim() || isCreatingProject"
+                class="flex-1 py-2 px-4 bg-red-600 text-white rounded-lg font-medium text-sm hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-red-200"
+              >
+                {{ isCreatingProject ? 'Création...' : 'Créer' }}
+              </button>
+              <button
+                (click)="cancelCreate()"
+                class="py-2 px-4 bg-white border border-slate-300 text-slate-600 rounded-lg font-medium text-sm hover:bg-slate-50 transition-all"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="flex flex-col items-center gap-2">
           <p class="text-slate-400 text-xs font-medium">CGI Costing Tool &bull; v1.0.0</p>
           <div class="flex gap-4 text-slate-300 text-[10px]">
@@ -101,6 +146,17 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
       }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .animate-in {
+        animation: fade-in 0.2s ease-out;
+      }
     `,
   ],
 })
@@ -115,6 +171,11 @@ export class ProjectSelectionComponent implements OnInit {
   loading = true;
   errorMessage: string | null = null;
   apiUrl = '';
+
+  // Creation State
+  isCreating = false;
+  isCreatingProject = false;
+  newProjectName = '';
 
   ngOnInit() {
     console.log('ProjectSelectionComponent ngOnInit');
@@ -158,5 +219,39 @@ export class ProjectSelectionComponent implements OnInit {
   selectProject(project: Project) {
     this.projectsService.setSelectedProject(project);
     this.router.navigate(['/dashboard']);
+  }
+
+  createProject() {
+    const name = this.newProjectName.trim();
+    if (!name) return;
+
+    this.isCreatingProject = true;
+    this.projectsService.createProject(name).subscribe({
+      next: (project) => {
+        this.ngZone.run(() => {
+          this.isCreatingProject = false;
+          this.isCreating = false;
+          this.newProjectName = '';
+          // Reload projects or just push? Reload ensures sort/consistency
+          this.loadProjects();
+          // Optional: Auto-select?
+          // this.selectProject(project);
+        });
+      },
+      error: (err) => {
+        console.error('Error creating project', err);
+        this.ngZone.run(() => {
+          this.isCreatingProject = false;
+          this.errorMessage = 'Erreur lors de la création du projet.';
+          this.cdr.detectChanges();
+        });
+      },
+    });
+  }
+
+  cancelCreate() {
+    this.isCreating = false;
+    this.newProjectName = '';
+    this.errorMessage = null;
   }
 }

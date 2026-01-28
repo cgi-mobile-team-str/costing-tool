@@ -64,4 +64,15 @@ export class ProjectsService {
       }),
     );
   }
+
+  createProject(name: string): Observable<Project> {
+    const url = this.apiUrl;
+    console.log(`ProjectsService.createProject() calling POST ${url}`, { name });
+    return this.http.post<Project>(url, { name }).pipe(
+      tap({
+        next: (project) => console.log('ProjectsService SUCCESS: Project created', project),
+        error: (err) => console.error('ProjectsService ERROR creating project:', err),
+      }),
+    );
+  }
 }

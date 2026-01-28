@@ -99,17 +99,4 @@ export class DashboardComponent {
       .sort((a, b) => this.getItemCost(b) - this.getItemCost(a))
       .slice(0, 5);
   });
-
-  testApi() {
-    this.apiResult.set('Chargement...');
-    this.apiService.getTestData().subscribe({
-      next: (res) => this.apiResult.set(`Succès: ${res}`),
-      error: (err) => {
-        console.error(err);
-        this.apiResult.set(
-          `Erreur: ${err.message}. Vérifiez la console et si votre API accepte les requêtes CORS.`,
-        );
-      },
-    });
-  }
 }

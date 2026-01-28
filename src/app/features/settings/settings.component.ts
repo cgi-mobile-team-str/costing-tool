@@ -12,20 +12,15 @@ import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
 import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
-import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ImportModalComponent } from '../backlog/import-modal.component';
+
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    TranslatePipe,
-    ImportModalComponent,
-    ZardButtonComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, ImportModalComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css'],
 })
@@ -41,6 +36,7 @@ export class SettingsComponent {
   private calc = inject(CalculationService);
   private alertDialogService = inject(ZardAlertDialogService);
   private projectsService = inject(ProjectsService);
+  private authService = inject(MsalService);
 
   showImportModal = signal(false);
   itemsToImport = signal<BacklogItem[]>([]);
@@ -51,6 +47,9 @@ export class SettingsComponent {
 
   settings = signal(this.repo.get());
   currentProjectName = this.projectsService.currentProjectName;
+
+  // User Info Claims
+  userClaims = signal<any>(null);
 
   form = this.fb.group({
     projectName: ['', Validators.required],
@@ -65,6 +64,21 @@ export class SettingsComponent {
       projectName: this.currentProjectName() || s.projectName || '',
       currency: s.currency,
     });
+
+    // Extract claims
+    let account = this.authService.instance.getActiveAccount();
+
+    if (!account) {
+      const allAccounts = this.authService.instance.getAllAccounts();
+      if (allAccounts.length > 0) {
+        account = allAccounts[0];
+        this.authService.instance.setActiveAccount(account);
+      }
+    }
+
+    if (account) {
+      this.userClaims.set(account.idTokenClaims);
+    }
   }
 
   save() {
