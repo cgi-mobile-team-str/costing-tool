@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '@env/environment';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { Project } from '../models/domain.model';
 import { LocalStorageService } from './local-storage.service';
 
@@ -16,9 +16,27 @@ export class ProjectsService {
 
   // Signals for global project state
   public currentProjectId = signal<string | null>(this.storage.getItem<string>('projectId'));
-  public currentProjectName = signal<string | null>(null);
-  public marginRate = signal<number>(0.15);
-  public currency = signal<string>('EUR');
+  public currentProjectName = signal<string | null>(this.storage.getItem<string>('projectName'));
+  public marginRate = signal<number>(Number(this.storage.getItem<string>('marginRate') || 0.15));
+  public currency = signal<string>(this.storage.getItem<string>('currency') || 'EUR');
+
+  constructor() {}
+
+  public initProject(): Observable<any> {
+    const id = this.currentProjectId();
+    if (id) {
+      const name = this.currentProjectName();
+      const margin = this.storage.getItem<string>('marginRate');
+      const currency = this.storage.getItem<string>('currency');
+
+      // If we are missing details but have an ID, fetch from API
+      if (!name || !margin || !currency) {
+        return this.getProject(id);
+      }
+    }
+    // Return a dummy observable if no fetch is needed
+    return of(null);
+  }
 
   getProjects(): Observable<Project[]> {
     const url = `${this.apiUrl}?t=${Date.now()}`;
@@ -31,9 +49,7 @@ export class ProjectsService {
       tap({
         next: (project) => {
           if (this.currentProjectId() === id) {
-            this.currentProjectName.set(project.name);
-            this.marginRate.set(Number(project.marginRate || 0.15));
-            this.currency.set(project.currency || 'EUR');
+            this.syncProjectData(project);
           }
         },
       }),
@@ -44,19 +60,29 @@ export class ProjectsService {
     if (project) {
       this.storage.setItem('projectId', project.id);
       this.currentProjectId.set(project.id);
-      this.currentProjectName.set(project.name);
-      this.marginRate.set(Number(project.marginRate || 0.15));
-      this.currency.set(project.currency || 'EUR');
+      this.syncProjectData(project);
     } else {
       this.storage.removeItem('projectId');
+      this.storage.removeItem('projectName');
+      this.storage.removeItem('marginRate');
+      this.storage.removeItem('currency');
       this.currentProjectId.set(null);
       this.currentProjectName.set(null);
     }
   }
 
+  private syncProjectData(project: Project) {
+    this.storage.setItem('projectName', project.name);
+    this.storage.setItem('marginRate', project.marginRate?.toString() || '0.15');
+    this.storage.setItem('currency', project.currency || 'EUR');
+
+    this.currentProjectName.set(project.name);
+    this.marginRate.set(Number(project.marginRate || 0.15));
+    this.currency.set(project.currency || 'EUR');
+  }
+
   updateProject(id: string, updates: Partial<Project>): Observable<Project> {
     const url = `${this.apiUrl}/${id}`;
-    // Margin rate is numeric/string in backend DTO for safety
     const payload = {
       ...updates,
       marginRate: updates.marginRate?.toString(),
@@ -65,9 +91,7 @@ export class ProjectsService {
       tap({
         next: (project) => {
           if (this.currentProjectId() === id) {
-            this.currentProjectName.set(project.name);
-            this.marginRate.set(Number(project.marginRate || 0.15));
-            this.currency.set(project.currency || 'EUR');
+            this.syncProjectData(project);
           }
         },
       }),
@@ -76,12 +100,6 @@ export class ProjectsService {
 
   createProject(name: string): Observable<Project> {
     const url = this.apiUrl;
-    console.log(`ProjectsService.createProject() calling POST ${url}`, { name });
-    return this.http.post<Project>(url, { name }).pipe(
-      tap({
-        next: (project) => console.log('ProjectsService SUCCESS: Project created', project),
-        error: (err) => console.error('ProjectsService ERROR creating project:', err),
-      }),
-    );
+    return this.http.post<Project>(url, { name });
   }
 }

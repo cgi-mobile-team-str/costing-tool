@@ -1,6 +1,11 @@
 import { provideZard } from '@/shared/core/provider/providezard';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
 import {
   MSAL_GUARD_CONFIG,
@@ -18,9 +23,15 @@ import {
   IPublicClientApplication,
   PublicClientApplication,
 } from '@azure/msal-browser';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { loginRequest, msalConfig } from './auth-config';
+import { ProjectsService } from './core/services/projects.service';
+
+export function initializeApp(projectsService: ProjectsService) {
+  return () => firstValueFrom(projectsService.initProject());
+}
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication(msalConfig);
@@ -51,6 +62,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes, withHashLocation()),
     provideZard(),
+    provideAppInitializer(() => {
+      const projectsService = inject(ProjectsService);
+      return firstValueFrom(projectsService.initProject());
+    }),
     {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory,
