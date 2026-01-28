@@ -188,46 +188,29 @@
 
       <z-dropdown-menu-content #actionMenu="zDropdownMenuContent">
         <z-dropdown-menu-item (click)="startEdit('title')">
-          <img
-            src="assets/pen-to-square-regular-full.svg"
-            alt="Edit"
-            width="16"
-            height="16"
-            style="margin-right: 0.5rem"
-          />
+          <z-icon zType="pencil" class="mr-2 h-4 w-4" />
           {{ 'common.edit' | translate }}
         </z-dropdown-menu-item>
         <z-dropdown-menu-item (click)="duplicateItem.emit(item)">
-          <img
-            src="assets/copy-regular-full.svg"
-            alt="Duplicate"
-            width="16"
-            height="16"
-            style="margin-right: 0.5rem"
-          />
+          <z-icon zType="copy" class="mr-2 h-4 w-4" />
           {{ 'common.duplicate' | translate }}
         </z-dropdown-menu-item>
         @if (!isFirst) {
           <z-dropdown-menu-item (click)="moveItemUp.emit(item)">
-            <z-icon zType="arrow-up" class="h-4 w-4 mr-2" />
+            <z-icon zType="arrow-up" class="mr-2 h-4 w-4" />
             {{ 'common.move_up' | translate }}
           </z-dropdown-menu-item>
         }
+
         @if (!isLast) {
           <z-dropdown-menu-item (click)="moveItemDown.emit(item)">
-            <z-icon zType="arrow-down" class="h-4 w-4 mr-2" />
+            <z-icon zType="arrow-down" class="mr-2 h-4 w-4" />
             {{ 'common.move_down' | translate }}
           </z-dropdown-menu-item>
         }
         <z-dropdown-menu-item (click)="deleteItem.emit(item)">
-          <img
-            src="assets/trash-can-regular-full.svg"
-            alt="Delete"
-            width="16"
-            height="16"
-            style="margin-right: 0.5rem"
-          />
-          {{ 'common.delete' | translate }}
+          <z-icon zType="trash" class="mr-2 h-4 w-4 text-destructive" />
+          <span class="text-destructive">{{ 'common.delete' | translate }}</span>
         </z-dropdown-menu-item>
       </z-dropdown-menu-content>
     </div>

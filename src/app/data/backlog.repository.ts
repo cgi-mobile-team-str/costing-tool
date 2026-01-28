@@ -36,19 +36,29 @@ export class BacklogRepository {
     // Let's assume the component acts correctly.
 
     if (item.id && !item.id.toString().includes('item-') && item.id.length > 10) {
+      // Destructure to remove non-updatable fields like createdAt, userId from payload
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { id, projectId, userId, createdAt, productId, clusterId, ...rest } = item as any;
+
+      // Re-add potentially needed fields that are allowed to change or needed for identification?
+      // Actually productId/clusterId are allowed in UpdateItemDto
+      const payload: Partial<BacklogItem> = { ...rest, productId, clusterId };
+      // Note: projectId is not in BacklogItem interface but might be in UpdateItemDto?
+      // UpdateItemDto extends CreateItemDto which has projectId.
+      // So payload should probably include it if we want to change projects?
+      // But typically we don't move items between projects this way.
+      // Let's stick to standard fields.
+
       return this.http
-        .patch<BacklogItem>(`${this.apiUrl}/${item.id}`, item)
+        .patch<BacklogItem>(`${this.apiUrl}/${item.id}`, payload)
         .pipe(tap((updated) => this.updateLocal(updated)));
     } else {
       // Create
-      // Remove temp ID if present so backend generates one? or backend ignores it.
-      // My backend implementation uses randomUUID() ignoring sent ID in create.
       return this.http
         .post<BacklogItem>(this.apiUrl, item)
         .pipe(tap((created) => this.addLocal(created)));
     }
   }
-
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap(() => {
@@ -65,10 +75,12 @@ export class BacklogRepository {
   }
 
   private updateLocal(item: BacklogItem) {
+    if (!item) return;
     this._items.update((list) => list.map((i) => (i.id === item.id ? item : i)));
   }
 
   private addLocal(item: BacklogItem) {
+    if (!item) return;
     this._items.update((list) => [...list, item]);
   }
 }

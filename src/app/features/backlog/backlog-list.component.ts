@@ -312,17 +312,22 @@ export class BacklogListComponent {
         .replace('{count}', this.selectedIds().length.toString()),
       zOkText: this.i18n.translate('common.delete'),
       zOkDestructive: true,
-      zOnOk: () => {
-        this.selectedIds().forEach((id) => this.repo.delete(id));
+      zOnOk: async () => {
+        const deletePromises = this.selectedIds().map((id) => firstValueFrom(this.repo.delete(id)));
+        await Promise.all(deletePromises);
         this.refresh();
       },
     });
   }
 
   // Item actions
-  duplicate(item: BacklogItem) {
-    const newItem = { ...item, id: this.idService.generate(), title: item.title + ' (Copy)' };
-    this.repo.save(newItem);
+  async duplicate(item: BacklogItem) {
+    const newItem = {
+      ...item,
+      id: `item-${this.idService.generate()}`,
+      title: item.title + ' (Copy)',
+    };
+    await firstValueFrom(this.repo.save(newItem));
     this.refresh();
   }
 
@@ -333,8 +338,8 @@ export class BacklogListComponent {
       zDescription: this.i18n.translate('backlog.delete_confirm'),
       zOkText: this.i18n.translate('common.delete'),
       zOkDestructive: true,
-      zOnOk: () => {
-        this.repo.delete(item.id);
+      zOnOk: async () => {
+        await firstValueFrom(this.repo.delete(item.id));
         this.refresh();
       },
     });
@@ -385,16 +390,16 @@ export class BacklogListComponent {
     }
   }
 
-  saveEdit(item: BacklogItem) {
-    this.repo.save(item);
+  async saveEdit(item: BacklogItem) {
+    await firstValueFrom(this.repo.save(item));
     this.editingCell.set(null);
     this.originalItem = null;
     this.refresh();
   }
 
-  cancelEdit() {
+  async cancelEdit() {
     if (this.originalItem) {
-      this.repo.save(this.originalItem);
+      await firstValueFrom(this.repo.save(this.originalItem));
       this.originalItem = null;
     }
     this.editingCell.set(null);
@@ -416,12 +421,18 @@ export class BacklogListComponent {
     }
 
     if (prevIndex !== -1) {
-      const newItems = [...allItems];
-      // Swap
-      newItems[index] = newItems[prevIndex];
-      newItems[prevIndex] = item;
+      const prevItem = allItems[prevIndex];
 
-      await firstValueFrom(this.repo.saveBulk(newItems));
+      // Swap orders
+      const tempOrder = item.order ?? 0;
+      item.order = prevItem.order ?? 0;
+      prevItem.order = tempOrder;
+
+      // Save only the modified items
+      await Promise.all([
+        firstValueFrom(this.repo.save(item)),
+        firstValueFrom(this.repo.save(prevItem)),
+      ]);
       this.refresh();
     }
   }
@@ -441,12 +452,18 @@ export class BacklogListComponent {
     }
 
     if (nextIndex !== -1) {
-      const newItems = [...allItems];
-      // Swap
-      newItems[index] = newItems[nextIndex];
-      newItems[nextIndex] = item;
+      const nextItem = allItems[nextIndex];
 
-      await firstValueFrom(this.repo.saveBulk(newItems));
+      // Swap orders
+      const tempOrder = item.order ?? 0;
+      item.order = nextItem.order ?? 0;
+      nextItem.order = tempOrder;
+
+      // Save only the modified items
+      await Promise.all([
+        firstValueFrom(this.repo.save(item)),
+        firstValueFrom(this.repo.save(nextItem)),
+      ]);
       this.refresh();
     }
   }
