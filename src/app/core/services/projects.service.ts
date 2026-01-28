@@ -16,16 +16,26 @@ export class ProjectsService {
 
   // Signals for global project state
   public currentProjectId = signal<string | null>(this.storage.getItem<string>('projectId'));
-  public currentProjectName = signal<string | null>(this.storage.getItem<string>('projectName'));
+  public currentProjectName = signal<string | null>(null);
+  public marginRate = signal<number>(0.15);
+  public currency = signal<string>('EUR');
 
   getProjects(): Observable<Project[]> {
     const url = `${this.apiUrl}?t=${Date.now()}`;
-    console.log('ProjectsService.getProjects() calling URL:', url);
-    return this.http.get<Project[]>(url).pipe(
+    return this.http.get<Project[]>(url);
+  }
+
+  getProject(id: string): Observable<Project> {
+    const url = `${this.apiUrl}/${id}?t=${Date.now()}`;
+    return this.http.get<Project>(url).pipe(
       tap({
-        next: (data) => console.log('ProjectsService SUCCESS: Received', data.length, 'projects'),
-        error: (err) => console.error('ProjectsService ERROR:', err),
-        complete: () => console.log('ProjectsService Observable COMPLETE'),
+        next: (project) => {
+          if (this.currentProjectId() === id) {
+            this.currentProjectName.set(project.name);
+            this.marginRate.set(Number(project.marginRate || 0.15));
+            this.currency.set(project.currency || 'EUR');
+          }
+        },
       }),
     );
   }
@@ -33,34 +43,33 @@ export class ProjectsService {
   setSelectedProject(project: Project | null) {
     if (project) {
       this.storage.setItem('projectId', project.id);
-      this.storage.setItem('projectName', project.name);
       this.currentProjectId.set(project.id);
       this.currentProjectName.set(project.name);
+      this.marginRate.set(Number(project.marginRate || 0.15));
+      this.currency.set(project.currency || 'EUR');
     } else {
       this.storage.removeItem('projectId');
-      this.storage.removeItem('projectName');
       this.currentProjectId.set(null);
       this.currentProjectName.set(null);
     }
   }
 
-  setProjectName(name: string) {
-    this.storage.setItem('projectName', name);
-    this.currentProjectName.set(name);
-  }
-
-  updateProject(id: string, name: string): Observable<Project> {
+  updateProject(id: string, updates: Partial<Project>): Observable<Project> {
     const url = `${this.apiUrl}/${id}`;
-    console.log(`ProjectsService.updateProject() calling PATCH ${url}`, { name });
-    return this.http.patch<Project>(url, { name }).pipe(
+    // Margin rate is numeric/string in backend DTO for safety
+    const payload = {
+      ...updates,
+      marginRate: updates.marginRate?.toString(),
+    };
+    return this.http.patch<Project>(url, payload).pipe(
       tap({
         next: (project) => {
-          console.log('ProjectsService SUCCESS: Project updated', project);
           if (this.currentProjectId() === id) {
-            this.setProjectName(project.name);
+            this.currentProjectName.set(project.name);
+            this.marginRate.set(Number(project.marginRate || 0.15));
+            this.currency.set(project.currency || 'EUR');
           }
         },
-        error: (err) => console.error('ProjectsService ERROR updating project:', err),
       }),
     );
   }

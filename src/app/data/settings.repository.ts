@@ -1,27 +1,33 @@
 import { Injectable, inject } from '@angular/core';
 import { Settings } from '../core/models/domain.model';
-import { LocalStorageService } from '../core/services/local-storage.service';
+import { ProjectsService } from '../core/services/projects.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsRepository {
   private key = 'settings';
-  private storage = inject(LocalStorageService);
-
-  private defaultSettings: Settings = {
-    projectName: 'Mon Projet Costing',
-    marginRate: 0.15,
-    currency: 'EUR',
-    version: '1.0.0',
-  };
+  private projectsService = inject(ProjectsService);
 
   get(): Settings {
-    const data = this.storage.getItem<Settings>(this.key);
-    return data ? { ...this.defaultSettings, ...data } : this.defaultSettings;
+    return {
+      projectName: this.projectsService.currentProjectName() || 'Mon Projet Costing',
+      marginRate: this.projectsService.marginRate(),
+      currency: this.projectsService.currency(),
+      version: '1.0.0',
+    };
   }
 
   save(settings: Settings): void {
-    this.storage.setItem(this.key, settings);
+    const projectId = this.projectsService.currentProjectId();
+    if (projectId) {
+      this.projectsService
+        .updateProject(projectId, {
+          name: settings.projectName,
+          marginRate: settings.marginRate,
+          currency: settings.currency,
+        })
+        .subscribe();
+    }
   }
 }

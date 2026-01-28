@@ -10,6 +10,8 @@ export interface Profile {
 export interface Project {
   id: string;
   name: string;
+  marginRate?: number;
+  currency?: string;
   createdAt: string;
 }
 

@@ -1,10 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, inject, input, ViewEncapsulation } from '@angular/core';
 import { BacklogItem, Profile } from '../../../core/models/domain.model';
 import { CalculationService } from '../../../core/services/calculation.service';
-import { ProjectsService } from '../../../core/services/projects.service';
-import { BacklogRepository } from '../../../data/backlog.repository';
-import { ProfilesRepository } from '../../../data/profiles.repository';
 import { ZardTableImports } from '../../../shared/components/table/table.imports';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
@@ -16,25 +13,12 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardProfilesStatsComponent {
-  private backlogRepo = inject(BacklogRepository);
-  private profilesRepo = inject(ProfilesRepository);
+  profiles = input.required<Profile[]>();
+  backlog = input.required<BacklogItem[]>();
   private calc = inject(CalculationService);
 
-  private projectsService = inject(ProjectsService);
-  private backlog = signal(this.backlogRepo.getAll());
-  profiles = signal<Profile[]>([]);
-
   constructor() {
-    this.refresh();
-  }
-
-  refresh() {
-    const projectId = this.projectsService.currentProjectId();
-    if (projectId) {
-      this.profilesRepo.getAll(projectId).subscribe((p) => {
-        this.profiles.set(p);
-      });
-    }
+    // No fetch
   }
 
   totalBuildEffort = computed(() => {

@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BacklogItem, Cluster, Product, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService, Lang } from '../../core/services/i18n.service';
-import { LocalStorageService } from '../../core/services/local-storage.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
@@ -31,7 +30,6 @@ export class SettingsComponent {
   private profilesRepo = inject(ProfilesRepository);
   private productsRepo = inject(ProductsRepository);
   private clustersRepo = inject(ClustersRepository);
-  private storage = inject(LocalStorageService);
   private i18n = inject(I18nService);
   private calc = inject(CalculationService);
   private alertDialogService = inject(ZardAlertDialogService);
@@ -103,10 +101,7 @@ export class SettingsComponent {
           if (val.projectName) {
             const projectId = this.projectsService.currentProjectId();
             if (projectId) {
-              this.projectsService.updateProject(projectId, val.projectName).subscribe();
-            } else {
-              // Fallback if no project ID (should not happen in main app)
-              this.projectsService.setProjectName(val.projectName);
+              this.projectsService.updateProject(projectId, { name: val.projectName }).subscribe();
             }
           }
 
@@ -272,7 +267,10 @@ export class SettingsComponent {
       zOkText: this.i18n.translate('settings.reset_app'),
       zOkDestructive: true,
       zOnOk: () => {
-        this.storage.clear();
+        // Since we are moving away from local storage, resetApp might need to clear projectId
+        // but perhaps not EVERYTHING if some things are meant to be persistent.
+        // For now, let's clear projectId to force project selection.
+        this.projectsService.setSelectedProject(null);
         window.location.reload();
       },
     });

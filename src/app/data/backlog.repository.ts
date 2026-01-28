@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { forkJoin, Observable, tap } from 'rxjs';
+import { forkJoin, map, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { BacklogItem } from '../core/models/domain.model';
 
@@ -24,6 +24,15 @@ export class BacklogRepository {
 
   getAll(): BacklogItem[] {
     return this._items();
+  }
+
+  getAllItems(projectId: string): Observable<BacklogItem[]> {
+    return this.http
+      .get<{ items: BacklogItem[] }>(`${environment.api.url}/backlog/project/${projectId}`)
+      .pipe(
+        map((res) => res.items || []),
+        tap((items) => this.setItems(items)),
+      );
   }
 
   save(item: BacklogItem): Observable<BacklogItem> {

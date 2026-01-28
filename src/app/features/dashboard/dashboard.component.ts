@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { BacklogItem, Profile, Scope } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { ProjectsService } from '../../core/services/projects.service';
@@ -28,7 +29,7 @@ export class DashboardComponent {
   private calc = inject(CalculationService);
   private projectsService = inject(ProjectsService);
 
-  private backlog = signal(this.backlogRepo.getAll());
+  public backlog = signal(this.backlogRepo.getAll());
   profiles = signal<Profile[]>([]);
   settings = signal(this.settingsRepo.get());
   currentProjectName = this.projectsService.currentProjectName;
@@ -39,12 +40,14 @@ export class DashboardComponent {
     this.refresh();
   }
 
-  refresh() {
+  async refresh() {
     const projectId = this.projectsService.currentProjectId();
     if (projectId) {
-      this.profilesRepo.getAll(projectId).subscribe((p) => {
-        this.profiles.set(p);
-      });
+      await firstValueFrom(this.projectsService.getProject(projectId));
+      const profiles = await firstValueFrom(this.profilesRepo.getAll(projectId));
+      this.profiles.set(profiles);
+      const items = await firstValueFrom(this.backlogRepo.getAllItems(projectId)); // Assuming method exists or using getAll if filter is applied
+      this.backlog.set(items);
     }
   }
 
