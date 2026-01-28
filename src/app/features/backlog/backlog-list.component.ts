@@ -15,6 +15,7 @@ import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { IdService } from '../../core/services/id.service';
 import { ProjectsService } from '../../core/services/projects.service';
+import { ToastService } from '../../core/services/toast.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
@@ -65,6 +66,7 @@ export class BacklogListComponent {
   private projectsService = inject(ProjectsService);
   private backlogService = inject(BacklogService);
   i18n = inject(I18nService);
+  private toastService = inject(ToastService);
 
   // items = signal<BacklogItem[]>([]); // Replaced by repo signal
   items = this.repo.items;
@@ -347,6 +349,10 @@ export class BacklogListComponent {
   }
 
   openBacklogSheet(item?: BacklogItem, defaults?: { productId: string; clusterId: string }) {
+    if (!item && this.profiles().length === 0) {
+      this.toastService.warning(this.i18n.translate('profiles.empty_title') || 'No profiles found');
+      return;
+    }
     this.sheetService.create({
       zTitle: item
         ? this.i18n.translate('backlog.edit_title')

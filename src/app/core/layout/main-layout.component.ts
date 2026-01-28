@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LocalStorageService } from '../services/local-storage.service';
 import { ProjectsService } from '../services/projects.service';
@@ -9,7 +10,14 @@ import { ProjectsService } from '../services/projects.service';
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    TranslatePipe,
+    ToastComponent,
+  ],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css'],
   encapsulation: ViewEncapsulation.None,
