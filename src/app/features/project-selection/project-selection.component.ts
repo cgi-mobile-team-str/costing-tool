@@ -117,15 +117,15 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
         <div class="flex flex-col items-center gap-2">
           <p class="text-slate-400 text-xs font-medium">CGI Costing Tool &bull; v1.0.0</p>
           <div class="flex gap-4 text-slate-300 text-[10px]">
-            <span>API: {{ apiUrl }}</span>
+            <!-- <span>API: {{ apiUrl }}</span> -->
             <span>Status: {{ loading ? 'Loading...' : projects.length + ' projects' }}</span>
           </div>
-          <button
+          <!-- <button
             (click)="loadProjects()"
             class="mt-2 text-[10px] text-red-400 hover:text-red-600 underline"
           >
             Forcer la recharge
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
