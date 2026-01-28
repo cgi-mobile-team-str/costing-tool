@@ -32,9 +32,9 @@ export class ProjectsService {
 
   setSelectedProject(project: Project | null) {
     if (project) {
-      this.storage.setItem('projectId', project.id.toString());
+      this.storage.setItem('projectId', project.id);
       this.storage.setItem('projectName', project.name);
-      this.currentProjectId.set(project.id.toString());
+      this.currentProjectId.set(project.id);
       this.currentProjectName.set(project.name);
     } else {
       this.storage.removeItem('projectId');
@@ -49,14 +49,14 @@ export class ProjectsService {
     this.currentProjectName.set(name);
   }
 
-  updateProject(id: number, name: string): Observable<Project> {
+  updateProject(id: string, name: string): Observable<Project> {
     const url = `${this.apiUrl}/${id}`;
     console.log(`ProjectsService.updateProject() calling PATCH ${url}`, { name });
     return this.http.patch<Project>(url, { name }).pipe(
       tap({
         next: (project) => {
           console.log('ProjectsService SUCCESS: Project updated', project);
-          if (this.currentProjectId() === id.toString()) {
+          if (this.currentProjectId() === id) {
             this.setProjectName(project.name);
           }
         },

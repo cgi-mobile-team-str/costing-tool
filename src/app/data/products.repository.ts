@@ -44,7 +44,7 @@ export class ProductsRepository {
     } else {
       const payload = {
         name: product.name,
-        projectId: Number(this.projectsService.currentProjectId()),
+        projectId: this.projectsService.currentProjectId()!,
         order: product.order,
       };
       return this.http.post<Product>(this.apiUrl, payload).pipe(

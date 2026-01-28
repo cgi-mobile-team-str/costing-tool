@@ -18,7 +18,7 @@ export class BacklogService {
 
   private apiUrl = `${environment.api.url}/backlog`;
 
-  loadProjectData(projectId: number) {
+  loadProjectData(projectId: string) {
     return this.http
       .get<{
         products: Product[];

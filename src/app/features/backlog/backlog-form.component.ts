@@ -115,7 +115,7 @@ export class BacklogFormComponent {
   constructor() {
     const projectId = this.projectsService.currentProjectId();
     if (projectId) {
-      this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+      this.profilesRepo.getAll(projectId).subscribe((p) => {
         const active = p.filter((x) => x.active);
         this.profiles.set(active);
 
@@ -205,7 +205,7 @@ export class BacklogFormComponent {
       const p = {
         id: 'product-new',
         name,
-        projectId: Number(this.projectsService.currentProjectId()),
+        projectId: this.projectsService.currentProjectId()!,
       };
       this.productsRepo.save(p).subscribe((saved) => {
         this.refreshSignal.update((v) => v + 1);
@@ -235,7 +235,7 @@ export class BacklogFormComponent {
         id: 'cluster-new',
         name,
         productId: pid,
-        projectId: Number(this.projectsService.currentProjectId()),
+        projectId: this.projectsService.currentProjectId()!,
       };
       this.clustersRepo.save(c).subscribe((saved) => {
         this.refreshSignal.update((v) => v + 1);
@@ -296,7 +296,7 @@ export class BacklogFormComponent {
     }
 
     // Ensure projectId is set
-    val.projectId = Number(this.projectsService.currentProjectId());
+    val.projectId = this.projectsService.currentProjectId()!;
 
     this.repo.save(val as BacklogItem).subscribe(() => {
       if (!this.isSheetMode) {

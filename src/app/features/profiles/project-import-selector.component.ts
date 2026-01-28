@@ -73,9 +73,9 @@ export class ProjectImportSelectorComponent implements OnInit {
   private repo = inject(ProfilesRepository);
   private zData = inject(Z_SHEET_DATA, { optional: true });
 
-  excludeProjectId: number | null = null;
+  excludeProjectId: string | null = null;
   availableProjects = signal<any[]>([]);
-  selectedProjectId = signal<number | null>(null);
+  selectedProjectId = signal<string | null>(null);
   loading = signal(true);
 
   constructor() {

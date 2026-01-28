@@ -61,7 +61,7 @@ export class ProfilesListComponent {
   refresh() {
     const projectId = this.projectsService.currentProjectId();
     if (projectId) {
-      this.repo.getAll(Number(projectId)).subscribe((profiles) => {
+      this.repo.getAll(projectId).subscribe((profiles) => {
         this.profiles.set(profiles);
       });
     }
@@ -116,7 +116,7 @@ export class ProfilesListComponent {
       zOnOk: (instance: ProjectImportSelectorComponent) => {
         const sourceId = instance.getSelectedId();
         if (sourceId) {
-          const targetId = Number(this.projectsService.currentProjectId());
+          const targetId = this.projectsService.currentProjectId();
           if (targetId) {
             this.repo.importFromProject(sourceId, targetId).subscribe(() => {
               this.refresh();

@@ -11,11 +11,11 @@ export class ProfilesRepository {
   private http = inject(HttpClient);
   private apiUrl = `${environment.api.url}/profiles`;
 
-  getAll(projectId: number): Observable<Profile[]> {
+  getAll(projectId: string): Observable<Profile[]> {
     return this.http.get<Profile[]>(`${this.apiUrl}/${projectId}`);
   }
 
-  save(profile: Profile, projectId: number): Observable<Profile> {
+  save(profile: Profile, projectId: string): Observable<Profile> {
     const data = { ...profile, projectId };
 
     if (profile.id && profile.id.length > 10) {
@@ -38,11 +38,11 @@ export class ProfilesRepository {
     return this.http.get<Profile>(`${this.apiUrl}/item/${id}`);
   }
 
-  getAvailableProjects(excludeProjectId: number): Observable<any[]> {
+  getAvailableProjects(excludeProjectId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/import/available/${excludeProjectId}`);
   }
 
-  importFromProject(sourceProjectId: number, targetProjectId: number): Observable<Profile[]> {
+  importFromProject(sourceProjectId: string, targetProjectId: string): Observable<Profile[]> {
     return this.http.post<Profile[]>(`${this.apiUrl}/import`, {
       sourceProjectId,
       targetProjectId,

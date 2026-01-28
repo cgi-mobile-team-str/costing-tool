@@ -136,11 +136,11 @@ export class BacklogListComponent {
   refresh() {
     const projectId = this.projectsService.currentProjectId();
     if (projectId) {
-      this.backlogService.loadProjectData(Number(projectId)).subscribe(() => {
+      this.backlogService.loadProjectData(projectId).subscribe(() => {
         // this.items.set(this.repo.getAll()); // Handled by signal connection
         this.selectedIds.set([]);
 
-        this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+        this.profilesRepo.getAll(projectId).subscribe((p) => {
           this.profiles.set(p);
         });
       });
@@ -322,12 +322,13 @@ export class BacklogListComponent {
 
   // Item actions
   async duplicate(item: BacklogItem) {
+    const { order, id, ...rest } = item;
     const newItem = {
-      ...item,
+      ...rest,
       id: `item-${this.idService.generate()}`,
       title: item.title + ' (Copy)',
     };
-    await firstValueFrom(this.repo.save(newItem));
+    await firstValueFrom(this.repo.save(newItem as BacklogItem));
     this.refresh();
   }
 

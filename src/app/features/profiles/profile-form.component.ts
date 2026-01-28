@@ -50,7 +50,7 @@ export class ProfileFormComponent {
     if (!projectId) return of(false);
 
     const val = this.form.value as Profile;
-    return this.repo.save(val, Number(projectId)).pipe(map(() => true));
+    return this.repo.save(val, projectId).pipe(map(() => true));
   }
 
   toggleActive() {

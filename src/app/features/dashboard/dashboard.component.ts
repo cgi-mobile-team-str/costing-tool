@@ -42,7 +42,7 @@ export class DashboardComponent {
   refresh() {
     const projectId = this.projectsService.currentProjectId();
     if (projectId) {
-      this.profilesRepo.getAll(Number(projectId)).subscribe((p) => {
+      this.profilesRepo.getAll(projectId).subscribe((p) => {
         this.profiles.set(p);
       });
     }

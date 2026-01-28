@@ -45,7 +45,7 @@ export class ClustersRepository {
       const payload = {
         name: cluster.name,
         productId: cluster.productId,
-        projectId: Number(this.projectsService.currentProjectId()),
+        projectId: this.projectsService.currentProjectId()!,
         order: cluster.order,
       };
       return this.http

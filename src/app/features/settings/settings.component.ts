@@ -103,7 +103,7 @@ export class SettingsComponent {
           if (val.projectName) {
             const projectId = this.projectsService.currentProjectId();
             if (projectId) {
-              this.projectsService.updateProject(Number(projectId), val.projectName).subscribe();
+              this.projectsService.updateProject(projectId, val.projectName).subscribe();
             } else {
               // Fallback if no project ID (should not happen in main app)
               this.projectsService.setProjectName(val.projectName);
@@ -125,7 +125,7 @@ export class SettingsComponent {
     const projectId = this.projectsService.currentProjectId();
 
     if (projectId) {
-      this.profilesRepo.getAll(Number(projectId)).subscribe((profiles) => {
+      this.profilesRepo.getAll(projectId).subscribe((profiles) => {
         const data = {
           projectName: s.projectName,
           exportDate: new Date().toISOString(),
@@ -211,12 +211,12 @@ export class SettingsComponent {
       this.repo.save({ ...current, projectName: event.projectName });
       this.form.patchValue({ projectName: event.projectName });
 
-      if (event.type === 'add') {
+      if (event.type === 'add' && projectId) {
         // Add profiles if they don't exist by ID
-        this.profilesRepo.getAll(Number(projectId)).subscribe((existingProfiles) => {
+        this.profilesRepo.getAll(projectId).subscribe((existingProfiles) => {
           profiles.forEach((p) => {
             if (!existingProfiles.some((ep: Profile) => ep.id === p.id)) {
-              this.profilesRepo.save(p, Number(projectId)).subscribe();
+              this.profilesRepo.save(p, projectId!).subscribe();
             }
           });
         });
@@ -241,7 +241,7 @@ export class SettingsComponent {
         // Since we don't have a clear "delete all profiles for project" yet,
         // we'll just save them. If ID conflicts, it updates.
         profiles.forEach((p) => {
-          this.profilesRepo.save(p, Number(projectId)).subscribe();
+          this.profilesRepo.save(p, projectId!).subscribe();
         });
 
         if (products.length > 0) this.productsRepo.saveBulk(products);

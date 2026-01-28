@@ -8,7 +8,7 @@ export interface Profile {
 }
 
 export interface Project {
-  id: number;
+  id: string;
   name: string;
   createdAt: string;
 }
