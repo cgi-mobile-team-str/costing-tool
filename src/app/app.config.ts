@@ -29,8 +29,13 @@ import { routes } from './app.routes';
 import { loginRequest, msalConfig } from './auth-config';
 import { ProjectsService } from './core/services/projects.service';
 
-export function initializeApp(projectsService: ProjectsService) {
-  return () => firstValueFrom(projectsService.initProject());
+export function initializeApp(msalService: MsalService, projectsService: ProjectsService) {
+  return async () => {
+    // 1. Initialize MSAL (Required for Interceptor to work during app initialization)
+    await msalService.instance.initialize();
+    // 2. Initialize Project State
+    await firstValueFrom(projectsService.initProject());
+  };
 }
 
 export function MSALInstanceFactory(): IPublicClientApplication {
@@ -63,8 +68,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withHashLocation()),
     provideZard(),
     provideAppInitializer(() => {
+      const msalService = inject(MsalService);
       const projectsService = inject(ProjectsService);
-      return firstValueFrom(projectsService.initProject());
+      return initializeApp(msalService, projectsService)();
     }),
     {
       provide: MSAL_INSTANCE,
