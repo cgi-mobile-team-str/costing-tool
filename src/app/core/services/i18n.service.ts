@@ -91,6 +91,9 @@ const FR = {
   'settings.export_json': 'Exporter le Backlog (JSON)',
   'settings.danger_zone': 'Zone de danger',
   'settings.reset_app': 'Réinitialiser les données',
+  'settings.delete_project': 'Supprimer le projet',
+  'settings.confirm_delete_project':
+    'Attention: Cela va supprimer définitivement le projet "{name}" ainsi que tous ses profils, produits, clusters et son backlog. Cette action est irréversible.',
   'settings.confirm_save_title': 'Confirmer la sauvegarde',
   'settings.confirm_save_desc': 'Voulez-vous vraiment enregistrer les modifications du projet ?',
   'settings.example': 'Ex:',
@@ -243,6 +246,9 @@ const EN = {
   'settings.export_json': 'Export Backlog (JSON)',
   'settings.danger_zone': 'Danger Zone',
   'settings.reset_app': 'Reset App Data',
+  'settings.delete_project': 'Delete project',
+  'settings.confirm_delete_project':
+    'Warning: This will permanently delete project "{name}" along with all its profiles, products, clusters and backlog. This action is irreversible.',
   'settings.confirm_save_title': 'Confirm Save',
   'settings.confirm_save_desc': 'Are you sure you want to save project changes?',
   'settings.example': 'Ex:',

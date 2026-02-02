@@ -273,14 +273,14 @@
         <div>
           <h3 class="text-lg font-bold text-red-900">{{ 'settings.danger_zone' | translate }}</h3>
           <p class="text-sm text-red-600 mt-1 opacity-80">
-            {{ 'settings.reset_app' | translate }} (Ceci effacera toutes les données locales)
+            {{ 'settings.delete_project' | translate }} (Ceci effacera toutes les données du projet)
           </p>
         </div>
         <button
-          (click)="resetApp()"
+          (click)="deleteCurrentProject()"
           class="px-4 py-2 bg-white border border-red-200 text-red-600 font-bold rounded-lg hover:bg-red-600 hover:text-white transition-all text-sm shadow-sm"
         >
-          {{ 'settings.reset_app' | translate }}
+          {{ 'settings.delete_project' | translate }}
         </button>
       </div>
     </div>

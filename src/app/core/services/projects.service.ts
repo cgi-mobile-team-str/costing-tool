@@ -102,4 +102,15 @@ export class ProjectsService {
     const url = this.apiUrl;
     return this.http.post<Project>(url, { name });
   }
+
+  deleteProject(id: string): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.delete(url).pipe(
+      tap(() => {
+        if (this.currentProjectId() === id) {
+          this.setSelectedProject(null);
+        }
+      }),
+    );
+  }
 }

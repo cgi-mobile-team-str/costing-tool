@@ -386,19 +386,30 @@ export class SettingsComponent {
     this.i18n.setLang(val);
   }
 
-  resetApp() {
+  deleteCurrentProject() {
+    const projectId = this.projectsService.currentProjectId();
+    const projectName = this.currentProjectName();
+
+    if (!projectId) return;
+
     this.alertDialogService.confirm({
-      zTitle: this.i18n.translate('settings.danger_zone'),
-      zDescription:
-        'ATTENTION: Cela va effacer toutes les données (Profils, Backlog, Settings). Continuer ?',
-      zOkText: this.i18n.translate('settings.reset_app'),
+      zTitle: this.i18n.translate('settings.delete_project'),
+      zDescription: this.i18n
+        .translate('settings.confirm_delete_project')
+        .replace('{name}', projectName || ''),
+      zOkText: this.i18n.translate('settings.delete_project'),
       zOkDestructive: true,
       zOnOk: () => {
-        // Since we are moving away from local storage, resetApp might need to clear projectId
-        // but perhaps not EVERYTHING if some things are meant to be persistent.
-        // For now, let's clear projectId to force project selection.
-        this.projectsService.setSelectedProject(null);
-        window.location.reload();
+        this.projectsService.deleteProject(projectId).subscribe({
+          next: () => {
+            alert('Projet supprimé avec succès.');
+            window.location.href = '/select-project';
+          },
+          error: (err) => {
+            alert('Erreur lors de la suppression du projet.');
+            console.error(err);
+          },
+        });
       },
     });
   }
