@@ -1,5 +1,13 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  signal,
+  ViewEncapsulation,
+} from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
@@ -33,13 +41,15 @@ export interface ClusterGroup {
 })
 export class BacklogTableComponent {
   private dialogService = inject(ZardDialogService);
-  @Input() clusterGroups: ClusterGroup[] = [];
+  @Input() clusterGroup!: ClusterGroup;
   @Input() profiles: Profile[] = [];
   @Input() selectedIds: string[] = [];
   @Input() editingCell: { itemId: string; field: string } | null = null;
   @Input() visibleColumns: string[] = [];
   @Input() getItemCost!: (item: BacklogItem) => number;
   @Input() getItemEffort!: (item: BacklogItem) => number;
+  @Input() showHeader = true;
+  @Input() showItems = true;
 
   @Output() toggleAll = new EventEmitter<boolean>();
   @Output() selectionToggle = new EventEmitter<string>();
@@ -54,6 +64,22 @@ export class BacklogTableComponent {
   @Output() moveClusterUp = new EventEmitter<string>();
   @Output() moveClusterDown = new EventEmitter<string>();
   @Output() renameCluster = new EventEmitter<{ clusterId: string; newName: string }>();
+
+  expandedClusters = signal<Set<string>>(new Set());
+
+  toggleCluster(clusterId: string) {
+    const set = new Set(this.expandedClusters());
+    if (set.has(clusterId)) {
+      set.delete(clusterId);
+    } else {
+      set.add(clusterId);
+    }
+    this.expandedClusters.set(set);
+  }
+
+  isClusterExpanded(clusterId: string): boolean {
+    return this.expandedClusters().has(clusterId);
+  }
 
   openRenameClusterDialog(clusterName: string, clusterId: string) {
     this.dialogService.create({
@@ -80,25 +106,21 @@ export class BacklogTableComponent {
     return this.selectedIds.includes(id);
   }
 
+  get allSelected(): boolean {
+    if (!this.clusterGroup) return false;
+    const allItems = this.clusterGroup.items;
+    return allItems.length > 0 && allItems.every((item) => this.selectedIds.includes(item.id));
+  }
+
+  toggleAllItems(checked: boolean) {
+    this.toggleAll.emit(checked);
+  }
   getClusterTotal(items: BacklogItem[]): number {
     return items.reduce((sum, item) => sum + this.getItemCost(item), 0);
   }
 
   getClusterEffort(items: BacklogItem[]): number {
     return items.reduce((sum, item) => sum + this.getItemEffort(item), 0);
-  }
-
-  get visibleColumnCount(): number {
-    return this.visibleColumns.length;
-  }
-
-  get allSelected(): boolean {
-    const allItems = this.clusterGroups.flatMap((cg) => cg.items);
-    return allItems.length > 0 && allItems.every((item) => this.selectedIds.includes(item.id));
-  }
-
-  toggleAllItems(checked: boolean) {
-    this.toggleAll.emit(checked);
   }
 
   isColumnVisible(columnId: string): boolean {

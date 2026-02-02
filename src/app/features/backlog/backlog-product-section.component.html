@@ -44,32 +44,107 @@
       </z-button>
     </div>
     <div class="product-stats" (click)="toggleExpand.emit(productGroup.product)">
-      <span class="product-effort">{{ productEffort | number: '1.1-1' }} j/h</span>
+      <span class="product-effort">{{ productEffort | number: '1.1-3' }} j/h</span>
       <span class="product-cost">{{ productTotal | currency: 'EUR' }}</span>
     </div>
   </h3>
   @if (isExpanded) {
-    <app-backlog-table
-      [clusterGroups]="productGroup.clusters"
-      [profiles]="profiles"
-      [selectedIds]="selectedIds"
-      [editingCell]="editingCell"
-      [visibleColumns]="visibleColumns"
-      [getItemCost]="getItemCost"
-      [getItemEffort]="getItemEffort"
-      (toggleAll)="toggleAll.emit($event)"
-      (selectionToggle)="selectionToggle.emit($event)"
-      (editStart)="editStart.emit($event)"
-      (editSave)="editSave.emit($event)"
-      (editCancel)="editCancel.emit()"
-      (duplicateItem)="duplicateItem.emit($event)"
-      (deleteItem)="deleteItem.emit($event)"
-      (addItemToCluster)="addItem.emit({ productId: productGroup.productId, clusterId: $event })"
-      (moveItemUp)="moveItemUp.emit($event)"
-      (moveItemDown)="moveItemDown.emit($event)"
-      (moveClusterUp)="moveClusterUp.emit($event)"
-      (moveClusterDown)="moveClusterDown.emit($event)"
-      (renameCluster)="renameCluster.emit($event)"
-    />
+    @for (cluster of productGroup.clusters; track cluster.clusterId) {
+      <div class="cluster-section">
+        <!-- Detached Cluster Title Line -->
+        <h4 class="cluster-title" (click)="toggleCluster(cluster.clusterId)">
+          <div class="cluster-title-content">
+            <span class="chevron" [class.expanded]="isClusterExpanded(cluster.clusterId)">▶</span>
+            <span class="cluster-name">{{ cluster.cluster }}</span>
+
+            <div class="cluster-actions">
+              <z-button
+                class="edit-btn"
+                zType="ghost"
+                zSize="xs"
+                (click)="
+                  $event.stopPropagation();
+                  openRenameClusterDialog(cluster.cluster, cluster.clusterId)
+                "
+                title="{{ 'common.edit' | translate }}"
+              >
+                <img
+                  src="assets/pen-to-square-regular-full.svg"
+                  alt="Edit"
+                  class="h-4 w-4 invert"
+                />
+              </z-button>
+
+              <z-button
+                class="move-btn"
+                zType="ghost"
+                zSize="xs"
+                (click)="$event.stopPropagation(); moveClusterUp.emit(cluster.clusterId)"
+                title="{{ 'common.move_up' | translate }}"
+              >
+                <img src="assets/circle-up-regular-full.svg" alt="Move Up" class="h-4 w-4 invert" />
+              </z-button>
+
+              <z-button
+                class="move-btn"
+                zType="ghost"
+                zSize="xs"
+                (click)="$event.stopPropagation(); moveClusterDown.emit(cluster.clusterId)"
+                title="{{ 'common.move_down' | translate }}"
+              >
+                <img
+                  src="assets/circle-down-regular-full.svg"
+                  alt="Move Down"
+                  class="h-4 w-4 invert"
+                />
+              </z-button>
+
+              <z-button
+                class="add-item-btn-inline"
+                zType="ghost"
+                zSize="xs"
+                (click)="
+                  $event.stopPropagation();
+                  addItem.emit({ productId: productGroup.productId, clusterId: cluster.clusterId })
+                "
+                title="{{ 'common.add' | translate }}"
+              >
+                <z-icon zType="plus" class="h-4 w-4" />
+              </z-button>
+            </div>
+          </div>
+
+          <div class="cluster-stats">
+            <span class="cluster-effort"
+              >{{ getClusterEffort(cluster.items) | number: '1.1-3' }} j/h</span
+            >
+            <span class="cluster-cost">{{ getClusterTotal(cluster.items) | currency: 'EUR' }}</span>
+          </div>
+        </h4>
+
+        <!-- Integrated Table (Header + Items) -->
+        @if (isClusterExpanded(cluster.clusterId)) {
+          <app-backlog-table
+            [clusterGroup]="cluster"
+            [profiles]="profiles"
+            [selectedIds]="selectedIds"
+            [editingCell]="editingCell"
+            [visibleColumns]="visibleColumns"
+            [getItemCost]="getItemCost"
+            [getItemEffort]="getItemEffort"
+            [showHeader]="true"
+            (toggleAll)="toggleAll.emit($event)"
+            (selectionToggle)="selectionToggle.emit($event)"
+            (editStart)="editStart.emit($event)"
+            (editSave)="editSave.emit($event)"
+            (editCancel)="editCancel.emit()"
+            (duplicateItem)="duplicateItem.emit($event)"
+            (deleteItem)="deleteItem.emit($event)"
+            (moveItemUp)="moveItemUp.emit($event)"
+            (moveItemDown)="moveItemDown.emit($event)"
+          />
+        }
+      </div>
+    }
   }
 </div>

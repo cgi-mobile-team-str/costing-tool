@@ -86,3 +86,82 @@
 .chevron.expanded {
   transform: rotate(90deg);
 }
+.cluster-section {
+  margin-top: 1rem;
+}
+.cluster-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827; /* Noir profond */
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: background-color 0.15s ease;
+}
+.cluster-title:hover {
+  background: #e2e8f0;
+}
+.cluster-title-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+.cluster-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.cluster-stats {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.cluster-effort {
+  font-size: 0.8125rem;
+  color: #4b5563; /* Slate 600 */
+  font-weight: 600;
+  margin-right: 1rem;
+  background: rgba(0, 0, 0, 0.08); /* Badge translucide sombre */
+  padding: 0.2rem 0.75rem;
+  border-radius: 9999px;
+}
+.cluster-cost {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  color: #111827;
+}
+
+.cluster-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.5rem;
+}
+
+.cluster-actions z-button {
+  margin: 0 !important; /* Reset any global margins for uniform spacing */
+}
+
+.cluster-title .invert,
+.cluster-title z-icon {
+  filter: brightness(0) !important;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.cluster-title .invert:hover,
+.cluster-title z-icon:hover {
+  opacity: 1;
+}
+
+.cluster-title .chevron {
+  color: #64748b;
+  font-size: 0.75rem;
+}

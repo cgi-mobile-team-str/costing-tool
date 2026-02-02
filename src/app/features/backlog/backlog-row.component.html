@@ -156,14 +156,14 @@
           (blur)="saveEdit()"
           (keydown.enter)="saveEdit()"
           (keydown.escape)="cancelEdit()"
-          step="0.5"
+          step="0.001"
           min="0"
         />
       } @else {
-        {{ item.effortDays | number: '1.1-1' }}{{ item.chargeType === 'ratio' ? '%' : ' j/h' }}
+        {{ item.effortDays | number: '1.1-3' }}{{ item.chargeType === 'ratio' ? '%' : ' j/h' }}
         @if (item.chargeType === 'ratio') {
           <span class="text-xs text-muted-foreground ml-1"
-            >({{ itemEffort | number: '1.1-1' }} j)</span
+            >({{ itemEffort | number: '1.1-3' }} j)</span
           >
         }
       }

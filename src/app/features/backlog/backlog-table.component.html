@@ -1,99 +1,63 @@
 <div class="table-container">
   <table>
-    <thead>
-      <tr>
-        <th class="select-col">
-          <div class="center-content">
-            <z-checkbox [checked]="allSelected" (checkChange)="toggleAllItems($event)" />
-          </div>
-        </th>
-        <th class="title-col">{{ 'backlog.title' | translate }}</th>
-        @if (visibleColumns.includes('description')) {
-          <th class="desc-col">{{ 'backlog.description' | translate }}</th>
-        }
-        @if (visibleColumns.includes('hypotheses')) {
-          <th class="hyp-col">{{ 'backlog.hypotheses' | translate }}</th>
-        }
-        @if (visibleColumns.includes('comments')) {
-          <th class="comm-col">{{ 'backlog.comments' | translate }}</th>
-        }
-        @if (visibleColumns.includes('moscow')) {
-          <th class="moscow-col text-center">{{ 'backlog.moscow' | translate }}</th>
-        }
-        @if (visibleColumns.includes('scope')) {
-          <th class="scope-col text-center">{{ 'backlog.scope' | translate }}</th>
-        }
-        @if (visibleColumns.includes('profile')) {
-          <th class="profile-col text-center">{{ 'backlog.profile' | translate }}</th>
-        }
-        @if (visibleColumns.includes('chargeType')) {
-          <th class="type-col">{{ 'backlog.chargeType' | translate }}</th>
-        }
-        @if (visibleColumns.includes('effort')) {
-          <th class="effort-col text-center">{{ 'backlog.effort' | translate }}</th>
-        }
-        @if (visibleColumns.includes('cost')) {
-          <th class="cost-col">
-            {{ 'backlog.cost' | translate }} {{ 'backlog.cost_ht' | translate }}
-          </th>
-        }
-        <th class="actions-col">
-          <div class="center-content">
-            <img
-              src="assets/cat-solid-full.svg"
-              alt="Actions"
-              width="16"
-              height="16"
-              style="
-                filter: brightness(0) saturate(100%) invert(40%) sepia(5%) saturate(50%)
-                  hue-rotate(200deg) brightness(85%) contrast(90%);
-                opacity: 0.95;
-              "
-            />
-          </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (clusterGroup of clusterGroups; track clusterGroup.clusterId) {
-        <tr class="cluster-header">
-          <td [attr.colspan]="visibleColumnCount + 3">
-            <div class="cluster-header-content">
-              <span class="font-bold">{{ clusterGroup.cluster }}</span>
-              <div class="cluster-actions">
-                <z-button
-                  zType="ghost"
-                  zSize="xs"
-                  (click)="
-                    $event.stopPropagation();
-                    openRenameClusterDialog(clusterGroup.cluster, clusterGroup.clusterId)
-                  "
-                  title="{{ 'common.edit' | translate }}"
-                >
-                  <img src="assets/pen-to-square-regular-full.svg" alt="Edit" class="h-4 w-4" />
-                </z-button>
-                <z-button
-                  class="move-btn"
-                  zType="ghost"
-                  zSize="xs"
-                  (click)="$event.stopPropagation(); moveClusterUp.emit(clusterGroup.clusterId)"
-                  title="{{ 'common.move_up' | translate }}"
-                >
-                  <img src="assets/circle-up-regular-full.svg" alt="Move Up" class="h-4 w-4" />
-                </z-button>
-                <z-button
-                  class="move-btn"
-                  zType="ghost"
-                  zSize="xs"
-                  (click)="$event.stopPropagation(); moveClusterDown.emit(clusterGroup.clusterId)"
-                  title="{{ 'common.move_down' | translate }}"
-                >
-                  <img src="assets/circle-down-regular-full.svg" alt="Move Down" class="h-4 w-4" />
-                </z-button>
-              </div>
+    @if (showHeader) {
+      <thead>
+        <tr>
+          <th class="select-col">
+            <div class="center-content">
+              <z-checkbox [checked]="allSelected" (checkChange)="toggleAllItems($event)" />
             </div>
-          </td>
+          </th>
+          <th class="title-col">{{ 'backlog.title' | translate }}</th>
+          @if (visibleColumns.includes('description')) {
+            <th class="desc-col">{{ 'backlog.description' | translate }}</th>
+          }
+          @if (visibleColumns.includes('hypotheses')) {
+            <th class="hyp-col">{{ 'backlog.hypotheses' | translate }}</th>
+          }
+          @if (visibleColumns.includes('comments')) {
+            <th class="comm-col">{{ 'backlog.comments' | translate }}</th>
+          }
+          @if (visibleColumns.includes('moscow')) {
+            <th class="moscow-col text-center">{{ 'backlog.moscow' | translate }}</th>
+          }
+          @if (visibleColumns.includes('scope')) {
+            <th class="scope-col text-center">{{ 'backlog.scope' | translate }}</th>
+          }
+          @if (visibleColumns.includes('profile')) {
+            <th class="profile-col text-center">{{ 'backlog.profile' | translate }}</th>
+          }
+          @if (visibleColumns.includes('chargeType')) {
+            <th class="type-col">{{ 'backlog.chargeType' | translate }}</th>
+          }
+          @if (visibleColumns.includes('effort')) {
+            <th class="effort-col text-center">{{ 'backlog.effort' | translate }}</th>
+          }
+          @if (visibleColumns.includes('cost')) {
+            <th class="cost-col">
+              {{ 'backlog.cost' | translate }} {{ 'backlog.cost_ht' | translate }}
+            </th>
+          }
+          <th class="actions-col">
+            <div class="center-content">
+              <img
+                src="assets/cat-solid-full.svg"
+                alt="Actions"
+                width="16"
+                height="16"
+                style="
+                  filter: brightness(0) saturate(100%) invert(40%) sepia(5%) saturate(50%)
+                    hue-rotate(200deg) brightness(85%) contrast(90%);
+                  opacity: 0.95;
+                "
+              />
+            </div>
+          </th>
         </tr>
+      </thead>
+    }
+    <tbody>
+      @if (showItems) {
         @for (item of clusterGroup.items; track item.id; let first = $first; let last = $last) {
           <app-backlog-row
             [item]="item"
@@ -115,37 +79,6 @@
             (moveItemDown)="moveItemDown.emit($event)"
           />
         }
-        <!-- Cluster Total -->
-        <tr class="cluster-total">
-          <td></td>
-          <td></td>
-          @for (col of sortedVisibleColumns; track col) {
-            @if (col === 'effort') {
-              <td class="effort-col total-effort">
-                {{ getClusterEffort(clusterGroup.items) | number: '1.1-1' }} j/h
-              </td>
-            } @else if (col === 'cost') {
-              <td class="cost-col total-value text-center">
-                {{ getClusterTotal(clusterGroup.items) | currency: 'EUR' }}
-              </td>
-            } @else {
-              <td></td>
-            }
-          }
-          <td class="actions-col text-center">
-            <div class="actions-container">
-              <z-button
-                zType="ghost"
-                zSize="xs"
-                class="!w-[34px] bg-zinc-500 text-white hover:bg-zinc-600"
-                (click)="addItemToCluster.emit(clusterGroup.clusterId)"
-                title="Ajouter un élément à ce cluster"
-              >
-                <z-icon zType="plus" class="h-4 w-4" />
-              </z-button>
-            </div>
-          </td>
-        </tr>
       }
     </tbody>
   </table>

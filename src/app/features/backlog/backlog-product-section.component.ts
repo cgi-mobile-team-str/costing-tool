@@ -1,8 +1,19 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+  signal,
+  SimpleChanges,
+  ViewEncapsulation,
+} from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
+import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogTableComponent, ClusterGroup } from './backlog-table.component';
 import { RenameDialogComponent, RenameDialogData } from './rename-dialog/rename-dialog.component';
@@ -16,13 +27,82 @@ export interface ProductGroup {
 @Component({
   selector: 'app-backlog-product-section',
   standalone: true,
-  imports: [CommonModule, BacklogTableComponent, CurrencyPipe, ZardButtonComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    BacklogTableComponent,
+    CurrencyPipe,
+    ZardButtonComponent,
+    TranslatePipe,
+    ZardIconComponent,
+  ],
   templateUrl: './backlog-product-section.component.html',
   styleUrls: ['./backlog-product-section.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
 })
-export class BacklogProductSectionComponent {
+export class BacklogProductSectionComponent implements OnChanges {
   private dialog = inject(ZardDialogService);
+
+  expandedClusters = signal<Set<string>>(new Set());
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['productGroup'] && this.productGroup?.clusters) {
+      const current = this.expandedClusters();
+      const next = new Set(current);
+      let changed = false;
+      for (const c of this.productGroup.clusters) {
+        if (!next.has(c.clusterId)) {
+          next.add(c.clusterId);
+          changed = true;
+        }
+      }
+      if (changed) {
+        this.expandedClusters.set(next);
+      }
+    }
+  }
+
+  toggleCluster(clusterId: string) {
+    const set = new Set(this.expandedClusters());
+    if (set.has(clusterId)) {
+      set.delete(clusterId);
+    } else {
+      set.add(clusterId);
+    }
+    this.expandedClusters.set(set);
+  }
+
+  isClusterExpanded(clusterId: string): boolean {
+    return this.expandedClusters().has(clusterId);
+  }
+
+  getClusterTotal(items: BacklogItem[]): number {
+    return items.reduce((sum, item) => sum + this.getItemCost(item), 0);
+  }
+
+  getClusterEffort(items: BacklogItem[]): number {
+    return items.reduce((sum, item) => sum + this.getItemEffort(item), 0);
+  }
+
+  openRenameClusterDialog(clusterName: string, clusterId: string) {
+    this.dialog.create({
+      zTitle: 'Renommer le cluster',
+      zContent: RenameDialogComponent,
+      zData: { name: clusterName } as RenameDialogData,
+      zOkText: 'Enregistrer',
+      zOnOk: (instance: RenameDialogComponent) => {
+        if (instance.form.valid) {
+          const newName = instance.form.value.name;
+          if (newName && newName !== clusterName) {
+            this.renameCluster.emit({
+              clusterId: clusterId,
+              newName: newName,
+            });
+          }
+        }
+      },
+      zWidth: '400px',
+    });
+  }
 
   @Input() productGroup!: ProductGroup;
   @Input() profiles: Profile[] = [];

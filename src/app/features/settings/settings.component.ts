@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { lastValueFrom } from 'rxjs';
 import { BacklogItem, Cluster, Product, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
+import { ExcelService } from '../../core/services/excel.service';
 import { I18nService, Lang } from '../../core/services/i18n.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
@@ -35,6 +37,7 @@ export class SettingsComponent {
   private alertDialogService = inject(ZardAlertDialogService);
   private projectsService = inject(ProjectsService);
   private authService = inject(MsalService);
+  private excelService = inject(ExcelService);
 
   showImportModal = signal(false);
   itemsToImport = signal<BacklogItem[]>([]);
@@ -187,6 +190,130 @@ export class SettingsComponent {
       event.target.value = '';
     };
     reader.readAsText(file);
+  }
+
+  async importExcel(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const currentProjectId = this.projectsService.currentProjectId();
+    if (!currentProjectId) {
+      alert("Veuillez sélectionner un projet d'abord.");
+      return;
+    }
+
+    try {
+      const extractedProfiles = await this.excelService.extractProfiles(file);
+      const extractedBacklog = await this.excelService.extractBacklog(file);
+
+      if (extractedProfiles.length === 0 && extractedBacklog.items.length === 0) {
+        alert('Aucune donnée trouvée dans le fichier Excel.');
+        return;
+      }
+
+      this.alertDialogService.confirm({
+        zTitle: 'Importer depuis Excel',
+        zDescription: `Voulez-vous importer ${extractedProfiles.length} profils et ${extractedBacklog.items.length} items de backlog ?`,
+        zOkText: 'Importer tout',
+        zOnOk: async () => {
+          const projectId = currentProjectId;
+
+          // 0. Fetch existing data to avoid duplicates
+          const [existingProfiles, hierarchy] = await Promise.all([
+            lastValueFrom(this.profilesRepo.getAll(projectId)),
+            lastValueFrom(this.backlogRepo.getFullBacklog(projectId)),
+          ]);
+
+          const existingProducts = (hierarchy as any).products as Product[];
+          const existingClusters = (hierarchy as any).clusters as Cluster[];
+
+          // 1. Import Profiles (Upsert)
+          const savedProfiles: Profile[] = [];
+          for (const p of extractedProfiles) {
+            const existing = existingProfiles.find((ep: Profile) => ep.name === p.role);
+            const profile: Profile = {
+              id: existing ? existing.id : '',
+              name: p.role,
+              username: p.username || '',
+              dailyRate: p.tjm,
+              scr: p.scr,
+              active: true,
+            };
+            const saved = await lastValueFrom(this.profilesRepo.save(profile, projectId));
+            savedProfiles.push(saved);
+          }
+
+          // 2. Import Products (Upsert) - Excel Clusters
+          const productMap = new Map<string, string>();
+          for (const productName of extractedBacklog.products) {
+            const existing = existingProducts.find((ep) => ep.name === productName);
+            const product: Product = {
+              id: existing ? existing.id : '',
+              name: productName,
+            };
+            const saved = await lastValueFrom(this.productsRepo.save(product));
+            productMap.set(productName, saved.id);
+          }
+
+          // 3. Import Clusters (Upsert) - Excel Features
+          const clusterMap = new Map<string, string>();
+          for (const c of extractedBacklog.clusters) {
+            const productId = productMap.get(c.productName);
+            if (productId) {
+              const existing = existingClusters.find(
+                (ec: Cluster) => ec.name === c.name && ec.productId === productId,
+              );
+              const cluster: Cluster = {
+                id: existing ? existing.id : '',
+                name: c.name,
+                productId,
+              };
+              const saved = await lastValueFrom(this.clustersRepo.save(cluster));
+              clusterMap.set(c.productName + c.name, saved.id);
+            }
+          }
+
+          // 4. Import Backlog Items (Upsert) - Excel Tasks
+          for (const item of extractedBacklog.items) {
+            const productId = productMap.get(item.productName);
+            const clusterId = clusterMap.get(item.productName + item.clusterName);
+            const profile = savedProfiles.find((p) => p.name === item.profileName);
+
+            if (productId && clusterId && profile) {
+              const existingItem = hierarchy.items.find(
+                (ei: BacklogItem) =>
+                  ei.title === item.title &&
+                  ei.clusterId === clusterId &&
+                  ei.profileId === profile.id,
+              );
+
+              const backlogItem: any = {
+                id: existingItem ? existingItem.id : '',
+                title: item.title,
+                description: item.description,
+                productId,
+                clusterId,
+                profileId: profile.id,
+                effortDays: item.effort,
+                chargeType: item.chargeType,
+                moscow: item.scope === 'S1' ? 'MUST' : 'SHOULD',
+                type: 'build',
+                scope: 'MVP',
+                projectId: currentProjectId,
+              };
+              await lastValueFrom(this.backlogRepo.save(backlogItem));
+            }
+          }
+
+          alert('Importation Excel réussie !');
+          window.location.reload();
+        },
+      });
+    } catch (err: any) {
+      alert('Erreur lors de la lecture du fichier Excel: ' + err.message);
+      console.error(err);
+    }
+    event.target.value = '';
   }
 
   handleImportAction(event: { type: 'add' | 'replace' | 'cancel'; projectName: string }) {

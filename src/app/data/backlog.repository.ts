@@ -28,11 +28,25 @@ export class BacklogRepository {
 
   getAllItems(projectId: string): Observable<BacklogItem[]> {
     return this.http
-      .get<{ items: BacklogItem[] }>(`${environment.api.url}/backlog/project/${projectId}`)
+      .get<{
+        items: BacklogItem[];
+        products: any[];
+        clusters: any[];
+      }>(`${environment.api.url}/backlog/project/${projectId}`)
       .pipe(
         map((res) => res.items || []),
         tap((items) => this.setItems(items)),
       );
+  }
+
+  getFullBacklog(projectId: string): Observable<{
+    items: BacklogItem[];
+    products: any[];
+    clusters: any[];
+  }> {
+    return this.http.get<{ items: BacklogItem[]; products: any[]; clusters: any[] }>(
+      `${environment.api.url}/backlog/project/${projectId}`,
+    );
   }
 
   save(item: BacklogItem): Observable<BacklogItem> {
