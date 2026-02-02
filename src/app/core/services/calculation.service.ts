@@ -12,9 +12,16 @@ export class CalculationService {
   }
 
   getItemEffort(item: BacklogItem, totalBuildEffort: number): number {
-    return item.chargeType === 'ratio'
-      ? (totalBuildEffort * Number(item.effortDays || 0)) / 100
-      : Number(item.effortDays || 0);
+    if (item.chargeType === 'ratio') {
+      const rawEffort = (totalBuildEffort * Number(item.effortDays || 0)) / 100;
+      return this.roundToNearestHour(rawEffort);
+    }
+    return Number(item.effortDays || 0);
+  }
+
+  private roundToNearestHour(days: number): number {
+    // Round to nearest 1/8th of a day (1 hour in 8h day)
+    return Math.round(days * 8) / 8;
   }
 
   getItemCost(item: BacklogItem, totalBuildEffort: number, dailyRate: number): number {

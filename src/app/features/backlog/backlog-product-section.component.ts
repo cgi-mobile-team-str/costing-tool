@@ -59,6 +59,17 @@ export class BacklogProductSectionComponent implements OnChanges {
         this.expandedClusters.set(next);
       }
     }
+
+    if (changes['forceExpandClusters']) {
+      if (this.forceExpandClusters) {
+        // Expand all clusters
+        const allIds = this.productGroup.clusters.map((c) => c.clusterId);
+        this.expandedClusters.set(new Set(allIds));
+      } else {
+        // Collapse all clusters
+        this.expandedClusters.set(new Set());
+      }
+    }
   }
 
   toggleCluster(clusterId: string) {
@@ -114,6 +125,7 @@ export class BacklogProductSectionComponent implements OnChanges {
   @Input() visibleColumns: string[] = [];
   @Input() getItemCost!: (item: BacklogItem) => number;
   @Input() getItemEffort!: (item: BacklogItem) => number;
+  @Input() forceExpandClusters = true;
 
   @Output() toggleExpand = new EventEmitter<string>();
   @Output() toggleAll = new EventEmitter<boolean>(); // This one for product-wide

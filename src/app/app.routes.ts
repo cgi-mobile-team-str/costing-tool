@@ -50,6 +50,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/settings/settings.component').then((m) => m.SettingsComponent),
       },
+      {
+        path: 'summary',
+        loadComponent: () =>
+          import('./features/summary/financial-summary.component').then(
+            (m) => m.FinancialSummaryComponent,
+          ),
+      },
     ],
   },
 ];

@@ -84,6 +84,7 @@ export class BacklogListComponent {
   // State
   selectedIds = signal<string[]>([]);
   collapsedProducts = signal<Set<string>>(new Set());
+  allClustersExpanded = signal(true);
   editingCell = signal<{ itemId: string; field: string } | null>(null);
   private originalItem: BacklogItem | null = null;
   // Column Visibility
@@ -284,6 +285,20 @@ export class BacklogListComponent {
 
     return result;
   });
+
+  toggleAllExpand() {
+    const newVal = !this.allClustersExpanded();
+    this.allClustersExpanded.set(newVal);
+
+    if (newVal) {
+      // Expand all: clear collapsed products
+      this.collapsedProducts.set(new Set());
+    } else {
+      // Collapse all: add all product IDs to collapsedProducts
+      const allProductIds = this.groupedItems().map((g) => g.product);
+      this.collapsedProducts.set(new Set(allProductIds));
+    }
+  }
 
   // Bulk selection
   toggleAllProduct(checked: boolean, group: ProductGroup) {

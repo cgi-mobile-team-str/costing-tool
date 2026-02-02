@@ -99,11 +99,14 @@
     max-width: 1200px;
     margin: 0 auto;
   }
-  .dashboard-header {
+  .title-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
     margin-bottom: 2.5rem;
     padding-top: 1rem;
   }
-  .dashboard-context-label {
+  .title-context-label {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -112,7 +115,7 @@
     margin-bottom: 0.25rem;
     display: block;
   }
-  .dashboard-header h2 {
+  .title-header h2 {
     margin: 0;
     font-size: 2.5rem;
     font-weight: 800;
@@ -437,6 +440,11 @@ tbody tr:last-child td {
 .badge.warning {
   background: #fef3c7;
   color: #b45309;
+}
+
+.badge.destructive {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 /* Dashboard Cards (Global to ensure child components like profile stats get it) */

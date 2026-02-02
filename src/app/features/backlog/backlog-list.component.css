@@ -2,33 +2,7 @@
   width: 100%;
   max-width: 100%;
 }
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 2.5rem;
-  padding-top: 1rem;
-}
-.context-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #6c757d;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  display: block;
-}
-.header h2 {
-  margin: 0;
-  font-size: 2.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--brand-red) 0%, #a31227 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
+
 .btn {
   display: inline-flex;
   align-items: center;

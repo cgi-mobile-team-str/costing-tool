@@ -1,10 +1,18 @@
 <div class="backlog-container">
-  <div class="header">
+  <div class="title-header">
     <div>
-      <span class="context-label">{{ 'nav.backlog' | translate }}</span>
+      <span class="title-context-label">{{ 'nav.backlog' | translate }}</span>
       <h2>{{ currentProjectName() }}</h2>
     </div>
     <div class="flex gap-2">
+      <z-button
+        zType="outline"
+        (click)="toggleAllExpand()"
+        [title]="allClustersExpanded() ? 'Tout replier' : 'Tout déplier'"
+      >
+        <z-icon [zType]="allClustersExpanded() ? 'chevron-up' : 'chevron-down'" />
+        {{ allClustersExpanded() ? 'Tout replier' : 'Tout déplier' }}
+      </z-button>
       <z-button zType="outline" (click)="openManagementSheet()">
         <z-icon zType="settings" />
       </z-button>
@@ -43,6 +51,7 @@
       [visibleColumns]="visibleColumns()"
       [getItemCost]="getItemCost.bind(this)"
       [getItemEffort]="getItemEffort.bind(this)"
+      [forceExpandClusters]="allClustersExpanded()"
       (toggleExpand)="toggleProduct($event)"
       (toggleAll)="toggleAllProduct($event, prodGroup)"
       (selectionToggle)="toggleSelection($event)"
