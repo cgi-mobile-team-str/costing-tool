@@ -27,10 +27,12 @@ import { ZardDropdownService } from '../../shared/components/dropdown/dropdown.s
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { BacklogBulkUpdateFormComponent } from './backlog-bulk-update-form.component';
 import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogFormComponent } from './backlog-form.component';
 import { BacklogManagementComponent } from './backlog-management.component';
 import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
+import { ClusterGroup } from './backlog-table.component';
 import { BulkActionsToastComponent } from './bulk-actions-toast.component';
 import { ColumnSelectorComponent } from './column-selector.component';
 
@@ -296,10 +298,22 @@ export class BacklogListComponent {
     this.selectedIds.set(Array.from(current));
   }
 
+  toggleAllCluster(checked: boolean, clusterGroup: ClusterGroup) {
+    const current = new Set(this.selectedIds());
+    const itemIds = clusterGroup.items.map((i: BacklogItem) => i.id);
+
+    if (checked) {
+      itemIds.forEach((id: string) => current.add(id));
+    } else {
+      itemIds.forEach((id: string) => current.delete(id));
+    }
+    this.selectedIds.set(Array.from(current));
+  }
+
   toggleSelection(id: string) {
     const current = this.selectedIds();
     if (current.includes(id)) {
-      this.selectedIds.set(current.filter((x) => x !== id));
+      this.selectedIds.set(current.filter((x: string) => x !== id));
     } else {
       this.selectedIds.set([...current, id]);
     }
@@ -318,6 +332,33 @@ export class BacklogListComponent {
         const deletePromises = this.selectedIds().map((id) => firstValueFrom(this.repo.delete(id)));
         await Promise.all(deletePromises);
         this.refresh();
+      },
+    });
+  }
+
+  editSelected() {
+    this.sheetService.create({
+      zTitle: 'Modification en masse',
+      zDescription: `Mettre à jour ${this.selectedIds().length} éléments sélectionnés`,
+      zContent: BacklogBulkUpdateFormComponent,
+      zOkText: this.i18n.translate('common.save'),
+      zCancelText: this.i18n.translate('common.cancel'),
+      zWidth: '500px',
+      zOnOk: async (instance: BacklogBulkUpdateFormComponent) => {
+        const updates = instance.getUpdates();
+        if (Object.keys(updates).length === 0) return true;
+
+        const currentItems = this.repo.getAll();
+        const itemsToUpdate = currentItems.filter((i) => this.selectedIds().includes(i.id));
+
+        const updatePromises = itemsToUpdate.map((item) => {
+          const updatedItem = { ...item, ...updates };
+          return firstValueFrom(this.repo.save(updatedItem));
+        });
+
+        await Promise.all(updatePromises);
+        this.refresh();
+        return true;
       },
     });
   }

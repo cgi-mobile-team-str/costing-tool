@@ -35,10 +35,24 @@
   color: #fafafa;
 }
 
-.toast-actions {
+.toast-buttons {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+}
+
+/* Specific styling for buttons inside the dark toast */
+.toast-buttons z-button[zType='ghost'] {
+  color: #e2e8f0;
+}
+
+.toast-buttons z-button[zType='ghost']:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.toast-buttons z-button z-icon {
+  margin-right: -4px;
 }
 
 .toast-close {

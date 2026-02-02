@@ -60,6 +60,7 @@
       (moveClusterDown)="onMoveClusterDown($any($event))"
       (renameProduct)="onRenameProduct($event)"
       (renameCluster)="onRenameCluster($event)"
+      (toggleAllCluster)="toggleAllCluster($event.checked, $event.clusterGroup)"
     />
   }
   @if (groupedItems().length === 0) {
@@ -75,5 +76,6 @@
     [deleteLabel]="i18n.translate('common.delete_selected')"
     (close)="selectedIds.set([])"
     (delete)="deleteSelected()"
+    (edit)="editSelected()"
   />
 </div>

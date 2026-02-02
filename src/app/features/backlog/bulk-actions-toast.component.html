@@ -4,8 +4,14 @@
   </button>
   <div class="toast-content">
     <span class="toast-message">{{ count() }} {{ message() }}</span>
-    <z-button zType="destructive" zSize="sm" (click)="onDelete()">
-      {{ deleteLabel() }}
-    </z-button>
+    <div class="toast-buttons">
+      <z-button zType="ghost" zSize="sm" (click)="onEdit()" class="flex items-center gap-1.5">
+        <z-icon zType="pencil" zSize="sm" />
+        {{ editLabel() }}
+      </z-button>
+      <z-button zType="destructive" zSize="sm" (click)="onDelete()">
+        {{ deleteLabel() }}
+      </z-button>
+    </div>
   </div>
 </div>

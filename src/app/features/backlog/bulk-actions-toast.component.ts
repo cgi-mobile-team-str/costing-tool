@@ -15,9 +15,11 @@ export class BulkActionsToastComponent {
   visible = input.required<boolean>();
   message = input.required<string>();
   deleteLabel = input.required<string>();
+  editLabel = input<string>('Modifier');
 
   close = output<void>();
   delete = output<void>();
+  edit = output<void>();
 
   onClose() {
     this.close.emit();
@@ -25,5 +27,9 @@ export class BulkActionsToastComponent {
 
   onDelete() {
     this.delete.emit();
+  }
+
+  onEdit() {
+    this.edit.emit();
   }
 }

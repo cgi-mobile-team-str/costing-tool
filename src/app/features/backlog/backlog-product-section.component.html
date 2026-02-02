@@ -133,7 +133,7 @@
             [getItemCost]="getItemCost"
             [getItemEffort]="getItemEffort"
             [showHeader]="true"
-            (toggleAll)="toggleAll.emit($event)"
+            (toggleAll)="toggleAllCluster.emit({ checked: $event, clusterGroup: cluster })"
             (selectionToggle)="selectionToggle.emit($event)"
             (editStart)="editStart.emit($event)"
             (editSave)="editSave.emit($event)"

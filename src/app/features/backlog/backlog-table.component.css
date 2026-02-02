@@ -36,16 +36,23 @@ thead th {
 .select-col {
   width: 40px !important;
   min-width: 40px;
+  max-width: 40px !important;
   padding: 0 !important;
   vertical-align: middle;
+  text-align: center !important;
 }
 
 .center-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  line-height: 0; /* Important to remove extra spacing from line-height */
+}
+
+z-checkbox {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
 }
 
 .title-col {

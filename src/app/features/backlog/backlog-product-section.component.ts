@@ -116,7 +116,8 @@ export class BacklogProductSectionComponent implements OnChanges {
   @Input() getItemEffort!: (item: BacklogItem) => number;
 
   @Output() toggleExpand = new EventEmitter<string>();
-  @Output() toggleAll = new EventEmitter<boolean>();
+  @Output() toggleAll = new EventEmitter<boolean>(); // This one for product-wide
+  @Output() toggleAllCluster = new EventEmitter<{ checked: boolean; clusterGroup: ClusterGroup }>();
   @Output() selectionToggle = new EventEmitter<string>();
   @Output() editStart = new EventEmitter<{ itemId: string; field: string }>();
   @Output() editSave = new EventEmitter<BacklogItem>();
