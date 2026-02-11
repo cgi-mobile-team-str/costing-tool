@@ -42,6 +42,7 @@ export class BacklogRowComponent {
   @Input() itemEffort = 0;
   @Input() isFirst = false;
   @Input() isLast = false;
+  @Input() isReadOnly = false;
 
   @Output() selectionToggle = new EventEmitter<string>();
   @Output() editStart = new EventEmitter<{ itemId: string; field: string }>();
@@ -62,6 +63,7 @@ export class BacklogRowComponent {
   }
 
   startEdit(field: string) {
+    if (this.isReadOnly) return;
     this.editStart.emit({ itemId: this.item.id, field });
   }
 

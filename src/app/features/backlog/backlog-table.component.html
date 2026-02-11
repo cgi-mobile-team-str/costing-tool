@@ -5,7 +5,11 @@
         <tr>
           <th class="select-col">
             <div class="center-content">
-              <z-checkbox [checked]="allSelected" (checkChange)="toggleAllItems($event)" />
+              <z-checkbox
+                *ngIf="!isReadOnly"
+                [checked]="allSelected"
+                (checkChange)="toggleAllItems($event)"
+              />
             </div>
           </th>
           <th class="title-col">{{ 'backlog.title' | translate }}</th>
@@ -69,6 +73,7 @@
             [visibleColumns]="visibleColumns"
             [isFirst]="first"
             [isLast]="last"
+            [isReadOnly]="isReadOnly"
             (selectionToggle)="selectionToggle.emit($event)"
             (editStart)="editStart.emit($event)"
             (editSave)="editSave.emit($event)"

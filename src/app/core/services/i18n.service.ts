@@ -174,6 +174,37 @@ const FR = {
   'management.empty_products': 'Aucun produit défini',
   'management.delete_product_title': 'Supprimer le produit',
   'management.delete_cluster_title': 'Supprimer le cluster',
+
+  // Project Selection
+  'project_sel.welcome_title': 'Bienvenue',
+  'project_sel.welcome_desc':
+    'Veuillez sélectionner le projet sur lequel vous souhaitez travailler pour continuer.',
+  'project_sel.create_new': 'Créer un nouveau projet',
+  'project_sel.create_btn': 'Créer',
+  'project_sel.cancel_btn': 'Annuler',
+  'project_sel.name_label': 'Nom du projet',
+  'project_sel.placeholder': 'Ex: Mon Super Projet',
+  'project_sel.no_projects': 'Aucun projet trouvé.',
+  'project_sel.error_loading': 'Erreur lors du chargement des projets :',
+  'project_sel.retry': 'Réessayer',
+  'project_sel.created_at': 'Créé le',
+  'project_sel.duplicate_title': 'Dupliquer le projet',
+  'project_sel.duplicate_desc': 'Veuillez choisir un nom pour la copie de ce projet.',
+  'project_sel.duplicate_name_label': 'Nom du nouveau projet',
+  'project_sel.duplicate_placeholder': 'Ex: Mon Projet (Copie)',
+  'project_sel.duplicate_btn': 'Dupliquer',
+  'project_sel.creating': 'Création...',
+
+  // Backlog Versioning
+  'backlog.draft': 'Brouillon',
+  'backlog.create_version_snapshot': 'Créer une version (Snapshot)',
+  'backlog.enter_version_name': 'Entrez le nom de la version (ex: v1.0)',
+  'backlog.version_created': 'Version créée avec succès',
+  'backlog.version_exists': 'Une version avec ce nom existe déjà',
+
+  // Filters
+  'backlog.search_placeholder': 'Rechercher...',
+  'backlog.scope_all': 'Tous les périmètres',
 };
 
 const EN = {
@@ -347,6 +378,36 @@ const EN = {
   'management.empty_products': 'No products defined',
   'management.delete_product_title': 'Delete product',
   'management.delete_cluster_title': 'Delete cluster',
+
+  // Project Selection
+  'project_sel.welcome_title': 'Welcome',
+  'project_sel.welcome_desc': 'Please select the project you want to work on to continue.',
+  'project_sel.create_new': 'Create new project',
+  'project_sel.create_btn': 'Create',
+  'project_sel.cancel_btn': 'Cancel',
+  'project_sel.name_label': 'Project Name',
+  'project_sel.placeholder': 'Ex: My Super Project',
+  'project_sel.no_projects': 'No projects found.',
+  'project_sel.error_loading': 'Error loading projects:',
+  'project_sel.retry': 'Retry',
+  'project_sel.created_at': 'Created on',
+  'project_sel.duplicate_title': 'Duplicate Project',
+  'project_sel.duplicate_desc': 'Please choose a name for the copy of this project.',
+  'project_sel.duplicate_name_label': 'New Project Name',
+  'project_sel.duplicate_placeholder': 'Ex: My Project (Copy)',
+  'project_sel.duplicate_btn': 'Duplicate',
+  'project_sel.creating': 'Creating...',
+
+  // Backlog Versioning
+  'backlog.draft': 'Draft',
+  'backlog.create_version_snapshot': 'Create Version Snapshot',
+  'backlog.enter_version_name': 'Enter version name (e.g. v1.0)',
+  'backlog.version_created': 'Version created successfully',
+  'backlog.version_exists': 'A version with this name already exists',
+
+  // Filters
+  'backlog.search_placeholder': 'Search...',
+  'backlog.scope_all': 'All Scopes',
 };
 
 @Injectable({

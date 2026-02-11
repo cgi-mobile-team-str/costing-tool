@@ -40,6 +40,7 @@ export class BacklogTableComponent {
   @Input() getItemEffort!: (item: BacklogItem) => number;
   @Input() showHeader = true;
   @Input() showItems = true;
+  @Input() isReadOnly = false;
 
   @Output() toggleAll = new EventEmitter<boolean>();
   @Output() selectionToggle = new EventEmitter<string>();

@@ -7,11 +7,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Copy, LucideAngularModule } from 'lucide-angular';
 import { Project } from '../../core/models/domain.model';
+import { I18nService } from '../../core/services/i18n.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-project-selection',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, ZardInputDirective],
+  imports: [CommonModule, FormsModule, LucideAngularModule, ZardInputDirective, TranslatePipe],
   templateUrl: './project-selection.component.html',
   styleUrls: ['./project-selection.component.css'],
 })
@@ -19,6 +21,7 @@ export class ProjectSelectionComponent implements OnInit {
   private projectsService = inject(ProjectsService);
   private alertDialogService = inject(ZardAlertDialogService);
   private router = inject(Router);
+  private i18n = inject(I18nService);
 
   projects = signal<Project[]>([]);
   loading = signal(true);
@@ -114,10 +117,10 @@ export class ProjectSelectionComponent implements OnInit {
     }
 
     this.alertDialogService.confirm({
-      zTitle: 'Dupliquer le projet',
+      zTitle: this.i18n.translate('project_sel.duplicate_title'),
       zContent: template,
-      zOkText: 'Dupliquer',
-      zCancelText: 'Annuler',
+      zOkText: this.i18n.translate('project_sel.duplicate_btn'),
+      zCancelText: this.i18n.translate('project_sel.cancel_btn'),
       zOnOk: () => {
         this.executeDuplication(project.id, this.duplicateProjectName);
       },

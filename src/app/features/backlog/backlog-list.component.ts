@@ -6,10 +6,13 @@ import {
   effect,
   inject,
   signal,
+  TemplateRef,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { BacklogItem, BacklogVersion, Profile } from '../../core/models/domain.model';
 import { BacklogService } from '../../core/services/backlog.service';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -27,6 +30,9 @@ import { ZardDialogService } from '../../shared/components/dialog/dialog.service
 import { ZardDropdownService } from '../../shared/components/dropdown/dropdown.service';
 import { HistoryDialogComponent } from '../../shared/components/history-dialog/history-dialog.component';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
+import { ZardInputDirective } from '../../shared/components/input';
+import { ZardSelectItemComponent } from '../../shared/components/select/select-item.component';
+import { ZardSelectComponent } from '../../shared/components/select/select.component';
 import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogBulkUpdateFormComponent } from './backlog-bulk-update-form.component';
@@ -43,13 +49,18 @@ import { ColumnSelectorComponent } from './column-selector.component';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TranslatePipe,
     BacklogFiltersComponent,
     BacklogProductSectionComponent,
     BulkActionsToastComponent,
     ColumnSelectorComponent,
     ZardButtonComponent,
+    ZardButtonComponent,
     ZardIconComponent,
+    ZardInputDirective,
+    ZardSelectComponent,
+    ZardSelectItemComponent,
   ],
   templateUrl: './backlog-list.component.html',
   styleUrls: ['./backlog-list.component.css'],
@@ -79,6 +90,17 @@ export class BacklogListComponent {
   currentProjectName = this.projectsService.currentProjectName;
   profiles = signal<Profile[]>([]);
 
+  // Versioning
+  activeVersion = signal<string | null>(null); // null = Draft
+  versions = signal<BacklogVersion[]>([]);
+  isReadOnly = computed(() => this.activeVersion() !== null);
+  activeVersionName = computed(() => {
+    const vId = this.activeVersion();
+    if (!vId) return this.i18n.translate('backlog.draft');
+    const version = this.versions().find((v) => v.id === vId);
+    return version ? version.name : 'Unknown';
+  });
+
   // Filters
   searchTerm = signal('');
   scopeFilter = signal('');
@@ -91,6 +113,10 @@ export class BacklogListComponent {
   allClustersExpanded = signal(true);
   editingCell = signal<{ itemId: string; field: string } | null>(null);
   private originalItem: BacklogItem | null = null;
+
+  readonly createVersionDialogTemplate = viewChild<TemplateRef<any>>('createVersionDialog');
+  newVersionName = '';
+
   // Column Visibility
   availableColumns = [
     { id: 'description', label: 'backlog.description' },
@@ -117,8 +143,9 @@ export class BacklogListComponent {
       () => {
         // React to project change
         const projectId = this.projectsService.currentProjectId();
+        const versionId = this.activeVersion();
         if (projectId) {
-          this.refresh();
+          this.refreshData(projectId, versionId);
         }
       },
       { allowSignalWrites: true },
@@ -144,16 +171,65 @@ export class BacklogListComponent {
 
   refresh() {
     const projectId = this.projectsService.currentProjectId();
+    const versionId = this.activeVersion();
     if (projectId) {
-      this.backlogService.loadProjectData(projectId).subscribe(() => {
-        // this.items.set(this.repo.getAll()); // Handled by signal connection
-        this.selectedIds.set([]);
-
-        this.profilesRepo.getAll(projectId).subscribe((p) => {
-          this.profiles.set(p);
-        });
-      });
+      this.refreshData(projectId, versionId);
     }
+  }
+
+  private refreshData(projectId: string, versionId: string | null) {
+    // 1. Load Backlog Data (Items, Products, Clusters)
+    this.backlogService.loadProjectData(projectId, versionId ?? undefined).subscribe(() => {
+      this.selectedIds.set([]);
+      // 2. Load Profiles (Project-wide, not versioned usually, but good to refresh)
+      this.profilesRepo.getAll(projectId).subscribe((p) => {
+        this.profiles.set(p);
+      });
+    });
+
+    // 3. Load Available Versions (only if needed, or always?)
+    this.backlogService.getVersions(projectId).subscribe((versions) => {
+      this.versions.set(versions);
+    });
+  }
+
+  switchVersion(versionId: string | null) {
+    this.activeVersion.set(versionId);
+    // Effect will trigger refresh
+  }
+
+  createVersion() {
+    this.dropdownService.close(); // Close any open dropdowns
+    const projectId = this.projectsService.currentProjectId();
+    if (!projectId) return;
+
+    this.newVersionName = '';
+    const template = this.createVersionDialogTemplate();
+
+    if (!template) return;
+
+    this.alertDialogService.confirm({
+      zTitle: this.i18n.translate('backlog.create_version_snapshot'),
+      zContent: template,
+      zOkText: this.i18n.translate('project_sel.create_btn'),
+      zCancelText: this.i18n.translate('project_sel.cancel_btn'),
+      zOnOk: () => {
+        const name = this.newVersionName.trim();
+        if (!name) return;
+
+        // Check for duplicates
+        const exists = this.versions().some((v) => v.name.toLowerCase() === name.toLowerCase());
+        if (exists) {
+          this.toastService.error(this.i18n.translate('backlog.version_exists'));
+          return;
+        }
+
+        this.backlogService.createVersion(projectId, name).subscribe(() => {
+          this.toastService.success(this.i18n.translate('backlog.version_created'));
+          this.refresh(); // Reload versions list
+        });
+      },
+    });
   }
 
   // Product section management

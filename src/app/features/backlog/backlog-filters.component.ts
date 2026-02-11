@@ -18,6 +18,7 @@ export class BacklogFiltersComponent {
   @Input() scopeFilter = '';
   @Input() profileFilter: string[] = [];
   @Input() historyFilter = '';
+  @Input() isReadOnly = false;
 
   @Output() searchTermChange = new EventEmitter<string>();
   @Output() scopeFilterChange = new EventEmitter<string>();

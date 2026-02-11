@@ -7,11 +7,15 @@
     <div
       style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%"
     >
-      <z-checkbox [checked]="isSelected" (checkChange)="selectionToggle.emit(item.id)" />
+      <z-checkbox
+        *ngIf="!isReadOnly"
+        [checked]="isSelected"
+        (checkChange)="selectionToggle.emit(item.id)"
+      />
     </div>
   </td>
   <!-- Title -->
-  <td class="title-col" (dblclick)="startEdit('title')">
+  <td class="title-col" (dblclick)="!isReadOnly && startEdit('title')">
     @if (isEditing('title')) {
       <input
         type="text"
@@ -24,7 +28,7 @@
     } @else {
       <div class="flex items-center gap-2">
         <strong class="item-title-text">{{ item.title }}</strong>
-        @if (item.updatedAt) {
+        @if (item.updatedAt && !isReadOnly) {
           <span class="modified-tag" [title]="'history.action_update' | translate">
             <span class="modified-dot"></span>
             {{ 'backlog.modified' | translate }}
@@ -35,7 +39,7 @@
   </td>
   <!-- Description -->
   @if (visibleColumns.includes('description')) {
-    <td class="desc-col text-small" (dblclick)="startEdit('description')">
+    <td class="desc-col text-small" (dblclick)="!isReadOnly && startEdit('description')">
       @if (isEditing('description')) {
         <textarea
           class="inline-edit"
@@ -51,7 +55,7 @@
   }
   <!-- Hypotheses -->
   @if (visibleColumns.includes('hypotheses')) {
-    <td class="hyp-col text-small" (dblclick)="startEdit('hypotheses')">
+    <td class="hyp-col text-small" (dblclick)="!isReadOnly && startEdit('hypotheses')">
       @if (isEditing('hypotheses')) {
         <textarea
           class="inline-edit"
@@ -67,7 +71,7 @@
   }
   <!-- Comments -->
   @if (visibleColumns.includes('comments')) {
-    <td class="comm-col text-small" (dblclick)="startEdit('comments')">
+    <td class="comm-col text-small" (dblclick)="!isReadOnly && startEdit('comments')">
       @if (isEditing('comments')) {
         <textarea
           class="inline-edit"
@@ -83,7 +87,7 @@
   }
   <!-- Moscow -->
   @if (visibleColumns.includes('moscow')) {
-    <td class="moscow-col text-center" (dblclick)="startEdit('moscow')">
+    <td class="moscow-col text-center" (dblclick)="!isReadOnly && startEdit('moscow')">
       @if (isEditing('moscow')) {
         <select
           class="inline-edit-select"
@@ -103,7 +107,7 @@
   }
   <!-- Scope -->
   @if (visibleColumns.includes('scope')) {
-    <td class="scope-col text-center" (dblclick)="startEdit('scope')">
+    <td class="scope-col text-center" (dblclick)="!isReadOnly && startEdit('scope')">
       @if (isEditing('scope')) {
         <select
           class="inline-edit-select"
@@ -122,7 +126,7 @@
   }
   <!-- Profile -->
   @if (visibleColumns.includes('profile')) {
-    <td class="profile-col text-center" (dblclick)="startEdit('profileId')">
+    <td class="profile-col text-center" (dblclick)="!isReadOnly && startEdit('profileId')">
       @if (isEditing('profileId')) {
         <select
           class="inline-edit-select"
@@ -141,7 +145,7 @@
   }
   <!-- Charge Type -->
   @if (visibleColumns.includes('chargeType')) {
-    <td class="type-col" (dblclick)="startEdit('chargeType')">
+    <td class="type-col" (dblclick)="!isReadOnly && startEdit('chargeType')">
       @if (isEditing('chargeType')) {
         <select
           class="inline-edit-select"
@@ -159,7 +163,10 @@
   }
   <!-- Effort -->
   @if (visibleColumns.includes('effort')) {
-    <td class="effort-col effort-cell text-center" (dblclick)="startEdit('effortDays')">
+    <td
+      class="effort-col effort-cell text-center"
+      (dblclick)="!isReadOnly && startEdit('effortDays')"
+    >
       @if (isEditing('effortDays')) {
         <input
           type="number"
@@ -199,35 +206,41 @@
       </button>
 
       <z-dropdown-menu-content #actionMenu="zDropdownMenuContent">
-        <z-dropdown-menu-item (click)="startEdit('title')">
-          <z-icon zType="pencil" class="mr-2 h-4 w-4" />
-          {{ 'common.edit' | translate }}
-        </z-dropdown-menu-item>
-        <z-dropdown-menu-item (click)="duplicateItem.emit(item)">
-          <z-icon zType="copy" class="mr-2 h-4 w-4" />
-          {{ 'common.duplicate' | translate }}
-        </z-dropdown-menu-item>
-        @if (!isFirst) {
-          <z-dropdown-menu-item (click)="moveItemUp.emit(item)">
-            <z-icon zType="arrow-up" class="mr-2 h-4 w-4" />
-            {{ 'common.move_up' | translate }}
+        @if (!isReadOnly) {
+          <z-dropdown-menu-item (click)="startEdit('title')">
+            <z-icon zType="pencil" class="mr-2 h-4 w-4" />
+            {{ 'common.edit' | translate }}
           </z-dropdown-menu-item>
-        }
+          <z-dropdown-menu-item (click)="duplicateItem.emit(item)">
+            <z-icon zType="copy" class="mr-2 h-4 w-4" />
+            {{ 'common.duplicate' | translate }}
+          </z-dropdown-menu-item>
+          @if (!isFirst) {
+            <z-dropdown-menu-item (click)="moveItemUp.emit(item)">
+              <z-icon zType="arrow-up" class="mr-2 h-4 w-4" />
+              {{ 'common.move_up' | translate }}
+            </z-dropdown-menu-item>
+          }
 
-        @if (!isLast) {
-          <z-dropdown-menu-item (click)="moveItemDown.emit(item)">
-            <z-icon zType="arrow-down" class="mr-2 h-4 w-4" />
-            {{ 'common.move_down' | translate }}
+          @if (!isLast) {
+            <z-dropdown-menu-item (click)="moveItemDown.emit(item)">
+              <z-icon zType="arrow-down" class="mr-2 h-4 w-4" />
+              {{ 'common.move_down' | translate }}
+            </z-dropdown-menu-item>
+          }
+        }
+        @if (!isReadOnly) {
+          <z-dropdown-menu-item (click)="viewHistory.emit(item)">
+            <z-icon zType="clock" class="mr-2 h-4 w-4" />
+            {{ 'common.history' | translate }}
           </z-dropdown-menu-item>
         }
-        <z-dropdown-menu-item (click)="viewHistory.emit(item)">
-          <z-icon zType="clock" class="mr-2 h-4 w-4" />
-          {{ 'common.history' | translate }}
-        </z-dropdown-menu-item>
-        <z-dropdown-menu-item (click)="deleteItem.emit(item)">
-          <z-icon zType="trash" class="mr-2 h-4 w-4 text-destructive" />
-          <span class="text-destructive">{{ 'common.delete' | translate }}</span>
-        </z-dropdown-menu-item>
+        @if (!isReadOnly) {
+          <z-dropdown-menu-item (click)="deleteItem.emit(item)">
+            <z-icon zType="trash" class="mr-2 h-4 w-4 text-destructive" />
+            <span class="text-destructive">{{ 'common.delete' | translate }}</span>
+          </z-dropdown-menu-item>
+        }
       </z-dropdown-menu-content>
     </div>
   </td>

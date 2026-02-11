@@ -118,6 +118,7 @@ export class BacklogProductSectionComponent implements OnChanges {
   @Input() productGroup!: ProductGroup;
   @Input() profiles: Profile[] = [];
   @Input() isExpanded = true;
+  @Input() isReadOnly = false;
   @Input() selectedIds: string[] = [];
   @Input() editingCell: { itemId: string; field: string } | null = null;
   @Input() productTotal = 0;

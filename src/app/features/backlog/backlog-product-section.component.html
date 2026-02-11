@@ -4,6 +4,7 @@
       <span class="chevron" [class.expanded]="isExpanded">▶</span>
       <span class="product-name">{{ productGroup.product }}</span>
       <z-button
+        *ngIf="!isReadOnly"
         class="edit-btn"
         zType="ghost"
         zSize="xs"
@@ -17,6 +18,7 @@
         />
       </z-button>
       <z-button
+        *ngIf="!isReadOnly"
         class="move-btn"
         zType="ghost"
         zSize="xs"
@@ -30,6 +32,7 @@
         />
       </z-button>
       <z-button
+        *ngIf="!isReadOnly"
         class="move-btn"
         zType="ghost"
         zSize="xs"
@@ -59,6 +62,7 @@
 
             <div class="cluster-actions">
               <z-button
+                *ngIf="!isReadOnly"
                 class="edit-btn"
                 zType="ghost"
                 zSize="xs"
@@ -76,6 +80,7 @@
               </z-button>
 
               <z-button
+                *ngIf="!isReadOnly"
                 class="move-btn"
                 zType="ghost"
                 zSize="xs"
@@ -86,6 +91,7 @@
               </z-button>
 
               <z-button
+                *ngIf="!isReadOnly"
                 class="move-btn"
                 zType="ghost"
                 zSize="xs"
@@ -100,6 +106,7 @@
               </z-button>
 
               <z-button
+                *ngIf="!isReadOnly"
                 class="add-item-btn-inline"
                 zType="ghost"
                 zSize="xs"
@@ -133,6 +140,7 @@
             [getItemCost]="getItemCost"
             [getItemEffort]="getItemEffort"
             [showHeader]="true"
+            [isReadOnly]="isReadOnly"
             (toggleAll)="toggleAllCluster.emit({ checked: $event, clusterGroup: cluster })"
             (selectionToggle)="selectionToggle.emit($event)"
             (editStart)="editStart.emit($event)"

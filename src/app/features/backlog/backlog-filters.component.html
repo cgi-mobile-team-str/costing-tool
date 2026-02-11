@@ -4,7 +4,7 @@
       type="text"
       [ngModel]="searchTerm"
       (ngModelChange)="searchTermChange.emit($event)"
-      placeholder="Search..."
+      [placeholder]="'backlog.search_placeholder' | translate"
       class="form-control search"
     />
     <select
@@ -12,7 +12,7 @@
       (ngModelChange)="scopeFilterChange.emit($event)"
       class="form-control"
     >
-      <option value="">All Scopes</option>
+      <option value="">{{ 'backlog.scope_all' | translate }}</option>
       <option value="MVP">MVP</option>
       <option value="V1">V1</option>
       <option value="V2">V2</option>
@@ -39,30 +39,32 @@
       }
     </div>
   </div>
-  <div class="filter-section">
-    <label class="filter-label">{{ 'backlog.filter_history' | translate }}</label>
-    <div class="profile-badges">
-      <button
-        class="badge-filter"
-        [class.selected]="historyFilter === ''"
-        (click)="historyFilterChange.emit('')"
-      >
-        {{ 'common.all' | translate }}
-      </button>
-      <button
-        class="badge-filter"
-        [class.selected]="historyFilter === 'unmodified'"
-        (click)="historyFilterChange.emit('unmodified')"
-      >
-        {{ 'history.filter_unmodified' | translate }}
-      </button>
-      <button
-        class="badge-filter"
-        [class.selected]="historyFilter === 'modified'"
-        (click)="historyFilterChange.emit('modified')"
-      >
-        {{ 'history.filter_modified' | translate }}
-      </button>
+  @if (!isReadOnly) {
+    <div class="filter-section">
+      <label class="filter-label">{{ 'backlog.filter_history' | translate }}</label>
+      <div class="profile-badges">
+        <button
+          class="badge-filter"
+          [class.selected]="historyFilter === ''"
+          (click)="historyFilterChange.emit('')"
+        >
+          {{ 'common.all' | translate }}
+        </button>
+        <button
+          class="badge-filter"
+          [class.selected]="historyFilter === 'unmodified'"
+          (click)="historyFilterChange.emit('unmodified')"
+        >
+          {{ 'history.filter_unmodified' | translate }}
+        </button>
+        <button
+          class="badge-filter"
+          [class.selected]="historyFilter === 'modified'"
+          (click)="historyFilterChange.emit('modified')"
+        >
+          {{ 'history.filter_modified' | translate }}
+        </button>
+      </div>
     </div>
-  </div>
+  }
 </div>

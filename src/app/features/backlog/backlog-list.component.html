@@ -4,7 +4,35 @@
       <span class="title-context-label">{{ 'nav.backlog' | translate }}</span>
       <h2>{{ currentProjectName() }}</h2>
     </div>
-    <div class="flex gap-2">
+    <div class="flex gap-2 items-center">
+      <!-- Version Controls -->
+      <div class="flex items-center gap-2 mr-4 border-r pr-4 border-gray-200">
+        <z-select
+          class="min-w-[200px]"
+          [(value)]="activeVersion"
+          [zPlaceholder]="'backlog.draft' | translate"
+        >
+          <z-select-item [zValue]="null">
+            {{ 'backlog.draft' | translate }}
+          </z-select-item>
+          @for (v of versions(); track v.id) {
+            <z-select-item [zValue]="v.id">
+              {{ v.name }} ({{ v.createdAt | date: 'shortDate' }})
+            </z-select-item>
+          }
+        </z-select>
+
+        @if (!activeVersion()) {
+          <z-button
+            zType="outline"
+            (click)="createVersion()"
+            [title]="'backlog.create_version_snapshot' | translate"
+          >
+            <z-icon zType="camera" />
+          </z-button>
+        }
+      </div>
+
       <z-button
         zType="outline"
         (click)="toggleAllExpand()"
@@ -13,10 +41,10 @@
         <z-icon [zType]="allClustersExpanded() ? 'chevron-up' : 'chevron-down'" />
         {{ allClustersExpanded() ? 'Tout replier' : 'Tout déplier' }}
       </z-button>
-      <z-button zType="outline" (click)="openManagementSheet()">
+      <z-button zType="outline" (click)="openManagementSheet()" [zDisabled]="isReadOnly()">
         <z-icon zType="settings" />
       </z-button>
-      <button z-button (click)="openBacklogSheet()">
+      <button z-button (click)="openBacklogSheet()" [disabled]="isReadOnly()">
         <z-icon zType="plus" />
         {{ 'common.add' | translate }}
       </button>
@@ -29,6 +57,7 @@
     [scopeFilter]="scopeFilter()"
     [profileFilter]="profileFilter()"
     [historyFilter]="historyFilter()"
+    [isReadOnly]="isReadOnly()"
     (searchTermChange)="searchTerm.set($event)"
     (scopeFilterChange)="scopeFilter.set($event)"
     (profileFilterChange)="profileFilter.set($event)"
@@ -46,6 +75,7 @@
       [productGroup]="prodGroup"
       [profiles]="profiles()"
       [isExpanded]="isProductExpanded(prodGroup.product)"
+      [isReadOnly]="isReadOnly()"
       [selectedIds]="selectedIds()"
       [editingCell]="editingCell()"
       [productTotal]="getProductTotal(prodGroup)"
@@ -91,3 +121,12 @@
     (edit)="editSelected()"
   />
 </div>
+
+<ng-template #createVersionDialog>
+  <div class="py-2">
+    <p class="text-sm text-slate-500 mb-4">{{ 'backlog.enter_version_name' | translate }}</p>
+    <div class="flex flex-col gap-1.5">
+      <input z-input type="text" [(ngModel)]="newVersionName" placeholder="v1.0" autofocus />
+    </div>
+  </div>
+</ng-template>

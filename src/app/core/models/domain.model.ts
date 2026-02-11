@@ -66,3 +66,11 @@ export interface Settings {
   currency: string;
   version: string;
 }
+
+export interface BacklogVersion {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  projectId: string;
+}

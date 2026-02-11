@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
-import { BacklogItem, Cluster, Product } from '../models/domain.model';
+import { BacklogItem, BacklogVersion, Cluster, Product } from '../models/domain.model';
 
 @Injectable({
   providedIn: 'root',
@@ -18,13 +18,15 @@ export class BacklogService {
 
   private apiUrl = `${environment.api.url}/backlog`;
 
-  loadProjectData(projectId: string) {
+  private versionsUrl = `${environment.api.url}/backlog-versions`;
+
+  loadProjectData(projectId: string, versionId?: string) {
     return this.http
       .get<{
         products: Product[];
         clusters: Cluster[];
         items: BacklogItem[];
-      }>(`${this.apiUrl}/project/${projectId}`)
+      }>(`${this.apiUrl}/project/${projectId}`, versionId ? { params: { versionId } } : {})
       .pipe(
         tap((data) => {
           this.productsRepo.setItems(data.products);
@@ -36,5 +38,16 @@ export class BacklogService {
 
   getItemHistory(itemId: string) {
     return this.http.get<any[]>(`${this.apiUrl}/items/${itemId}/history`);
+  }
+
+  getVersions(projectId: string) {
+    return this.http.get<BacklogVersion[]>(`${this.versionsUrl}/project/${projectId}`);
+  }
+
+  createVersion(projectId: string, name: string, description?: string) {
+    return this.http.post<BacklogVersion>(`${this.versionsUrl}/project/${projectId}/snapshot`, {
+      name,
+      description,
+    });
   }
 }
