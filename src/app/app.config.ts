@@ -51,9 +51,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
-  protectedResourceMap.set(environment.api.url, [
-    'api://8b243d6e-5c1c-411e-a387-f44ce9ef0043/access_as_user',
-  ]);
+  protectedResourceMap.set(environment.api.url, [environment.msalConfig.auth.scopes[0]]);
 
   return {
     interactionType: InteractionType.Redirect,

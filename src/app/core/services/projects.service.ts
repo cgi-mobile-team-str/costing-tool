@@ -113,4 +113,9 @@ export class ProjectsService {
       }),
     );
   }
+
+  duplicateProject(id: string, name?: string): Observable<Project> {
+    const url = `${this.apiUrl}/${id}/duplicate`;
+    return this.http.post<Project>(url, { name });
+  }
 }
