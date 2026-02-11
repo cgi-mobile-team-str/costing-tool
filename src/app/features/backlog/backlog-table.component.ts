@@ -1,4 +1,4 @@
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -9,10 +9,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
-import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
-import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogRowComponent } from './backlog-row.component';
 import { RenameDialogComponent, RenameDialogData } from './rename-dialog/rename-dialog.component';
@@ -26,15 +24,7 @@ export interface ClusterGroup {
 @Component({
   selector: 'app-backlog-table',
   standalone: true,
-  imports: [
-    CommonModule,
-    BacklogRowComponent,
-    CurrencyPipe,
-    TranslatePipe,
-    ZardCheckboxComponent,
-    ZardButtonComponent,
-    ZardIconComponent,
-  ],
+  imports: [CommonModule, BacklogRowComponent, TranslatePipe, ZardCheckboxComponent],
   templateUrl: './backlog-table.component.html',
   styleUrls: ['./backlog-table.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
@@ -64,6 +54,7 @@ export class BacklogTableComponent {
   @Output() moveClusterUp = new EventEmitter<string>();
   @Output() moveClusterDown = new EventEmitter<string>();
   @Output() renameCluster = new EventEmitter<{ clusterId: string; newName: string }>();
+  @Output() viewHistory = new EventEmitter<BacklogItem>();
 
   expandedClusters = signal<Set<string>>(new Set());
 

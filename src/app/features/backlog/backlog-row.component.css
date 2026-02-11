@@ -145,3 +145,52 @@ z-checkbox {
   line-height: normal;
   vertical-align: middle;
 }
+/* Modified indicator */
+.modified-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4f46e5;
+  background: #eef2ff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #c7d2fe;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-left: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.modified-tag:hover {
+  background: #e0e7ff;
+  transform: translateY(-1px);
+}
+
+.modified-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #4f46e5;
+  border-radius: 50%;
+  animation: breathe 2s infinite ease-in-out;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 6px rgba(79, 70, 229, 0.4);
+  }
+}
+
+.title-col .flex {
+  display: flex !important;
+  align-items: center !important;
+  width: 100%;
+}

@@ -28,9 +28,11 @@
     [searchTerm]="searchTerm()"
     [scopeFilter]="scopeFilter()"
     [profileFilter]="profileFilter()"
+    [historyFilter]="historyFilter()"
     (searchTermChange)="searchTerm.set($event)"
     (scopeFilterChange)="scopeFilter.set($event)"
     (profileFilterChange)="profileFilter.set($event)"
+    (historyFilterChange)="historyFilter.set($event)"
   />
 
   <app-column-selector
@@ -70,6 +72,7 @@
       (renameProduct)="onRenameProduct($event)"
       (renameCluster)="onRenameCluster($event)"
       (toggleAllCluster)="toggleAllCluster($event.checked, $event.clusterGroup)"
+      (viewHistory)="openHistoryDialog($event)"
     />
   }
   @if (groupedItems().length === 0) {

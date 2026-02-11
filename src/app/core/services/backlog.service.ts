@@ -33,4 +33,8 @@ export class BacklogService {
         }),
       );
   }
+
+  getItemHistory(itemId: string) {
+    return this.http.get<any[]>(`${this.apiUrl}/items/${itemId}/history`);
+  }
 }

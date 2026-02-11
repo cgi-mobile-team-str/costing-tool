@@ -7,6 +7,7 @@ import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox
 import { ZardDropdownMenuItemComponent } from '../../shared/components/dropdown/dropdown-item.component';
 import { ZardDropdownMenuContentComponent } from '../../shared/components/dropdown/dropdown-menu-content.component';
 import { ZardDropdownDirective } from '../../shared/components/dropdown/dropdown-trigger.directive';
+import { HistoryTooltipDirective } from '../../shared/components/history-tooltip/history-tooltip.directive';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
@@ -24,6 +25,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     ZardDropdownDirective,
     ZardIconComponent,
     TranslatePipe,
+    HistoryTooltipDirective,
   ],
   templateUrl: './backlog-row.component.html',
   styleUrls: ['./backlog-row.component.css'],
@@ -49,6 +51,7 @@ export class BacklogRowComponent {
   @Output() deleteItem = new EventEmitter<BacklogItem>();
   @Output() moveItemUp = new EventEmitter<BacklogItem>();
   @Output() moveItemDown = new EventEmitter<BacklogItem>();
+  @Output() viewHistory = new EventEmitter<BacklogItem>();
 
   isEditing(field: string): boolean {
     return (

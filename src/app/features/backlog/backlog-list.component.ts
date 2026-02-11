@@ -23,7 +23,9 @@ import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
 import { ZardAlertDialogService } from '../../shared/components/alert-dialog/alert-dialog.service';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
+import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
 import { ZardDropdownService } from '../../shared/components/dropdown/dropdown.service';
+import { HistoryDialogComponent } from '../../shared/components/history-dialog/history-dialog.component';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -63,6 +65,7 @@ export class BacklogListComponent {
   private calc = inject(CalculationService);
   private idService = inject(IdService);
   private sheetService = inject(ZardSheetService);
+  private dialogService = inject(ZardDialogService);
   private dropdownService = inject(ZardDropdownService);
   private alertDialogService = inject(ZardAlertDialogService);
   private projectsService = inject(ProjectsService);
@@ -80,6 +83,7 @@ export class BacklogListComponent {
   searchTerm = signal('');
   scopeFilter = signal('');
   profileFilter = signal<string[]>([]);
+  historyFilter = signal<string>('');
 
   // State
   selectedIds = signal<string[]>([]);
@@ -211,6 +215,7 @@ export class BacklogListComponent {
     const term = this.searchTerm().toLowerCase();
     const scope = this.scopeFilter();
     const profiles = this.profileFilter();
+    const history = this.historyFilter();
 
     let itemsToProcess = sortedItems;
 
@@ -222,6 +227,11 @@ export class BacklogListComponent {
     }
     if (profiles.length > 0) {
       itemsToProcess = itemsToProcess.filter((i) => profiles.includes(i.profileId));
+    }
+    if (history === 'modified') {
+      itemsToProcess = itemsToProcess.filter((i) => !!i.updatedAt);
+    } else if (history === 'unmodified') {
+      itemsToProcess = itemsToProcess.filter((i) => !i.updatedAt);
     }
 
     // Grouping
@@ -625,5 +635,24 @@ export class BacklogListComponent {
     await firstValueFrom(this.clustersRepo.save(currentCluster));
     await firstValueFrom(this.clustersRepo.save(nextCluster));
     this.refresh();
+  }
+
+  openHistoryDialog(item: BacklogItem) {
+    this.backlogService.getItemHistory(item.id).subscribe((history: any[]) => {
+      this.dialogService.create({
+        zContent: HistoryDialogComponent,
+        zData: {
+          history,
+          item: item,
+          profiles: this.profiles(),
+          products: this.productsRepo.getAll(),
+          clusters: this.clustersRepo.getAll(),
+        },
+        zWidth: '85vw',
+        zCustomClasses: 'max-w-none !max-w-none h-[80vh] m-0 rounded-xl p-0 border-none shadow-2xl',
+        zClosable: false,
+        zHideFooter: true,
+      });
+    });
   }
 }

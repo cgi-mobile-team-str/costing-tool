@@ -29,14 +29,40 @@
         {{ 'common.all' | translate }}
       </button>
       @for (p of profiles; track p.id) {
+        <button
+          class="badge-filter"
+          [class.selected]="profileFilter.includes(p.id)"
+          (click)="toggleProfile(p.id)"
+        >
+          {{ p.name }}
+        </button>
+      }
+    </div>
+  </div>
+  <div class="filter-section">
+    <label class="filter-label">{{ 'backlog.filter_history' | translate }}</label>
+    <div class="profile-badges">
       <button
         class="badge-filter"
-        [class.selected]="profileFilter.includes(p.id)"
-        (click)="toggleProfile(p.id)"
+        [class.selected]="historyFilter === ''"
+        (click)="historyFilterChange.emit('')"
       >
-        {{ p.name }}
+        {{ 'common.all' | translate }}
       </button>
-      }
+      <button
+        class="badge-filter"
+        [class.selected]="historyFilter === 'unmodified'"
+        (click)="historyFilterChange.emit('unmodified')"
+      >
+        {{ 'history.filter_unmodified' | translate }}
+      </button>
+      <button
+        class="badge-filter"
+        [class.selected]="historyFilter === 'modified'"
+        (click)="historyFilterChange.emit('modified')"
+      >
+        {{ 'history.filter_modified' | translate }}
+      </button>
     </div>
   </div>
 </div>

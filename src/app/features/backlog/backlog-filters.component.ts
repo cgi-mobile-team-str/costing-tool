@@ -17,10 +17,12 @@ export class BacklogFiltersComponent {
   @Input() searchTerm = '';
   @Input() scopeFilter = '';
   @Input() profileFilter: string[] = [];
+  @Input() historyFilter = '';
 
   @Output() searchTermChange = new EventEmitter<string>();
   @Output() scopeFilterChange = new EventEmitter<string>();
   @Output() profileFilterChange = new EventEmitter<string[]>();
+  @Output() historyFilterChange = new EventEmitter<string>();
 
   toggleProfile(profileId: string) {
     if (this.profileFilter.includes(profileId)) {

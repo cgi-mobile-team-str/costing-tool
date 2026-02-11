@@ -3,6 +3,7 @@ import { Component, computed, inject, signal, ViewEncapsulation } from '@angular
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BacklogItem, BacklogItemType, ChargeType, Profile } from '../../core/models/domain.model';
+import { BacklogService } from '../../core/services/backlog.service';
 import { CalculationService } from '../../core/services/calculation.service';
 import { IdService } from '../../core/services/id.service';
 import { ProjectsService } from '../../core/services/projects.service';
@@ -11,7 +12,9 @@ import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
+import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
 import { ZardFormImports } from '../../shared/components/form/form.imports';
+import { HistoryDialogComponent } from '../../shared/components/history-dialog/history-dialog.component';
 import { ZardInputDirective } from '../../shared/components/input';
 import { ZardSheetRef } from '../../shared/components/sheet/sheet-ref';
 import { Z_SHEET_DATA } from '../../shared/components/sheet/sheet.service';
@@ -59,6 +62,8 @@ export class BacklogFormComponent {
   private idService = inject(IdService);
   private calc = inject(CalculationService);
   private projectsService = inject(ProjectsService);
+  private backlogService = inject(BacklogService);
+  private dialogService = inject(ZardDialogService);
   private sheetRef = inject(ZardSheetRef, { optional: true });
   private zData = inject(Z_SHEET_DATA, { optional: true });
   isSheetMode = !!this.sheetRef;
@@ -105,8 +110,9 @@ export class BacklogFormComponent {
   newProductName = signal('');
   newClusterName = signal('');
 
-  currentProductId = signal('');
-  currentClusterId = signal('');
+  public currentProductId = signal<string>('');
+  private currentClusterId = signal('');
+  private currentItem = signal<BacklogItem | null>(null);
   private currentCost = signal(0);
 
   isProductInputMode = signal(false);
@@ -168,6 +174,7 @@ export class BacklogFormComponent {
   private initForm(item: Partial<BacklogItem>) {
     if (item.id) {
       this.isEditMode.set(true);
+      this.currentItem.set(item as BacklogItem);
     }
     this.form.patchValue(item as any);
     this.currentProductId.set(item.productId || '');
@@ -314,5 +321,34 @@ export class BacklogFormComponent {
     });
 
     return false; // Return false to prevent automatic close, we close manually in subscribe
+  }
+
+  openHistory() {
+    const id = this.form.get('id')?.value;
+    if (id) {
+      this.backlogService.getItemHistory(id).subscribe((history) => {
+        // Fallback to form values if currentItem signal is null
+        const itemToPass = this.currentItem() || {
+          ...this.form.getRawValue(),
+          id, // ensure ID is present
+        };
+
+        this.dialogService.create({
+          zContent: HistoryDialogComponent,
+          zData: {
+            history,
+            item: itemToPass,
+            profiles: this.profiles(),
+            products: this.allProducts(),
+            clusters: this.availableClusters(),
+          },
+          zWidth: '85vw',
+          zCustomClasses:
+            'max-w-none !max-w-none h-[80vh] m-0 rounded-xl p-0 border-none shadow-2xl',
+          zClosable: false,
+          zHideFooter: true,
+        });
+      });
+    }
   }
 }

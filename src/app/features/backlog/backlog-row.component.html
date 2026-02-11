@@ -1,4 +1,8 @@
-<tr>
+<tr
+  [appHistoryTooltip]="item.id"
+  [creatorName]="item.creatorName || ''"
+  [createdAt]="item.createdAt || ''"
+>
   <td class="select-col">
     <div
       style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%"
@@ -18,7 +22,15 @@
         (keydown.escape)="cancelEdit()"
       />
     } @else {
-      <strong class="item-title-text">{{ item.title }}</strong>
+      <div class="flex items-center gap-2">
+        <strong class="item-title-text">{{ item.title }}</strong>
+        @if (item.updatedAt) {
+          <span class="modified-tag" [title]="'history.action_update' | translate">
+            <span class="modified-dot"></span>
+            {{ 'backlog.modified' | translate }}
+          </span>
+        }
+      </div>
     }
   </td>
   <!-- Description -->
@@ -208,6 +220,10 @@
             {{ 'common.move_down' | translate }}
           </z-dropdown-menu-item>
         }
+        <z-dropdown-menu-item (click)="viewHistory.emit(item)">
+          <z-icon zType="clock" class="mr-2 h-4 w-4" />
+          {{ 'common.history' | translate }}
+        </z-dropdown-menu-item>
         <z-dropdown-menu-item (click)="deleteItem.emit(item)">
           <z-icon zType="trash" class="mr-2 h-4 w-4 text-destructive" />
           <span class="text-destructive">{{ 'common.delete' | translate }}</span>

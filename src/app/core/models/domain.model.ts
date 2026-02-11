@@ -55,6 +55,9 @@ export interface BacklogItem {
   profileId: string;
   tags?: string[];
   risk?: Risk;
+  creatorName?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Settings {
