@@ -106,4 +106,11 @@ export class BacklogRepository {
     if (!item) return;
     this._items.update((list) => [...list, item]);
   }
+
+  clearHistory(itemIds: string[]): Observable<{ deletedCount: number; itemIds: string[] }> {
+    return this.http.post<{ deletedCount: number; itemIds: string[] }>(
+      `${environment.api.url}/backlog-versions/clear`,
+      { itemIds },
+    );
+  }
 }

@@ -260,7 +260,7 @@ export class SettingsComponent {
           // Helper to check if profile has changed
           const hasProfileChanged = (
             existing: Profile,
-            incoming: { role: string; username?: string; tjm: number; scr: number },
+            incoming: { role: string; username?: string | null; tjm: number; scr: number },
           ) => {
             return (
               existing.name !== incoming.role ||

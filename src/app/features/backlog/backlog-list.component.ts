@@ -449,15 +449,42 @@ export class BacklogListComponent {
         const updates = instance.getUpdates();
         if (Object.keys(updates).length === 0) return true;
 
-        const currentItems = this.repo.getAll();
-        const itemsToUpdate = currentItems.filter((i) => this.selectedIds().includes(i.id));
+        // Handle clear history separately
+        if (updates.clearHistory) {
+          const confirmed = await new Promise<boolean>((resolve) => {
+            this.alertDialogService.confirm({
+              zTitle: "Effacer l'historique",
+              zDescription: `Voulez-vous vraiment effacer l'historique de ${this.selectedIds().length} items ? Cette action est irréversible.`,
+              zOkText: 'Effacer',
+              zOkDestructive: true,
+              zOnOk: () => resolve(true),
+              zOnCancel: () => resolve(false),
+            });
+          });
 
-        const updatePromises = itemsToUpdate.map((item) => {
-          const updatedItem = { ...item, ...updates };
-          return firstValueFrom(this.repo.save(updatedItem));
-        });
+          if (confirmed) {
+            await firstValueFrom(this.repo.clearHistory(this.selectedIds()));
+            this.toastService.success(`Historique effacé pour ${this.selectedIds().length} items`);
+          }
 
-        await Promise.all(updatePromises);
+          delete updates.clearHistory; // Remove from updates object
+        }
+
+        // Apply other updates if any
+        if (Object.keys(updates).length > 0) {
+          const currentItems = this.repo.getAll();
+          const itemsToUpdate = currentItems.filter((i) => this.selectedIds().includes(i.id));
+
+          const updatePromises = itemsToUpdate.map((item) => {
+            const updatedItem = { ...item, ...updates };
+            return firstValueFrom(this.repo.save(updatedItem));
+          });
+
+          await Promise.all(updatePromises);
+        }
+
+        // Small delay to ensure DB transaction is fully committed
+        await new Promise((resolve) => setTimeout(resolve, 100));
         this.refresh();
         return true;
       },

@@ -158,6 +158,24 @@ import { ZardSheetRef } from '../../shared/components/sheet/sheet-ref';
               </div>
             </div>
           </div>
+
+          <!-- Clear History -->
+          <div class="field-card">
+            <div class="field-header">
+              <input
+                type="checkbox"
+                formControlName="clearHistory"
+                id="clearHistory"
+                class="z-checkbox"
+              />
+              <label for="clearHistory" class="field-label">Effacer l'historique</label>
+            </div>
+            <div class="field-content" [class.disabled]="!form.value.clearHistory">
+              <p class="text-sm text-slate-600">
+                Supprime tout l'historique des items sélectionnés (garde la valeur actuelle)
+              </p>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -233,6 +251,7 @@ export class BacklogBulkUpdateFormComponent {
     type: ['build'],
     updateChargeType: [false],
     chargeType: ['days'],
+    clearHistory: [false],
   });
 
   allProducts = computed(() => this.productsRepo.getAll());
@@ -265,6 +284,7 @@ export class BacklogBulkUpdateFormComponent {
     if (val.updateProfile) updates.profileId = val.profileId;
     if (val.updateType) updates.type = val.type;
     if (val.updateChargeType) updates.chargeType = val.chargeType;
+    if (val.clearHistory) updates.clearHistory = true;
     return updates;
   }
 }
