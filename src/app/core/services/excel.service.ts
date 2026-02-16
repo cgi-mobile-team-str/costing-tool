@@ -110,21 +110,21 @@ export class ExcelService {
         const descriptionValue = row.getCell(9).value;
         const profileName = this.getStringValue(row.getCell(10).value);
         const chargeMode = this.getStringValue(row.getCell(12).value);
-        const effort = this.getNumericalValue(row.getCell(13).value);
         const scope = this.getStringValue(row.getCell(7).value);
 
         const isOtherRatio = chargeMode === 'Other (Ratio)';
+        const isRatio = isOtherRatio || chargeMode.toLowerCase().includes('ratio');
+
+        // Column 14 (N) for ratios, else Column 13 (M)
+        const cellValue = isRatio ? row.getCell(14).value : row.getCell(13).value;
+        const effort = this.getNumericalValue(cellValue);
 
         items.push({
           title: this.getStringValue(title),
           description: this.getStringValue(descriptionValue),
           profileName: profileName,
           effort: effort,
-          chargeType: isOtherRatio
-            ? 'ratio'
-            : chargeMode.toLowerCase().includes('ratio')
-              ? 'ratio'
-              : 'days',
+          chargeType: isRatio ? 'ratio' : 'days',
           type: isOtherRatio ? 'other' : 'build',
           scope: scope,
           productName: currentProduct,
@@ -147,15 +147,27 @@ export class ExcelService {
         return value.richText.map((rt: any) => rt.text).join('');
       }
       if (value.text) return value.text;
+      if (value.result !== undefined) return value.result.toString();
       return value.toString();
     }
     return value.toString();
   }
 
   private getNumericalValue(value: any): number {
-    if (value && typeof value === 'object') {
-      return value.result !== undefined ? Number(value.result) : 0;
+    if (!value) return 0;
+
+    if (typeof value === 'object') {
+      if (value.result !== undefined) return Number(value.result);
+      value = this.getStringValue(value);
     }
-    return value ? Number(value) : 0;
+
+    if (typeof value === 'string') {
+      // Handle "15%", "15,5%", "15.5"
+      const cleaned = value.replace('%', '').replace(',', '.').trim();
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? 0 : num;
+    }
+
+    return isNaN(Number(value)) ? 0 : Number(value);
   }
 }
