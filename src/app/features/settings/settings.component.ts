@@ -219,19 +219,36 @@ export class SettingsComponent {
       this.alertDialogService.confirm({
         zTitle: 'Importer depuis Excel',
         zContent: `
-          <div class="space-y-4">
-            <p>Voulez-vous importer ${extractedProfiles.length} profils et ${extractedBacklog.items.length} items de backlog ?</p>
-            <div class="space-y-2">
-              <p class="text-sm font-semibold text-slate-700">Mode d'importation :</p>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="import-mode" value="add-only" checked class="text-red-600 focus:ring-red-500" />
-                <span class="text-sm">Ajouter uniquement les nouveaux (ignorer les doublons)</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="import-mode" value="upsert" class="text-red-600 focus:ring-red-500" />
-                <span class="text-sm">Mettre à jour tout (upsert)</span>
-              </label>
+          <div class="space-y-4 py-2">
+            <p class="text-base text-slate-700">Voulez-vous importer <span class="font-bold text-red-700">${extractedProfiles.length} profils</span> et <span class="font-bold text-red-700">${extractedBacklog.items.length} items</span> de backlog ?</p>
+            
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <p class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Mode d'importation :</p>
+              
+              <div class="space-y-3">
+                <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-md cursor-pointer hover:border-red-300 transition-colors">
+                  <input type="radio" name="import-mode" value="add-only" checked 
+                    class="mt-1 w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500" 
+                    style="accent-color: #b91c1c; min-width: 16px; min-height: 16px; visibility: visible !important; opacity: 1 !important; position: static !important;" />
+                  <div>
+                    <span class="block text-sm font-semibold text-slate-800">Ajouter uniquement</span>
+                    <span class="block text-xs text-slate-500">Ajoute les nouveaux produits/clusters/items. Ignore ceux déjà présents (détection par nom/titre).</span>
+                  </div>
+                </label>
+                
+                <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-md cursor-pointer hover:border-red-300 transition-colors">
+                  <input type="radio" name="import-mode" value="upsert" 
+                    class="mt-1 w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500" 
+                    style="accent-color: #b91c1c; min-width: 16px; min-height: 16px; visibility: visible !important; opacity: 1 !important; position: static !important;" />
+                  <div>
+                    <span class="block text-sm font-semibold text-slate-800">Mettre à jour tout (Sync)</span>
+                    <span class="block text-xs text-slate-500">Ajoute les nouveaux ET met à jour les éléments existants si leurs propriétés (dont les charges) ont changé.</span>
+                  </div>
+                </label>
+              </div>
             </div>
+            
+            <p class="text-xs text-slate-400 italic">Note: La détection des doublons se base sur le nom du produit, du cluster et le titre de l'item.</p>
           </div>
         `,
         zOkText: 'Importer',
@@ -265,8 +282,8 @@ export class SettingsComponent {
             return (
               existing.name !== incoming.role ||
               existing.username !== (incoming.username || '') ||
-              existing.dailyRate !== incoming.tjm ||
-              existing.scr !== incoming.scr
+              Number(existing.dailyRate) !== Number(incoming.tjm) ||
+              Number(existing.scr) !== Number(incoming.scr)
             );
           };
 
@@ -368,13 +385,15 @@ export class SettingsComponent {
                   continue;
                 }
 
-                // Check if item has actually changed
+                // Check if item has actually changed (handle string vs number for effortDays)
+                const mappedMoscow = item.scope === 'S1' ? 'MUST' : 'SHOULD';
                 const hasChanged =
                   existingItem.title !== item.title ||
                   existingItem.description !== item.description ||
-                  existingItem.effortDays !== item.effort ||
+                  Number(existingItem.effortDays) !== Number(item.effort) ||
                   existingItem.chargeType !== item.chargeType ||
-                  existingItem.moscow !== (item.scope === 'S1' ? 'MUST' : 'SHOULD');
+                  existingItem.scope !== item.scope ||
+                  existingItem.moscow !== mappedMoscow;
 
                 if (!hasChanged) {
                   // No changes, skip
@@ -393,10 +412,13 @@ export class SettingsComponent {
                 chargeType: item.chargeType,
                 moscow: item.scope === 'S1' ? 'MUST' : 'SHOULD',
                 type: 'build',
-                scope: 'MVP',
+                scope: item.scope || 'MVP',
                 projectId: currentProjectId,
               };
               await lastValueFrom(this.backlogRepo.save(backlogItem));
+
+              if (existingItem) updatedCount++;
+              else addedCount++;
             }
           }
 
