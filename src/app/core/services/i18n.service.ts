@@ -205,6 +205,9 @@ const FR = {
   // Filters
   'backlog.search_placeholder': 'Rechercher...',
   'backlog.scope_all': 'Tous les périmètres',
+  'summary.by_profile': 'Récapitulatif par Profil',
+  'summary.by_hierarchy': 'Récapitulatif par Produit et Cluster',
+  'summary.by_hierarchy_scoped': 'Récapitulatif Produit/Cluster par Périmètre',
 };
 
 const EN = {
@@ -408,6 +411,9 @@ const EN = {
   // Filters
   'backlog.search_placeholder': 'Search...',
   'backlog.scope_all': 'All Scopes',
+  'summary.by_profile': 'Summary by Profile',
+  'summary.by_hierarchy': 'Summary by Product and Cluster',
+  'summary.by_hierarchy_scoped': 'Product/Cluster Summary by Scope',
 };
 
 @Injectable({

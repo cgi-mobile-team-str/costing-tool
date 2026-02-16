@@ -5,122 +5,187 @@
   </div>
 </div>
 
-<div class="table-container shadow-sm">
-  <table class="w-full text-sm text-left text-slate-300">
-    <thead class="text-xs uppercase bg-red-900 text-white">
-      <tr>
-        <th scope="col" class="px-4 py-3 w-32 border-r border-red-100">Scope</th>
-        <th scope="col" class="px-4 py-3 border-r border-red-100">Profiles</th>
-        <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Workload</th>
-        <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Price</th>
-        <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Cost</th>
-        <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Daily rate</th>
-        <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">SCR</th>
-        <th scope="col" class="px-4 py-3 text-right w-20">Margin</th>
-      </tr>
-    </thead>
-    <tbody class="">
-      <ng-container *ngFor="let scope of summaryData().scopes">
-        <!-- Scope Header Row -->
-        <tr class="bg-red-50 text-red-900 font-bold border-b border-red-100">
-          <td class="px-4 py-2 border-r border-red-100 text-lg uppercase text-red-800">
-            {{ scope.scope }}
-          </td>
-          <td class="px-4 py-2 border-r border-red-100"></td>
-          <td class="px-4 py-2 text-right border-r border-red-100">
-            {{ scope.totalWorkload | number: '1.3-3' }}
-          </td>
-          <td class="px-4 py-2 text-right border-r border-red-100">
-            {{ scope.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-2 text-right border-r border-red-100">
-            {{ scope.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-2 text-right border-r border-red-100">
-            {{ scope.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-2 text-right border-r border-red-100">
-            {{ scope.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-2 text-right">
-            <span
-              class="badge"
-              [class.success]="scope.margin >= 0.2"
-              [class.warning]="scope.margin < 0.2 && scope.margin > 0"
-              [class.destructive]="scope.margin <= 0"
-            >
-              {{ scope.margin | percent: '1.0-0' }}
-            </span>
-          </td>
+<div class="summary-section">
+  <h3 class="section-title">{{ 'summary.by_profile' | translate }}</h3>
+  <div class="table-container shadow-sm">
+    <table class="w-full text-sm text-left text-slate-300">
+      <thead class="text-xs uppercase bg-red-900 text-white">
+        <tr>
+          <th scope="col" class="px-4 py-3 w-32 border-r border-red-100">Scope</th>
+          <th scope="col" class="px-4 py-3 border-r border-red-100">Profiles</th>
+          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Workload</th>
+          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Price</th>
+          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Cost</th>
+          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Daily rate</th>
+          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">SCR</th>
+          <th scope="col" class="px-4 py-3 text-right w-20">Margin</th>
         </tr>
+      </thead>
+      <tbody class="">
+        <ng-container *ngFor="let scope of summaryData().scopes">
+          <!-- Scope Header Row -->
+          <tr class="bg-red-50 text-red-900 font-bold border-b border-red-100">
+            <td class="px-4 py-2 border-r border-red-100 text-lg uppercase text-red-800">
+              {{ scope.scope }}
+            </td>
+            <td class="px-4 py-2 border-r border-red-100"></td>
+            <td class="px-4 py-2 text-right border-r border-red-100">
+              {{ scope.totalWorkload | number: '1.3-3' }}
+            </td>
+            <td class="px-4 py-2 text-right border-r border-red-100">
+              {{ scope.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-2 text-right border-r border-red-100">
+              {{ scope.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-2 text-right border-r border-red-100">
+              {{ scope.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-2 text-right border-r border-red-100">
+              {{ scope.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-2 text-right">
+              <span
+                class="badge"
+                [class.success]="scope.margin >= 0.2"
+                [class.warning]="scope.margin < 0.2 && scope.margin > 0"
+                [class.destructive]="scope.margin <= 0"
+              >
+                {{ scope.margin | percent: '1.0-0' }}
+              </span>
+            </td>
+          </tr>
 
-        <!-- Profile Rows -->
-        <tr
-          *ngFor="let row of scope.rows"
-          class="bg-white text-slate-700 border-b border-slate-200"
-        >
-          <td class="px-4 py-1 border-r border-slate-200 text-slate-500 text-xs">
-            {{ scope.scope }}
-          </td>
-          <td class="px-4 py-1 border-r border-slate-200">{{ row.profileName }}</td>
-          <td class="px-4 py-1 text-right border-r border-slate-200 bg-slate-50">
-            {{ row.workload | number: '1.3-3' }}
-          </td>
-          <td class="px-4 py-1 text-right border-r border-slate-200">
-            {{ row.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-1 text-right border-r border-slate-200">
-            {{ row.cost | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-1 text-right border-r border-slate-200">
-            {{ row.dailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-1 text-right border-r border-slate-200">
-            {{ row.scr | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-1 text-right bg-slate-50">
-            <span
-              class="badge"
-              [class.success]="row.margin >= 0.2"
-              [class.warning]="row.margin < 0.2 && row.margin > 0"
-              [class.destructive]="row.margin <= 0"
-            >
-              {{ row.margin | percent: '1.0-0' }}
-            </span>
-          </td>
-        </tr>
-      </ng-container>
-
-      <!-- Grand Total Row -->
-      <tr class="bg-red-50 text-red-900 font-bold border-t-2 border-red-500">
-        <td class="px-4 py-3 border-r border-red-200 text-lg uppercase text-red-700">Total</td>
-        <td class="px-4 py-3 border-r border-red-200"></td>
-        <td class="px-4 py-3 text-right border-r border-red-200">
-          {{ summaryData().total.totalWorkload | number: '1.3-3' }}
-        </td>
-        <td class="px-4 py-3 text-right border-r border-red-200">
-          {{ summaryData().total.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
-        </td>
-        <td class="px-4 py-3 text-right border-r border-red-200">
-          {{ summaryData().total.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
-        </td>
-        <td class="px-4 py-3 text-right border-r border-red-200">
-          {{ summaryData().total.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
-        </td>
-        <td class="px-4 py-3 text-right border-r border-red-200">
-          {{ summaryData().total.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
-        </td>
-        <td class="px-4 py-3 text-right">
-          <span
-            class="badge"
-            [class.success]="summaryData().total.margin >= 0.2"
-            [class.warning]="summaryData().total.margin < 0.2 && summaryData().total.margin > 0"
-            [class.destructive]="summaryData().total.margin <= 0"
+          <!-- Profile Rows -->
+          <tr
+            *ngFor="let row of scope.rows"
+            class="bg-white text-slate-700 border-b border-slate-200"
           >
-            {{ summaryData().total.margin | percent: '1.0-0' }}
-          </span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+            <td class="px-4 py-1 border-r border-slate-200 text-slate-500 text-xs">
+              {{ scope.scope }}
+            </td>
+            <td class="px-4 py-1 border-r border-slate-200">{{ row.profileName }}</td>
+            <td class="px-4 py-1 text-right border-r border-slate-200 bg-slate-50">
+              {{ row.workload | number: '1.3-3' }}
+            </td>
+            <td class="px-4 py-1 text-right border-r border-slate-200">
+              {{ row.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-1 text-right border-r border-slate-200">
+              {{ row.cost | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-1 text-right border-r border-slate-200">
+              {{ row.dailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-1 text-right border-r border-slate-200">
+              {{ row.scr | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+            <td class="px-4 py-1 text-right bg-slate-50">
+              <span
+                class="badge"
+                [class.success]="row.margin >= 0.2"
+                [class.warning]="row.margin < 0.2 && row.margin > 0"
+                [class.destructive]="row.margin <= 0"
+              >
+                {{ row.margin | percent: '1.0-0' }}
+              </span>
+            </td>
+          </tr>
+        </ng-container>
+
+        <!-- Grand Total Row -->
+        <tr class="bg-red-50 text-red-900 font-bold border-t-2 border-red-500">
+          <td class="px-4 py-3 border-r border-red-200 text-lg uppercase text-red-700">Total</td>
+          <td class="px-4 py-3 border-r border-red-200"></td>
+          <td class="px-4 py-3 text-right border-r border-red-200">
+            {{ summaryData().total.totalWorkload | number: '1.3-3' }}
+          </td>
+          <td class="px-4 py-3 text-right border-r border-red-200">
+            {{ summaryData().total.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+          </td>
+          <td class="px-4 py-3 text-right border-r border-red-200">
+            {{ summaryData().total.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
+          </td>
+          <td class="px-4 py-3 text-right border-r border-red-200">
+            {{ summaryData().total.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
+          </td>
+          <td class="px-4 py-3 text-right border-r border-red-200">
+            {{ summaryData().total.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
+          </td>
+          <td class="px-4 py-3 text-right">
+            <span
+              class="badge"
+              [class.success]="summaryData().total.margin >= 0.2"
+              [class.warning]="summaryData().total.margin < 0.2 && summaryData().total.margin > 0"
+              [class.destructive]="summaryData().total.margin <= 0"
+            >
+              {{ summaryData().total.margin | percent: '1.0-0' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<!-- Scoped Hierarchy Summary Tables (One table per Scope) -->
+@for (scopeSum of hierarchySummaryByScopeData(); track scopeSum.scope) {
+  <div class="summary-section mt-12 mb-12">
+    <h3 class="section-title">{{ 'summary.by_hierarchy' | translate }} - {{ scopeSum.scope }}</h3>
+    <div class="table-container shadow-sm">
+      <table class="w-full text-sm text-left text-slate-300">
+        <thead class="text-xs uppercase bg-red-900 text-white border-b border-red-800">
+          <tr>
+            <th scope="col" class="px-4 py-3 w-48 border-r border-red-100">Produit / Cluster</th>
+            <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Workload</th>
+            <th scope="col" class="px-4 py-3 text-right w-32">Price</th>
+          </tr>
+        </thead>
+        <tbody class="">
+          @for (prod of scopeSum.products; track prod.productId) {
+            <!-- Product Header Row -->
+            <tr class="bg-red-50 text-red-900 font-bold border-b border-red-100">
+              <td class="px-4 py-2 border-r border-red-100 text-lg uppercase text-red-800 pl-6">
+                {{ prod.productName }}
+              </td>
+              <td class="px-4 py-2 text-right border-r border-red-100">
+                {{ prod.totalWorkload | number: '1.3-3' }}
+              </td>
+              <td class="px-4 py-2 text-right">
+                {{ prod.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            </tr>
+
+            <!-- Cluster Rows -->
+            @for (cluster of prod.clusters; track cluster.clusterId) {
+              <tr class="bg-white text-slate-700 border-b border-slate-200">
+                <td class="px-4 py-1 border-r border-slate-200 text-slate-500 italic pl-12">
+                  {{ cluster.clusterName }}
+                </td>
+                <td class="px-4 py-1 text-right border-r border-slate-200 bg-slate-50">
+                  {{ cluster.workload | number: '1.3-3' }}
+                </td>
+                <td class="px-4 py-1 text-right">
+                  {{ cluster.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+                </td>
+              </tr>
+            }
+          }
+
+          <!-- Grand Total Row for this Scope -->
+          <tr class="bg-red-50 text-red-900 font-bold border-t-2 border-red-500">
+            <td class="px-4 py-3 border-r border-red-100 text-lg uppercase text-red-700">
+              Total {{ scopeSum.scope }}
+            </td>
+            <td class="px-4 py-3 text-right border-r border-red-100">
+              {{ scopeSum.totalWorkload | number: '1.3-3' }}
+            </td>
+            <td class="px-4 py-3 text-right">
+              {{ scopeSum.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
