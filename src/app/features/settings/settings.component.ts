@@ -257,16 +257,38 @@ export class SettingsComponent {
           let updatedCount = 0;
           let skippedCount = 0;
 
+          // Helper to check if profile has changed
+          const hasProfileChanged = (
+            existing: Profile,
+            incoming: { role: string; username?: string; tjm: number; scr: number },
+          ) => {
+            return (
+              existing.name !== incoming.role ||
+              existing.username !== (incoming.username || '') ||
+              existing.dailyRate !== incoming.tjm ||
+              existing.scr !== incoming.scr
+            );
+          };
+
           // 1. Import Profiles
           const savedProfiles: Profile[] = [];
           for (const p of extractedProfiles) {
             const existing = existingProfiles.find((ep: Profile) => ep.name === p.role);
 
-            if (existing && isAddOnlyMode) {
-              // Skip existing in add-only mode
-              savedProfiles.push(existing);
-              skippedCount++;
-              continue;
+            if (existing) {
+              if (isAddOnlyMode) {
+                // Skip existing in add-only mode
+                savedProfiles.push(existing);
+                skippedCount++;
+                continue;
+              }
+
+              // Check if there are actual changes
+              if (!hasProfileChanged(existing, p)) {
+                savedProfiles.push(existing);
+                skippedCount++;
+                continue;
+              }
             }
 
             const profile: Profile = {
@@ -340,9 +362,24 @@ export class SettingsComponent {
                   ei.profileId === profile.id,
               );
 
-              if (existingItem && isAddOnlyMode) {
-                // Skip existing item in add-only mode
-                continue;
+              if (existingItem) {
+                if (isAddOnlyMode) {
+                  // Skip existing item in add-only mode
+                  continue;
+                }
+
+                // Check if item has actually changed
+                const hasChanged =
+                  existingItem.title !== item.title ||
+                  existingItem.description !== item.description ||
+                  existingItem.effortDays !== item.effort ||
+                  existingItem.chargeType !== item.chargeType ||
+                  existingItem.moscow !== (item.scope === 'S1' ? 'MUST' : 'SHOULD');
+
+                if (!hasChanged) {
+                  // No changes, skip
+                  continue;
+                }
               }
 
               const backlogItem: any = {
