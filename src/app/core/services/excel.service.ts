@@ -14,6 +14,7 @@ export interface ExtractedBacklogItem {
   profileName: string;
   effort: number;
   chargeType: 'days' | 'ratio';
+  type: 'build' | 'other';
   scope: string; // S1, S2, etc.
   productName: string;
   clusterName: string;
@@ -112,12 +113,19 @@ export class ExcelService {
         const effort = this.getNumericalValue(row.getCell(13).value);
         const scope = this.getStringValue(row.getCell(7).value);
 
+        const isOtherRatio = chargeMode === 'Other (Ratio)';
+
         items.push({
           title: this.getStringValue(title),
           description: this.getStringValue(descriptionValue),
           profileName: profileName,
           effort: effort,
-          chargeType: chargeMode.toLowerCase().includes('ratio') ? 'ratio' : 'days',
+          chargeType: isOtherRatio
+            ? 'ratio'
+            : chargeMode.toLowerCase().includes('ratio')
+              ? 'ratio'
+              : 'days',
+          type: isOtherRatio ? 'other' : 'build',
           scope: scope,
           productName: currentProduct,
           clusterName: currentCluster,

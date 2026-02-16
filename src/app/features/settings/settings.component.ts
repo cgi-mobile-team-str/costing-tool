@@ -371,6 +371,7 @@ export class SettingsComponent {
                   !areStringsEqual(existingItem.description, item.description) ||
                   !areNumbersEqual(existingItem.effortDays, item.effort) ||
                   existingItem.chargeType !== item.chargeType ||
+                  existingItem.type !== item.type ||
                   !areStringsEqual(existingItem.scope, incomingScope) ||
                   existingItem.moscow !== mappedMoscow;
 
@@ -390,7 +391,7 @@ export class SettingsComponent {
                 effortDays: item.effort,
                 chargeType: item.chargeType,
                 moscow: item.scope === 'S1' ? 'MUST' : 'SHOULD',
-                type: 'build',
+                type: item.type,
                 scope: item.scope || 'MVP',
                 projectId: currentProjectId,
               };
