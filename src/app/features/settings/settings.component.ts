@@ -218,7 +218,7 @@ export class SettingsComponent {
 
       this.alertDialogService.confirm({
         zTitle: 'Importer depuis Excel',
-        zDescription: `
+        zContent: `
           <div class="space-y-4">
             <p>Voulez-vous importer ${extractedProfiles.length} profils et ${extractedBacklog.items.length} items de backlog ?</p>
             <div class="space-y-2">

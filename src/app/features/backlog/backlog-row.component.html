@@ -1,5 +1,6 @@
 <tr
   [appHistoryTooltip]="item.id"
+  [appHistoryTooltipDisabled]="!item.updatedAt"
   [creatorName]="item.creatorName || ''"
   [createdAt]="item.createdAt || ''"
 >

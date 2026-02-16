@@ -12,6 +12,7 @@ export class HistoryTooltipDirective implements OnDestroy {
   @Input('appHistoryTooltip') itemId!: string;
   @Input() creatorName = '';
   @Input() createdAt = '';
+  @Input() appHistoryTooltipDisabled = false;
 
   private overlay = inject(Overlay);
   private overlayPositionBuilder = inject(OverlayPositionBuilder);
@@ -22,7 +23,7 @@ export class HistoryTooltipDirective implements OnDestroy {
 
   @HostListener('mouseenter')
   show() {
-    if (this.overlayRef) return;
+    if (this.appHistoryTooltipDisabled || this.overlayRef) return;
 
     const positionStrategy = this.overlayPositionBuilder
       .flexibleConnectedTo(this.elementRef)
