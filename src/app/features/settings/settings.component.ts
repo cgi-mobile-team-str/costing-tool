@@ -220,13 +220,30 @@ export class SettingsComponent {
         zTitle: 'Importer depuis Excel',
         zContent: `
           <div class="space-y-4 py-2">
+            <style>
+              .import-option-card {
+                border: 2px solid #e2e8f0;
+                transition: all 0.2s ease;
+              }
+              .import-option-card:hover {
+                border-color: #fca5a5;
+              }
+              .import-option-card:has(input:checked) {
+                border-color: #b91c1c !important;
+                background-color: #fef2f2 !important;
+                box-shadow: 0 0 0 1px #b91c1c;
+              }
+              .import-option-card input:checked {
+                accent-color: #b91c1c;
+              }
+            </style>
             <p class="text-base text-slate-700">Voulez-vous importer <span class="font-bold text-red-700">${extractedProfiles.length} profils</span> et <span class="font-bold text-red-700">${extractedBacklog.items.length} items</span> de backlog ?</p>
             
             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
               <p class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Mode d'importation :</p>
               
               <div class="space-y-3">
-                <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-md cursor-pointer hover:border-red-300 transition-colors">
+                <label class="import-option-card flex items-start gap-3 p-3 bg-white rounded-md cursor-pointer">
                   <input type="radio" name="import-mode" value="add-only" checked 
                     class="mt-1 w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500" 
                     style="accent-color: #b91c1c; min-width: 16px; min-height: 16px; visibility: visible !important; opacity: 1 !important; position: static !important;" />
@@ -236,7 +253,7 @@ export class SettingsComponent {
                   </div>
                 </label>
                 
-                <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-md cursor-pointer hover:border-red-300 transition-colors">
+                <label class="import-option-card flex items-start gap-3 p-3 bg-white rounded-md cursor-pointer">
                   <input type="radio" name="import-mode" value="upsert" 
                     class="mt-1 w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500" 
                     style="accent-color: #b91c1c; min-width: 16px; min-height: 16px; visibility: visible !important; opacity: 1 !important; position: static !important;" />
