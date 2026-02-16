@@ -243,22 +243,20 @@ export class SettingsComponent {
           const existingProducts = (hierarchy as any).products as Product[];
           const existingClusters = (hierarchy as any).clusters as Cluster[];
 
+          // Helpers for robust comparison
+          const areStringsEqual = (a: any, b: any) => {
+            const valA = (a === null || a === undefined ? '' : String(a)).trim();
+            const valB = (b === null || b === undefined ? '' : String(b)).trim();
+            return valA === valB;
+          };
+
+          const areNumbersEqual = (a: any, b: any) => {
+            return Number(a || 0) === Number(b || 0);
+          };
+
           let addedCount = 0;
           let updatedCount = 0;
           let skippedCount = 0;
-
-          // Helper to check if profile has changed
-          const hasProfileChanged = (
-            existing: Profile,
-            incoming: { role: string; username?: string | null; tjm: number; scr: number },
-          ) => {
-            return (
-              existing.name !== incoming.role ||
-              existing.username !== (incoming.username || '') ||
-              Number(existing.dailyRate) !== Number(incoming.tjm) ||
-              Number(existing.scr) !== Number(incoming.scr)
-            );
-          };
 
           // 1. Import Profiles
           const savedProfiles: Profile[] = [];
@@ -274,7 +272,13 @@ export class SettingsComponent {
               }
 
               // Check if there are actual changes
-              if (!hasProfileChanged(existing, p)) {
+              const hasProfileChanged =
+                !areStringsEqual(existing.name, p.role) ||
+                !areStringsEqual(existing.username, p.username) ||
+                !areNumbersEqual(existing.dailyRate, p.tjm) ||
+                !areNumbersEqual(existing.scr, p.scr);
+
+              if (!hasProfileChanged) {
                 savedProfiles.push(existing);
                 skippedCount++;
                 continue;
@@ -360,12 +364,14 @@ export class SettingsComponent {
 
                 // Check if item has actually changed (handle string vs number for effortDays)
                 const mappedMoscow = item.scope === 'S1' ? 'MUST' : 'SHOULD';
+                const incomingScope = item.scope || 'MVP';
+
                 const hasChanged =
-                  existingItem.title !== item.title ||
-                  existingItem.description !== item.description ||
-                  Number(existingItem.effortDays) !== Number(item.effort) ||
+                  !areStringsEqual(existingItem.title, item.title) ||
+                  !areStringsEqual(existingItem.description, item.description) ||
+                  !areNumbersEqual(existingItem.effortDays, item.effort) ||
                   existingItem.chargeType !== item.chargeType ||
-                  existingItem.scope !== item.scope ||
+                  !areStringsEqual(existingItem.scope, incomingScope) ||
                   existingItem.moscow !== mappedMoscow;
 
                 if (!hasChanged) {
