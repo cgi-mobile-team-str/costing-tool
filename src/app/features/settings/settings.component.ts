@@ -192,6 +192,8 @@ export class SettingsComponent {
     reader.readAsText(file);
   }
 
+  isImportingExcel = signal(false);
+
   async importExcel(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -202,21 +204,45 @@ export class SettingsComponent {
       return;
     }
 
+    this.isImportingExcel.set(true);
+
     try {
       const extractedProfiles = await this.excelService.extractProfiles(file);
       const extractedBacklog = await this.excelService.extractBacklog(file);
 
       if (extractedProfiles.length === 0 && extractedBacklog.items.length === 0) {
         alert('Aucune donnée trouvée dans le fichier Excel.');
+        this.isImportingExcel.set(false);
         return;
       }
 
       this.alertDialogService.confirm({
         zTitle: 'Importer depuis Excel',
-        zDescription: `Voulez-vous importer ${extractedProfiles.length} profils et ${extractedBacklog.items.length} items de backlog ?`,
-        zOkText: 'Importer tout',
+        zDescription: `
+          <div class="space-y-4">
+            <p>Voulez-vous importer ${extractedProfiles.length} profils et ${extractedBacklog.items.length} items de backlog ?</p>
+            <div class="space-y-2">
+              <p class="text-sm font-semibold text-slate-700">Mode d'importation :</p>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="import-mode" value="add-only" checked class="text-red-600 focus:ring-red-500" />
+                <span class="text-sm">Ajouter uniquement les nouveaux (ignorer les doublons)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="import-mode" value="upsert" class="text-red-600 focus:ring-red-500" />
+                <span class="text-sm">Mettre à jour tout (upsert)</span>
+              </label>
+            </div>
+          </div>
+        `,
+        zOkText: 'Importer',
         zOnOk: async () => {
           const projectId = currentProjectId;
+
+          // Get selected import mode
+          const selectedMode =
+            (document.querySelector('input[name="import-mode"]:checked') as HTMLInputElement)
+              ?.value || 'add-only';
+          const isAddOnlyMode = selectedMode === 'add-only';
 
           // 0. Fetch existing data to avoid duplicates
           const [existingProfiles, hierarchy] = await Promise.all([
@@ -227,10 +253,22 @@ export class SettingsComponent {
           const existingProducts = (hierarchy as any).products as Product[];
           const existingClusters = (hierarchy as any).clusters as Cluster[];
 
-          // 1. Import Profiles (Upsert)
+          let addedCount = 0;
+          let updatedCount = 0;
+          let skippedCount = 0;
+
+          // 1. Import Profiles
           const savedProfiles: Profile[] = [];
           for (const p of extractedProfiles) {
             const existing = existingProfiles.find((ep: Profile) => ep.name === p.role);
+
+            if (existing && isAddOnlyMode) {
+              // Skip existing in add-only mode
+              savedProfiles.push(existing);
+              skippedCount++;
+              continue;
+            }
+
             const profile: Profile = {
               id: existing ? existing.id : '',
               name: p.role,
@@ -241,12 +279,21 @@ export class SettingsComponent {
             };
             const saved = await lastValueFrom(this.profilesRepo.save(profile, projectId));
             savedProfiles.push(saved);
+
+            if (existing) updatedCount++;
+            else addedCount++;
           }
 
           // 2. Import Products (Upsert) - Excel Clusters
           const productMap = new Map<string, string>();
           for (const productName of extractedBacklog.products) {
             const existing = existingProducts.find((ep) => ep.name === productName);
+
+            if (existing && isAddOnlyMode) {
+              productMap.set(productName, existing.id);
+              continue;
+            }
+
             const product: Product = {
               id: existing ? existing.id : '',
               name: productName,
@@ -263,6 +310,12 @@ export class SettingsComponent {
               const existing = existingClusters.find(
                 (ec: Cluster) => ec.name === c.name && ec.productId === productId,
               );
+
+              if (existing && isAddOnlyMode) {
+                clusterMap.set(c.productName + c.name, existing.id);
+                continue;
+              }
+
               const cluster: Cluster = {
                 id: existing ? existing.id : '',
                 name: c.name,
@@ -287,6 +340,11 @@ export class SettingsComponent {
                   ei.profileId === profile.id,
               );
 
+              if (existingItem && isAddOnlyMode) {
+                // Skip existing item in add-only mode
+                continue;
+              }
+
               const backlogItem: any = {
                 id: existingItem ? existingItem.id : '',
                 title: item.title,
@@ -305,11 +363,21 @@ export class SettingsComponent {
             }
           }
 
-          alert('Importation Excel réussie !');
+          this.isImportingExcel.set(false);
+
+          const summary = isAddOnlyMode
+            ? `Importation terminée !\n${addedCount} nouveaux éléments ajoutés\n${skippedCount} doublons ignorés`
+            : `Importation terminée !\n${addedCount} nouveaux éléments\n${updatedCount} éléments mis à jour`;
+
+          alert(summary);
           window.location.reload();
+        },
+        zOnCancel: () => {
+          this.isImportingExcel.set(false);
         },
       });
     } catch (err: any) {
+      this.isImportingExcel.set(false);
       alert('Erreur lors de la lecture du fichier Excel: ' + err.message);
       console.error(err);
     }
