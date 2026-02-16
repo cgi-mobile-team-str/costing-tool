@@ -322,3 +322,83 @@
     }
   </div>
 </div>
+
+<!-- Excel Import Confirmation Template -->
+<ng-template #importConfirmTpl>
+  <div class="space-y-4 py-2">
+    <p class="text-base text-slate-700">
+      Voulez-vous importer
+      <span class="font-bold text-red-700">{{ extractedData().profiles }} profils</span> et
+      <span class="font-bold text-red-700">{{ extractedData().items }} items</span> de backlog ?
+    </p>
+
+    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <p class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">
+        Mode d'importation :
+      </p>
+
+      <div class="space-y-3">
+        <!-- Add Only Mode -->
+        <div
+          (click)="importMode.set('add-only')"
+          class="flex items-start gap-3 p-3 bg-white rounded-md cursor-pointer border-2 transition-all"
+          [class.border-red-600]="importMode() === 'add-only'"
+          [class.bg-red-50]="importMode() === 'add-only'"
+          [class.border-slate-200]="importMode() !== 'add-only'"
+        >
+          <div class="mt-1 flex items-center justify-center">
+            <div
+              class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all"
+              [class.border-red-600]="importMode() === 'add-only'"
+              [class.border-slate-300]="importMode() !== 'add-only'"
+            >
+              @if (importMode() === 'add-only') {
+                <div class="w-2 h-2 rounded-full bg-red-600"></div>
+              }
+            </div>
+          </div>
+          <div>
+            <span class="block text-sm font-semibold text-slate-800">Ajouter uniquement</span>
+            <span class="block text-xs text-slate-500"
+              >Ajoute les nouveaux. Ignore ceux déjà présents.</span
+            >
+          </div>
+        </div>
+
+        <!-- Sync (Upsert) Mode -->
+        <div
+          (click)="importMode.set('upsert')"
+          class="flex items-start gap-3 p-3 bg-white rounded-md cursor-pointer border-2 transition-all"
+          [class.border-red-600]="importMode() === 'upsert'"
+          [class.bg-red-50]="importMode() === 'upsert'"
+          [class.border-slate-200]="importMode() !== 'upsert'"
+        >
+          <div class="mt-1 flex items-center justify-center">
+            <div
+              class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all"
+              [class.border-red-600]="importMode() === 'upsert'"
+              [class.border-slate-300]="importMode() !== 'upsert'"
+            >
+              @if (importMode() === 'upsert') {
+                <div class="w-2 h-2 rounded-full bg-red-600"></div>
+              }
+            </div>
+          </div>
+          <div>
+            <span class="block text-sm font-semibold text-slate-800"
+              >Mettre à jour tout (Sync)</span
+            >
+            <span class="block text-xs text-slate-500"
+              >Ajoute les nouveaux ET met à jour les éléments existants (charges, etc.).</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-xs text-slate-400 italic">
+      Note: La détection des doublons se base sur le nom du produit, du cluster et le titre de
+      l'item.
+    </p>
+  </div>
+</ng-template>

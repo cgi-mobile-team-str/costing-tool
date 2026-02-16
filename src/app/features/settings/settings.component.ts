@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, TemplateRef, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 import { BacklogItem, Cluster, Product, Profile } from '../../core/models/domain.model';
@@ -45,6 +45,10 @@ export class SettingsComponent {
   productsToImport = signal<Product[]>([]);
   clustersToImport = signal<Cluster[]>([]);
   importedProjectName = signal('');
+  importMode = signal<'add-only' | 'upsert'>('add-only');
+  extractedData = signal<{ profiles: number; items: number }>({ profiles: 0, items: 0 });
+
+  importConfirmTpl = viewChild<TemplateRef<any>>('importConfirmTpl');
 
   settings = signal(this.repo.get());
   currentProjectName = this.projectsService.currentProjectName;
@@ -216,67 +220,19 @@ export class SettingsComponent {
         return;
       }
 
+      this.extractedData.set({
+        profiles: extractedProfiles.length,
+        items: extractedBacklog.items.length,
+      });
+      this.importMode.set('add-only');
+
       this.alertDialogService.confirm({
         zTitle: 'Importer depuis Excel',
-        zContent: `
-          <div class="space-y-4 py-2">
-            <style>
-              .import-option-card {
-                border: 2px solid #e2e8f0;
-                transition: all 0.2s ease;
-              }
-              .import-option-card:hover {
-                border-color: #fca5a5;
-              }
-              .import-option-card:has(input:checked) {
-                border-color: #b91c1c !important;
-                background-color: #fef2f2 !important;
-                box-shadow: 0 0 0 1px #b91c1c;
-              }
-              .import-option-card input:checked {
-                accent-color: #b91c1c;
-              }
-            </style>
-            <p class="text-base text-slate-700">Voulez-vous importer <span class="font-bold text-red-700">${extractedProfiles.length} profils</span> et <span class="font-bold text-red-700">${extractedBacklog.items.length} items</span> de backlog ?</p>
-            
-            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <p class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Mode d'importation :</p>
-              
-              <div class="space-y-3">
-                <label class="import-option-card flex items-start gap-3 p-3 bg-white rounded-md cursor-pointer">
-                  <input type="radio" name="import-mode" value="add-only" checked 
-                    class="mt-1 w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500" 
-                    style="accent-color: #b91c1c; min-width: 16px; min-height: 16px; visibility: visible !important; opacity: 1 !important; position: static !important;" />
-                  <div>
-                    <span class="block text-sm font-semibold text-slate-800">Ajouter uniquement</span>
-                    <span class="block text-xs text-slate-500">Ajoute les nouveaux produits/clusters/items. Ignore ceux déjà présents (détection par nom/titre).</span>
-                  </div>
-                </label>
-                
-                <label class="import-option-card flex items-start gap-3 p-3 bg-white rounded-md cursor-pointer">
-                  <input type="radio" name="import-mode" value="upsert" 
-                    class="mt-1 w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500" 
-                    style="accent-color: #b91c1c; min-width: 16px; min-height: 16px; visibility: visible !important; opacity: 1 !important; position: static !important;" />
-                  <div>
-                    <span class="block text-sm font-semibold text-slate-800">Mettre à jour tout (Sync)</span>
-                    <span class="block text-xs text-slate-500">Ajoute les nouveaux ET met à jour les éléments existants si leurs propriétés (dont les charges) ont changé.</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-            
-            <p class="text-xs text-slate-400 italic">Note: La détection des doublons se base sur le nom du produit, du cluster et le titre de l'item.</p>
-          </div>
-        `,
+        zContent: this.importConfirmTpl()!,
         zOkText: 'Importer',
         zOnOk: async () => {
           const projectId = currentProjectId;
-
-          // Get selected import mode
-          const selectedMode =
-            (document.querySelector('input[name="import-mode"]:checked') as HTMLInputElement)
-              ?.value || 'add-only';
-          const isAddOnlyMode = selectedMode === 'add-only';
+          const isAddOnlyMode = this.importMode() === 'add-only';
 
           // 0. Fetch existing data to avoid duplicates
           const [existingProfiles, hierarchy] = await Promise.all([
