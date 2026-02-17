@@ -145,6 +145,8 @@ export class BacklogListComponent {
         const projectId = this.projectsService.currentProjectId();
         const versionId = this.activeVersion();
         if (projectId) {
+          this.loadCollapsedState();
+          this.loadAllExpandedState();
           this.refreshData(projectId, versionId);
         }
       },
@@ -233,6 +235,50 @@ export class BacklogListComponent {
   }
 
   // Product section management
+  private getStorageKey(): string | null {
+    const projectId = this.projectsService.currentProjectId();
+    return projectId ? `backlog_collapsed_products_${projectId}` : null;
+  }
+
+  private loadCollapsedState() {
+    const key = this.getStorageKey();
+    if (!key) return;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        this.collapsedProducts.set(new Set(JSON.parse(stored)));
+      } catch (e) {
+        console.error('Error parsing collapsed products', e);
+      }
+    } else {
+      this.collapsedProducts.set(new Set());
+    }
+  }
+
+  private saveCollapsedState() {
+    const key = this.getStorageKey();
+    if (!key) return;
+    const values = Array.from(this.collapsedProducts());
+    localStorage.setItem(key, JSON.stringify(values));
+  }
+
+  private loadAllExpandedState() {
+    const projectId = this.projectsService.currentProjectId();
+    if (!projectId) return;
+    const stored = localStorage.getItem(`backlog_all_expanded_${projectId}`);
+    if (stored !== null) {
+      this.allClustersExpanded.set(stored === 'true');
+    } else {
+      this.allClustersExpanded.set(true);
+    }
+  }
+
+  private saveAllExpandedState() {
+    const projectId = this.projectsService.currentProjectId();
+    if (!projectId) return;
+    localStorage.setItem(`backlog_all_expanded_${projectId}`, String(this.allClustersExpanded()));
+  }
+
   toggleProduct(productName: string) {
     const collapsed = this.collapsedProducts();
     const newSet = new Set(collapsed);
@@ -242,6 +288,7 @@ export class BacklogListComponent {
       newSet.add(productName);
     }
     this.collapsedProducts.set(newSet);
+    this.saveCollapsedState();
   }
 
   isProductExpanded(productName: string): boolean {
@@ -384,6 +431,8 @@ export class BacklogListComponent {
       const allProductIds = this.groupedItems().map((g) => g.product);
       this.collapsedProducts.set(new Set(allProductIds));
     }
+    this.saveCollapsedState();
+    this.saveAllExpandedState();
   }
 
   // Bulk selection

@@ -11,6 +11,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { ProjectsService } from '../../core/services/projects.service';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
@@ -41,33 +42,49 @@ export interface ProductGroup {
 })
 export class BacklogProductSectionComponent implements OnChanges {
   private dialog = inject(ZardDialogService);
+  private projectsService = inject(ProjectsService);
 
   expandedClusters = signal<Set<string>>(new Set());
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['productGroup'] && this.productGroup?.clusters) {
+      this.loadExpandedClusters();
+
       const current = this.expandedClusters();
       const next = new Set(current);
       let changed = false;
-      for (const c of this.productGroup.clusters) {
-        if (!next.has(c.clusterId)) {
-          next.add(c.clusterId);
-          changed = true;
+
+      // Only auto-expand if no state is stored in localStorage
+      const key = this.getStorageKey();
+      const hasStored = localStorage.getItem(key || '') !== null;
+
+      if (!hasStored) {
+        for (const c of this.productGroup.clusters) {
+          if (!next.has(c.clusterId)) {
+            next.add(c.clusterId);
+            changed = true;
+          }
         }
       }
+
       if (changed) {
         this.expandedClusters.set(next);
       }
     }
 
     if (changes['forceExpandClusters']) {
-      if (this.forceExpandClusters) {
-        // Expand all clusters
-        const allIds = this.productGroup.clusters.map((c) => c.clusterId);
-        this.expandedClusters.set(new Set(allIds));
-      } else {
-        // Collapse all clusters
-        this.expandedClusters.set(new Set());
+      // Only apply forceExpandClusters if it's NOT the first change
+      // because on first change/init we want to favor the state loaded from localStorage in loadExpandedClusters()
+      if (!changes['forceExpandClusters'].firstChange) {
+        if (this.forceExpandClusters) {
+          // Expand all clusters
+          const allIds = this.productGroup.clusters.map((c) => c.clusterId);
+          this.expandedClusters.set(new Set(allIds));
+        } else {
+          // Collapse all clusters
+          this.expandedClusters.set(new Set());
+        }
+        this.saveExpandedClusters();
       }
     }
   }
@@ -80,6 +97,33 @@ export class BacklogProductSectionComponent implements OnChanges {
       set.add(clusterId);
     }
     this.expandedClusters.set(set);
+    this.saveExpandedClusters();
+  }
+
+  private getStorageKey(): string | null {
+    const projectId = this.projectsService.currentProjectId();
+    const productId = this.productGroup?.productId;
+    return projectId && productId ? `backlog_expanded_clusters_${projectId}_${productId}` : null;
+  }
+
+  private loadExpandedClusters() {
+    const key = this.getStorageKey();
+    if (!key) return;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        this.expandedClusters.set(new Set(JSON.parse(stored)));
+      } catch (e) {
+        console.error('Error parsing expanded clusters', e);
+      }
+    }
+  }
+
+  private saveExpandedClusters() {
+    const key = this.getStorageKey();
+    if (!key) return;
+    const values = Array.from(this.expandedClusters());
+    localStorage.setItem(key, JSON.stringify(values));
   }
 
   isClusterExpanded(clusterId: string): boolean {
