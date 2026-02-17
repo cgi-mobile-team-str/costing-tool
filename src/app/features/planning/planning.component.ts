@@ -25,6 +25,7 @@ interface PlanningScopeGroup {
   scope: string;
   rows: PlanningRow[];
   totalEffort: number;
+  remaining: number;
   monthlyTotals: Record<number, number>;
 }
 
@@ -132,6 +133,7 @@ export class PlanningComponent {
         .sort((a, b) => a.profileName.localeCompare(b.profileName));
 
       const totalEffort = rows.reduce((sum, r) => sum + r.totalEffort, 0);
+      const remaining = rows.reduce((sum, r) => sum + r.remaining, 0);
       const monthlyTotals: Record<number, number> = {};
       this.months.forEach((m) => {
         monthlyTotals[m] = rows.reduce((sum, r) => sum + (r.distribution[m] || 0), 0);
@@ -141,6 +143,7 @@ export class PlanningComponent {
         scope,
         rows,
         totalEffort,
+        remaining,
         monthlyTotals,
       });
     });
@@ -151,17 +154,19 @@ export class PlanningComponent {
   grandTotals = computed(() => {
     const data = this.planningData();
     let totalEffort = 0;
+    let remaining = 0;
     const monthlyTotals: Record<number, number> = {};
     this.months.forEach((m) => (monthlyTotals[m] = 0));
 
     data.forEach((group) => {
       totalEffort += group.totalEffort;
+      remaining += group.remaining;
       this.months.forEach((m) => {
         monthlyTotals[m] += group.monthlyTotals[m] || 0;
       });
     });
 
-    return { totalEffort, monthlyTotals };
+    return { totalEffort, remaining, monthlyTotals };
   });
 
   onValueChange(row: PlanningRow, month: number, event: any) {
@@ -169,12 +174,20 @@ export class PlanningComponent {
     const projectId = this.projectsService.currentProjectId();
     if (!projectId) return;
 
-    const newDistribution = { ...row.distribution, [month]: value };
+    // Convert keys to string for the model
+    const newDistribution: Record<string, number> = {};
+    Object.entries(row.distribution).forEach(([k, v]) => {
+      newDistribution[String(k)] = v;
+    });
+    newDistribution[String(month)] = value;
 
-    // Update row locally for immediate feedback (Optimistic)
-    row.distribution[month] = value;
-    const totalDistributed = Object.values(row.distribution).reduce((sum, v) => sum + v, 0);
-    row.remaining = row.totalEffort - totalDistributed;
+    // Optimistic update via signal
+    this.planningRepo.updateOptimistic({
+      projectId,
+      scope: row.scope,
+      profileId: row.profileId,
+      distribution: newDistribution,
+    });
 
     // Send to backend
     this.planningRepo
@@ -182,7 +195,7 @@ export class PlanningComponent {
         projectId,
         scope: row.scope,
         profileId: row.profileId,
-        distribution: newDistribution as any,
+        distribution: newDistribution,
       })
       .subscribe();
   }

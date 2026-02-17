@@ -26,21 +26,25 @@ export class PlanningRepository {
   save(planning: Planning): Observable<Planning> {
     return this.http.post<Planning>(this.apiUrl, planning).pipe(
       tap((saved) => {
-        this._plannings.update((current) => {
-          const index = current.findIndex(
-            (p) =>
-              p.projectId === saved.projectId &&
-              p.scope === saved.scope &&
-              p.profileId === saved.profileId,
-          );
-          if (index !== -1) {
-            const updated = [...current];
-            updated[index] = saved;
-            return updated;
-          }
-          return [...current, saved];
-        });
+        this.updateOptimistic(saved);
       }),
     );
+  }
+
+  updateOptimistic(planning: Planning) {
+    this._plannings.update((current) => {
+      const index = current.findIndex(
+        (p) =>
+          p.projectId === planning.projectId &&
+          p.scope === planning.scope &&
+          p.profileId === planning.profileId,
+      );
+      if (index !== -1) {
+        const updated = [...current];
+        updated[index] = { ...planning };
+        return updated;
+      }
+      return [...current, { ...planning }];
+    });
   }
 }
