@@ -69,7 +69,7 @@ export class SettingsComponent {
     this.form.patchValue({
       projectName: this.currentProjectName() || s.projectName || '',
       currency: s.currency,
-      startDate: s.startDate || '',
+      startDate: s.startDate ? s.startDate.split('T')[0] : '',
     });
 
     // Extract claims

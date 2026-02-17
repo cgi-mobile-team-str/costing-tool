@@ -197,7 +197,9 @@ export class PlanningComponent {
   });
 
   onValueChange(row: PlanningRow, month: number, event: any) {
-    const value = parseFloat(event?.target?.value) || 0;
+    const rawValue = event?.target?.value || '0';
+    const normalizedValue = rawValue.replace(',', '.');
+    const value = parseFloat(normalizedValue) || 0;
     const projectId = this.projectsService.currentProjectId();
     if (!projectId) return;
 

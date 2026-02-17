@@ -29,8 +29,10 @@ export class ProjectsService {
       const name = this.currentProjectName();
       const margin = this.storage.getItem<string>('marginRate');
       const currency = this.storage.getItem<string>('currency');
+      const startDate = this.storage.getItem<string>('startDate');
 
       // If we are missing details but have an ID, fetch from API
+      // Note: startDate is optional but we should fetch if it might be there on the server
       if (!name || !margin || !currency) {
         return this.getProject(id);
       }

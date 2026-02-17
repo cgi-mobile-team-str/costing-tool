@@ -25,11 +25,11 @@
             <td z-table-cell>{{ group.scope }}</td>
             <td z-table-cell class="sticky-col col-profile"></td>
             <td z-table-cell class="sticky-col col-remaining text-right font-bold">
-              {{ group.remaining | number: '1.2-3' }}
+              {{ group.remaining | number: '1.2-3' : 'en-US' }}
             </td>
             @for (m of months; track m) {
               <td z-table-cell class="text-center font-bold">
-                {{ group.monthlyTotals[m] | number: '1.2-3' }}
+                {{ group.monthlyTotals[m] | number: '1.2-3' : 'en-US' }}
               </td>
             }
           </tr>
@@ -53,17 +53,18 @@
                 class="sticky-col col-remaining text-right"
                 [class.negative]="row.remaining < 0"
               >
-                {{ row.remaining | number: '1.2-3' }}
+                {{ row.remaining | number: '1.2-3' : 'en-US' }}
               </td>
               @for (m of months; track m) {
                 <td z-table-cell>
                   <input
                     z-input
                     type="number"
+                    lang="en-US"
                     [value]="getDistributionValue(row, m)"
                     (input)="onValueChange(row, m, $event)"
                     class="cell-input"
-                    step="0.125"
+                    step="any"
                   />
                 </td>
               }
@@ -78,11 +79,11 @@
           </td>
           <td z-table-cell class="sticky-col col-profile font-bold"></td>
           <td z-table-cell class="sticky-col col-remaining text-right font-bold">
-            {{ grandTotals().remaining | number: '1.2-3' }}
+            {{ grandTotals().remaining | number: '1.2-3' : 'en-US' }}
           </td>
           @for (m of months; track m) {
             <td z-table-cell class="text-center font-bold">
-              {{ grandTotals().monthlyTotals[m] | number: '1.2-3' }}
+              {{ grandTotals().monthlyTotals[m] | number: '1.2-3' : 'en-US' }}
             </td>
           }
         </tr>
