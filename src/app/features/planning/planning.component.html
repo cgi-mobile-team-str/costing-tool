@@ -62,7 +62,7 @@
                     type="number"
                     lang="en-US"
                     [value]="getDistributionValue(row, m)"
-                    (input)="onValueChange(row, m, $event)"
+                    (change)="onValueChange(row, m, $event)"
                     class="cell-input"
                     step="any"
                   />
