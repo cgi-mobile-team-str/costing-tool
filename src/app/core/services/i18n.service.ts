@@ -37,6 +37,7 @@ const FR = {
   'nav.profiles': 'Profils & Taux',
   'nav.settings': 'Paramètres',
   'nav.dashboard': 'Tableau de bord',
+  'nav.planning': 'Planning',
 
   // Dashboard
   'dash.total_ht': 'Total HT',
@@ -245,6 +246,7 @@ const EN = {
   'nav.profiles': 'Profiles & Rates',
   'nav.settings': 'Settings',
   'nav.dashboard': 'Dashboard',
+  'nav.planning': 'Planning',
 
   // Dashboard
   'dash.total_ht': 'Total Excl. Tax',

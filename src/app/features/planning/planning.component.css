@@ -1,0 +1,186 @@
+.planning-container {
+  padding: 0.25rem 1.5rem 1.5rem 1.5rem; /* Further reduced top padding */
+  height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.title-header {
+  margin-bottom: 1rem !important;
+  padding-top: 0 !important;
+}
+
+.planning-header {
+  margin-bottom: 1.5rem;
+}
+
+.planning-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.planning-header p {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.table-wrapper {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--card);
+}
+
+.planning-table {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.8125rem;
+}
+
+.planning-table th,
+.planning-table td {
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+  white-space: nowrap;
+}
+
+.planning-table thead th {
+  background: #2d1b4e;
+  color: white;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* Base sticky column style */
+.sticky-col {
+  position: sticky !important;
+  position: -webkit-sticky !important;
+  background-color: white !important;
+  z-index: 10 !important;
+}
+
+.col-profile {
+  left: 0 !important;
+  min-width: 180px;
+}
+
+.col-remaining {
+  left: 180px !important;
+  min-width: 90px;
+  background-color: #f1f5f9 !important;
+  border-right: 2px solid var(--border) !important;
+  font-weight: 600;
+}
+
+/* Header intersection */
+thead th.sticky-col {
+  z-index: 50 !important;
+  background-color: #2d1b4e !important;
+}
+
+/* Footer intersection */
+.grand-total {
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: 0;
+  z-index: 30;
+  background: #f1f5f9;
+}
+
+.grand-total td {
+  border-top: 2px solid #2d1b4e;
+}
+
+.grand-total .sticky-col {
+  z-index: 45 !important;
+  background-color: #f1f5f9 !important;
+}
+
+/* Scope headers (grouping) sticky if needed? User wanted them non-sticky but let's ensure the row stays consistent */
+.scope-header td.sticky-col {
+  background-color: #f8fafc !important;
+}
+
+.col-scope {
+  min-width: 80px;
+}
+
+.scope-header {
+  background: #f8fafc;
+  font-weight: 700;
+  color: #2d1b4e;
+}
+
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+.text-muted {
+  color: var(--muted-foreground);
+}
+.font-medium {
+  font-weight: 500;
+}
+
+.negative {
+  color: #e11d48;
+  font-weight: 600;
+}
+
+.cell-input {
+  width: 60px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 0.8125rem;
+  padding: 0.25rem;
+  color: #f97316; /* Orange values like in image */
+}
+
+.cell-input:focus {
+  outline: 2px solid #3b82f6;
+  background: white;
+}
+
+.grand-total {
+  background: #f1f5f9;
+  font-weight: 700;
+  position: sticky;
+  bottom: 0;
+  z-index: 25; /* Fixed footer above body but below header? Actually 25 is safe. */
+}
+
+.grand-total td {
+  border-top: 2px solid #2d1b4e;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.col-month {
+  min-width: 60px;
+}
+
+.col-remaining {
+  font-weight: 600;
+  min-width: 90px;
+  border-right: 2px solid var(--border); /* Visual separator */
+}

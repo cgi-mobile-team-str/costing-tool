@@ -46,6 +46,11 @@ export const routes: Routes = [
           import('./features/backlog/backlog-form.component').then((m) => m.BacklogFormComponent),
       },
       {
+        path: 'planning',
+        loadComponent: () =>
+          import('./features/planning/planning.component').then((m) => m.PlanningComponent),
+      },
+      {
         path: 'settings',
         loadComponent: () =>
           import('./features/settings/settings.component').then((m) => m.SettingsComponent),

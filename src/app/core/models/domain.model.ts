@@ -74,3 +74,11 @@ export interface BacklogVersion {
   createdAt: string;
   projectId: string;
 }
+
+export interface Planning {
+  id?: string;
+  projectId: string;
+  scope: string;
+  profileId: string;
+  distribution: Record<string, number>;
+}

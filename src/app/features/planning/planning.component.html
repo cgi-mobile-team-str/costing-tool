@@ -1,0 +1,83 @@
+<div class="planning-container">
+  <div class="title-header">
+    <div>
+      <span class="title-context-label">{{ 'nav.planning' | translate }}</span>
+      <h2>{{ currentProjectName() }}</h2>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table z-table class="planning-table">
+      <thead z-table-header>
+        <tr z-table-row>
+          <th z-table-head class="col-scope">{{ 'backlog.scope' | translate }}</th>
+          <th z-table-head class="sticky-col col-profile">{{ 'nav.profiles' | translate }}</th>
+          <th z-table-head class="sticky-col col-remaining">Remaining</th>
+          @for (m of months; track m) {
+            <th z-table-head class="col-month">M{{ m + 1 }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody z-table-body>
+        @for (group of planningData(); track group.scope) {
+          <!-- Scope Header Row -->
+          <tr z-table-row class="scope-header">
+            <td z-table-cell>{{ group.scope }}</td>
+            <td z-table-cell class="sticky-col col-profile"></td>
+            <td z-table-cell class="sticky-col col-remaining text-right font-bold">
+              {{ group.totalEffort | number: '1.2-3' }}
+            </td>
+            @for (m of months; track m) {
+              <td z-table-cell class="text-center font-bold">
+                {{ group.monthlyTotals[m] | number: '1.2-3' }}
+              </td>
+            }
+          </tr>
+
+          <!-- Profile Rows -->
+          @for (row of group.rows; track row.profileId) {
+            <tr z-table-row>
+              <td z-table-cell class="text-muted">{{ group.scope }}</td>
+              <td z-table-cell class="sticky-col col-profile font-medium">{{ row.profileName }}</td>
+              <td
+                z-table-cell
+                class="sticky-col col-remaining text-right"
+                [class.negative]="row.remaining < 0"
+              >
+                {{ row.remaining | number: '1.2-3' }}
+              </td>
+              @for (m of months; track m) {
+                <td z-table-cell>
+                  <input
+                    z-input
+                    type="number"
+                    [value]="getDistributionValue(row, m)"
+                    (input)="onValueChange(row, m, $event)"
+                    class="cell-input"
+                    step="0.125"
+                  />
+                </td>
+              }
+            </tr>
+          }
+        }
+      </tbody>
+      <tfoot z-table-caption>
+        <tr z-table-row class="grand-total">
+          <td z-table-cell class="font-bold">
+            {{ 'common.total' | translate }}
+          </td>
+          <td z-table-cell class="sticky-col col-profile font-bold"></td>
+          <td z-table-cell class="sticky-col col-remaining text-right font-bold">
+            {{ grandTotals().totalEffort | number: '1.2-3' }}
+          </td>
+          @for (m of months; track m) {
+            <td z-table-cell class="text-center font-bold">
+              {{ grandTotals().monthlyTotals[m] | number: '1.2-3' }}
+            </td>
+          }
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
