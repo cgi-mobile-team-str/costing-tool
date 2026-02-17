@@ -59,6 +59,7 @@ export class SettingsComponent {
   form = this.fb.group({
     projectName: ['', Validators.required],
     currency: ['EUR', Validators.required],
+    startDate: [''],
   });
 
   currentLang = this.i18n.getLang.bind(this.i18n);
@@ -68,6 +69,7 @@ export class SettingsComponent {
     this.form.patchValue({
       projectName: this.currentProjectName() || s.projectName || '',
       currency: s.currency,
+      startDate: s.startDate || '',
     });
 
     // Extract claims
@@ -100,6 +102,7 @@ export class SettingsComponent {
             ...current,
             projectName: val.projectName || current.projectName,
             currency: val.currency || 'EUR',
+            startDate: val.startDate || undefined,
           };
           this.repo.save(newSettings);
           this.settings.set(newSettings);
@@ -108,7 +111,12 @@ export class SettingsComponent {
           if (val.projectName) {
             const projectId = this.projectsService.currentProjectId();
             if (projectId) {
-              this.projectsService.updateProject(projectId, { name: val.projectName }).subscribe();
+              this.projectsService
+                .updateProject(projectId, {
+                  name: val.projectName,
+                  startDate: val.startDate || undefined,
+                })
+                .subscribe();
             }
           }
 

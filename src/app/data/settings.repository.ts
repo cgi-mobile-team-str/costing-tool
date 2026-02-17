@@ -14,6 +14,7 @@ export class SettingsRepository {
       projectName: this.projectsService.currentProjectName() || 'Mon Projet Costing',
       marginRate: this.projectsService.marginRate(),
       currency: this.projectsService.currency(),
+      startDate: this.projectsService.startDate() || undefined,
       version: '1.0.0',
     };
   }
@@ -26,6 +27,7 @@ export class SettingsRepository {
           name: settings.projectName,
           marginRate: settings.marginRate,
           currency: settings.currency,
+          startDate: settings.startDate,
         })
         .subscribe();
     }

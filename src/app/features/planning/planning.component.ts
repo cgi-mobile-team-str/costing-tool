@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Profile } from '../../core/models/domain.model';
 import { BacklogService } from '../../core/services/backlog.service';
 import { CalculationService } from '../../core/services/calculation.service';
+import { I18nService } from '../../core/services/i18n.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { PlanningRepository } from '../../data/planning.repository';
@@ -16,6 +17,7 @@ interface PlanningRow {
   scope: string;
   profileId: string;
   profileName: string;
+  username?: string;
   totalEffort: number;
   remaining: number;
   distribution: Record<number, number>;
@@ -43,13 +45,37 @@ export class PlanningComponent {
   private calcService = inject(CalculationService);
   private projectsService = inject(ProjectsService);
   private backlogService = inject(BacklogService);
+  private i18n = inject(I18nService);
 
   currentProjectName = this.projectsService.currentProjectName;
   items = this.backlogRepo.items;
   profiles = signal<Profile[]>([]);
   plannings = this.planningRepo.plannings;
+  startDate = this.projectsService.startDate;
 
   months = Array.from({ length: 24 }, (_, i) => i);
+
+  formattedMonthLabels = computed(() => {
+    const start = this.startDate();
+    if (!start) {
+      return this.months.map((m) => `M${m + 1}`);
+    }
+
+    // Use UTC to avoid timezone shifts for YYYY-MM-DD strings
+    const startDate = new Date(start);
+    const lang = this.i18n.getLang() === 'fr' ? 'fr-FR' : 'en-US';
+
+    return this.months.map((m) => {
+      // Create date object and adjust month in UTC
+      const date = new Date(
+        Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth() + m, 1, 12, 0, 0),
+      );
+      const month = date.toLocaleString(lang, { month: 'short', timeZone: 'UTC' });
+      const year = date.getUTCFullYear().toString().slice(-2);
+      // Capitalize first letter
+      return month.charAt(0).toUpperCase() + month.slice(1) + ' ' + year;
+    });
+  });
 
   constructor() {
     effect(() => {
@@ -113,6 +139,7 @@ export class PlanningComponent {
         scope,
         profileId,
         profileName: profile.name,
+        username: profile.username,
         totalEffort,
         remaining: totalEffort - totalDistributed,
         distribution: numericDistribution,

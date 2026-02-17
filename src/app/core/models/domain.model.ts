@@ -12,6 +12,7 @@ export interface Project {
   name: string;
   marginRate?: number;
   currency?: string;
+  startDate?: string;
   createdAt: string;
 }
 
@@ -64,6 +65,7 @@ export interface Settings {
   projectName?: string;
   marginRate: number; // 0.15 = 15%
   currency: string;
+  startDate?: string;
   version: string;
 }
 

@@ -14,7 +14,7 @@
           <th z-table-head class="sticky-col col-profile">{{ 'nav.profiles' | translate }}</th>
           <th z-table-head class="sticky-col col-remaining">Remaining</th>
           @for (m of months; track m) {
-            <th z-table-head class="col-month">M{{ m + 1 }}</th>
+            <th z-table-head class="col-month text-center">{{ formattedMonthLabels()[$index] }}</th>
           }
         </tr>
       </thead>
@@ -38,7 +38,16 @@
           @for (row of group.rows; track row.profileId) {
             <tr z-table-row>
               <td z-table-cell class="text-muted">{{ group.scope }}</td>
-              <td z-table-cell class="sticky-col col-profile font-medium">{{ row.profileName }}</td>
+              <td z-table-cell class="sticky-col col-profile">
+                <div class="flex flex-col">
+                  <span class="font-medium">{{ row.profileName }}</span>
+                  @if (row.username) {
+                    <span class="text-[10px] text-slate-400 font-normal leading-tight">{{
+                      row.username
+                    }}</span>
+                  }
+                </div>
+              </td>
               <td
                 z-table-cell
                 class="sticky-col col-remaining text-right"

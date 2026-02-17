@@ -34,7 +34,7 @@ const FR = {
 
   // Navigation
   'nav.backlog': 'Backlog',
-  'nav.profiles': 'Profils & Taux',
+  'nav.profiles': 'Profils',
   'nav.settings': 'Paramètres',
   'nav.dashboard': 'Tableau de bord',
   'nav.planning': 'Planning',
@@ -83,6 +83,7 @@ const FR = {
   // Settings
   'settings.project_section': 'Projet',
   'settings.project_name': 'Nom du projet',
+  'settings.project_start_date': 'Date de début du projet',
   'settings.calculations_section': 'Calculs',
   'settings.currency': 'Devise',
   'settings.interface_section': 'Interface',
@@ -243,7 +244,7 @@ const EN = {
 
   // Navigation
   'nav.backlog': 'Backlog',
-  'nav.profiles': 'Profiles & Rates',
+  'nav.profiles': 'Profiles',
   'nav.settings': 'Settings',
   'nav.dashboard': 'Dashboard',
   'nav.planning': 'Planning',
@@ -292,6 +293,7 @@ const EN = {
   // Settings
   'settings.project_section': 'Project',
   'settings.project_name': 'Project Name',
+  'settings.project_start_date': 'Project Start Date',
   'settings.calculations_section': 'Calculations',
   'settings.currency': 'Currency',
   'settings.interface_section': 'Interface',

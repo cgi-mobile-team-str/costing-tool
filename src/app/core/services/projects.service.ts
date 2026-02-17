@@ -19,6 +19,7 @@ export class ProjectsService {
   public currentProjectName = signal<string | null>(this.storage.getItem<string>('projectName'));
   public marginRate = signal<number>(Number(this.storage.getItem<string>('marginRate') || 0.15));
   public currency = signal<string>(this.storage.getItem<string>('currency') || 'EUR');
+  public startDate = signal<string | null>(this.storage.getItem<string>('startDate'));
 
   constructor() {}
 
@@ -66,6 +67,7 @@ export class ProjectsService {
       this.storage.removeItem('projectName');
       this.storage.removeItem('marginRate');
       this.storage.removeItem('currency');
+      this.storage.removeItem('startDate');
       this.currentProjectId.set(null);
       this.currentProjectName.set(null);
     }
@@ -75,10 +77,16 @@ export class ProjectsService {
     this.storage.setItem('projectName', project.name);
     this.storage.setItem('marginRate', project.marginRate?.toString() || '0.15');
     this.storage.setItem('currency', project.currency || 'EUR');
+    if (project.startDate) {
+      this.storage.setItem('startDate', project.startDate);
+    } else {
+      this.storage.removeItem('startDate');
+    }
 
     this.currentProjectName.set(project.name);
     this.marginRate.set(Number(project.marginRate || 0.15));
     this.currency.set(project.currency || 'EUR');
+    this.startDate.set(project.startDate || null);
   }
 
   updateProject(id: string, updates: Partial<Project>): Observable<Project> {
