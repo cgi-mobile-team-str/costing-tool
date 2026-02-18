@@ -8,18 +8,12 @@ import {
   signal,
   ViewEncapsulation,
 } from '@angular/core';
-import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { BacklogItem, ClusterGroup, Profile } from '../../core/models/domain.model';
 import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogRowComponent } from './backlog-row.component';
 import { RenameDialogComponent, RenameDialogData } from './rename-dialog/rename-dialog.component';
-
-export interface ClusterGroup {
-  clusterId: string;
-  cluster: string;
-  items: BacklogItem[];
-}
 
 @Component({
   selector: 'app-backlog-table',

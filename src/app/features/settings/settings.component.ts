@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal, TemplateRef, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { lastValueFrom } from 'rxjs';
-import { BacklogItem, Cluster, Product, Profile } from '../../core/models/domain.model';
+import { forkJoin, lastValueFrom } from 'rxjs';
+import { BacklogItem, Cluster, Planning, Product, Profile } from '../../core/models/domain.model';
 import { CalculationService } from '../../core/services/calculation.service';
 import { ExcelService } from '../../core/services/excel.service';
 import { I18nService, Lang } from '../../core/services/i18n.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
+import { PlanningRepository } from '../../data/planning.repository';
 import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
 import { SettingsRepository } from '../../data/settings.repository';
@@ -38,6 +39,7 @@ export class SettingsComponent {
   private projectsService = inject(ProjectsService);
   private authService = inject(MsalService);
   private excelService = inject(ExcelService);
+  private planningRepo = inject(PlanningRepository);
 
   showImportModal = signal(false);
   itemsToImport = signal<BacklogItem[]>([]);
@@ -125,6 +127,91 @@ export class SettingsComponent {
         },
       });
     }
+  }
+
+  async exportExcel() {
+    const s = this.repo.get();
+    const projectId = this.projectsService.currentProjectId();
+    if (!projectId) return;
+
+    forkJoin({
+      profiles: this.profilesRepo.getAll(projectId),
+      backlog: this.backlogRepo.getFullBacklog(projectId),
+      plannings: this.planningRepo.getByProject(projectId),
+    }).subscribe(
+      ({
+        profiles,
+        backlog,
+        plannings,
+      }: {
+        profiles: Profile[];
+        backlog: any;
+        plannings: Planning[];
+      }) => {
+        const items = backlog.items || [];
+        const allProducts = backlog.products || [];
+        const allClusters = backlog.clusters || [];
+
+        // Grouping logic
+        const sortedItems = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+        const productMap = new Map<string, BacklogItem[]>();
+        sortedItems.forEach((item) => {
+          const pid = item.productId || 'unknown';
+          if (!productMap.has(pid)) productMap.set(pid, []);
+          productMap.get(pid)!.push(item);
+        });
+
+        const sortedProductIds = Array.from(productMap.keys()).sort((a, b) => {
+          const prodA = allProducts.find((p: Product) => p.id === a);
+          const prodB = allProducts.find((p: Product) => p.id === b);
+          return (prodA?.order ?? 0) - (prodB?.order ?? 0);
+        });
+
+        const groupedData: any[] = [];
+        for (const pid of sortedProductIds) {
+          const prodItems = productMap.get(pid)!;
+          const productName =
+            allProducts.find((p: Product) => p.id === pid)?.name || 'Unknown Product';
+
+          const clusterMap = new Map<string, BacklogItem[]>();
+          prodItems.forEach((item) => {
+            const cid = item.clusterId || 'unknown';
+            if (!clusterMap.has(cid)) clusterMap.set(cid, []);
+            clusterMap.get(cid)!.push(item);
+          });
+
+          const sortedClusterIds = Array.from(clusterMap.keys()).sort((a, b) => {
+            const clusterA = allClusters.find((c: Cluster) => c.id === a);
+            const clusterB = allClusters.find((c: Cluster) => c.id === b);
+            return (clusterA?.order ?? 0) - (clusterB?.order ?? 0);
+          });
+
+          const clusterGroups = [];
+          for (const cid of sortedClusterIds) {
+            const clusterName = allClusters.find((c: Cluster) => c.id === cid)?.name || 'General';
+            clusterGroups.push({
+              clusterId: cid,
+              cluster: clusterName,
+              items: clusterMap.get(cid)!,
+            });
+          }
+
+          groupedData.push({
+            productId: pid,
+            product: productName,
+            clusters: clusterGroups,
+          });
+        }
+
+        this.excelService.exportBacklog(
+          s.projectName || 'export',
+          groupedData,
+          profiles,
+          plannings,
+        );
+      },
+    );
   }
 
   exportJson() {

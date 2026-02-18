@@ -10,20 +10,14 @@ import {
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import { BacklogItem, Profile } from '../../core/models/domain.model';
+import { BacklogItem, ClusterGroup, ProductGroup, Profile } from '../../core/models/domain.model';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardDialogService } from '../../shared/components/dialog/dialog.service';
 import { ZardIconComponent } from '../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { BacklogTableComponent, ClusterGroup } from './backlog-table.component';
+import { BacklogTableComponent } from './backlog-table.component';
 import { RenameDialogComponent, RenameDialogData } from './rename-dialog/rename-dialog.component';
-
-export interface ProductGroup {
-  productId: string;
-  product: string;
-  clusters: ClusterGroup[];
-}
 
 @Component({
   selector: 'app-backlog-product-section',

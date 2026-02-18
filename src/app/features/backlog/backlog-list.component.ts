@@ -12,7 +12,13 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { BacklogItem, BacklogVersion, Profile } from '../../core/models/domain.model';
+import {
+  BacklogItem,
+  BacklogVersion,
+  ClusterGroup,
+  ProductGroup,
+  Profile,
+} from '../../core/models/domain.model';
 import { BacklogService } from '../../core/services/backlog.service';
 import { CalculationService } from '../../core/services/calculation.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -39,8 +45,7 @@ import { BacklogBulkUpdateFormComponent } from './backlog-bulk-update-form.compo
 import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogFormComponent } from './backlog-form.component';
 import { BacklogManagementComponent } from './backlog-management.component';
-import { BacklogProductSectionComponent, ProductGroup } from './backlog-product-section.component';
-import { ClusterGroup } from './backlog-table.component';
+import { BacklogProductSectionComponent } from './backlog-product-section.component';
 import { BulkActionsToastComponent } from './bulk-actions-toast.component';
 import { ColumnSelectorComponent } from './column-selector.component';
 
@@ -438,12 +443,14 @@ export class BacklogListComponent {
   // Bulk selection
   toggleAllProduct(checked: boolean, group: ProductGroup) {
     const current = new Set(this.selectedIds());
-    const groupItemIds = group.clusters.flatMap((c) => c.items.map((i) => i.id));
+    const groupItemIds = group.clusters.flatMap((c: ClusterGroup) =>
+      c.items.map((i: BacklogItem) => i.id),
+    );
 
     if (checked) {
-      groupItemIds.forEach((id) => current.add(id));
+      groupItemIds.forEach((id: string) => current.add(id));
     } else {
-      groupItemIds.forEach((id) => current.delete(id));
+      groupItemIds.forEach((id: string) => current.delete(id));
     }
     this.selectedIds.set(Array.from(current));
   }

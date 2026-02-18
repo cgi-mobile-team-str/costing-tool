@@ -84,3 +84,15 @@ export interface Planning {
   profileId: string;
   distribution: Record<string, number>;
 }
+
+export interface ClusterGroup {
+  clusterId: string;
+  cluster: string;
+  items: BacklogItem[];
+}
+
+export interface ProductGroup {
+  productId: string;
+  product: string;
+  clusters: ClusterGroup[];
+}
