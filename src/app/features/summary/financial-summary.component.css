@@ -77,3 +77,24 @@
   background-color: #fee2e2;
   color: #991b1b;
 }
+
+/* Compact Summary Table for Export */
+.compact-summary-table {
+  max-width: 900px;
+}
+
+.compact-summary-table .table-container {
+  border: 1px solid #fee2e2;
+}
+
+.compact-summary-table table {
+  table-layout: fixed;
+}
+
+.compact-summary-table col-hierarchy {
+  width: 60%;
+}
+
+.compact-summary-table col-data {
+  width: 20%;
+}
