@@ -103,6 +103,7 @@
       (renameCluster)="onRenameCluster($event)"
       (toggleAllCluster)="toggleAllCluster($event.checked, $event.clusterGroup)"
       (viewHistory)="openHistoryDialog($event)"
+      (viewComments)="onViewComments($event)"
     />
   }
   @if (groupedItems().length === 0) {

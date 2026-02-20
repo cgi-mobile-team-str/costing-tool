@@ -50,6 +50,7 @@ export class BacklogTableComponent {
   @Output() moveClusterDown = new EventEmitter<string>();
   @Output() renameCluster = new EventEmitter<{ clusterId: string; newName: string }>();
   @Output() viewHistory = new EventEmitter<BacklogItem>();
+  @Output() viewComments = new EventEmitter<BacklogItem>();
 
   expandedClusters = signal<Set<string>>(new Set());
 

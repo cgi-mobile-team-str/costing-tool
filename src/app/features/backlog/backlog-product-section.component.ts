@@ -185,6 +185,7 @@ export class BacklogProductSectionComponent implements OnChanges {
   @Output() renameProduct = new EventEmitter<{ productId: string; newName: string }>();
   @Output() renameCluster = new EventEmitter<{ clusterId: string; newName: string }>();
   @Output() viewHistory = new EventEmitter<BacklogItem>();
+  @Output() viewComments = new EventEmitter<BacklogItem>();
 
   openRenameDialog() {
     this.dialog.create({

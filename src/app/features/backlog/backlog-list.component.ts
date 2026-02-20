@@ -44,6 +44,7 @@ import { ZardSelectComponent } from '../../shared/components/select/select.compo
 import { ZardSheetService } from '../../shared/components/sheet/sheet.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { BacklogBulkUpdateFormComponent } from './backlog-bulk-update-form.component';
+import { BacklogCommentsModalComponent } from './backlog-comments-modal.component';
 import { BacklogFiltersComponent } from './backlog-filters.component';
 import { BacklogFormComponent } from './backlog-form.component';
 import { BacklogManagementComponent } from './backlog-management.component';
@@ -822,6 +823,16 @@ export class BacklogListComponent {
         zClosable: false,
         zHideFooter: true,
       });
+    });
+  }
+
+  onViewComments(item: BacklogItem) {
+    this.dialogService.create({
+      zContent: BacklogCommentsModalComponent,
+      zData: { item },
+      zClosable: false,
+      zHideFooter: true,
+      zCustomClasses: '!p-0 !border-none !bg-transparent overflow-hidden shadow-2xl !max-w-[600px]',
     });
   }
 }

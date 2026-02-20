@@ -59,6 +59,7 @@ export interface BacklogItem {
   creatorName?: string;
   createdAt?: string;
   updatedAt?: string;
+  commentCount?: number;
 }
 
 export interface Settings {
@@ -95,4 +96,13 @@ export interface ProductGroup {
   productId: string;
   product: string;
   clusters: ClusterGroup[];
+}
+
+export interface BacklogComment {
+  id: string;
+  itemId: string;
+  userId: string;
+  userName: string;
+  content: string;
+  createdAt: string;
 }

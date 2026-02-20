@@ -5,7 +5,13 @@ import { environment } from '../../../environments/environment';
 import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
-import { BacklogItem, BacklogVersion, Cluster, Product } from '../models/domain.model';
+import {
+  BacklogComment,
+  BacklogItem,
+  BacklogVersion,
+  Cluster,
+  Product,
+} from '../models/domain.model';
 
 @Injectable({
   providedIn: 'root',
@@ -48,6 +54,16 @@ export class BacklogService {
     return this.http.post<BacklogVersion>(`${this.versionsUrl}/project/${projectId}/snapshot`, {
       name,
       description,
+    });
+  }
+
+  getItemComments(itemId: string) {
+    return this.http.get<BacklogComment[]>(`${this.apiUrl}/items/${itemId}/comments`);
+  }
+
+  addItemComment(itemId: string, content: string) {
+    return this.http.post<BacklogComment>(`${this.apiUrl}/items/${itemId}/comments`, {
+      content,
     });
   }
 }

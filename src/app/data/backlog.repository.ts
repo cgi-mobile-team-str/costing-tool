@@ -34,7 +34,13 @@ export class BacklogRepository {
         clusters: any[];
       }>(`${environment.api.url}/backlog/project/${projectId}`)
       .pipe(
-        map((res) => res.items || []),
+        map((res) => {
+          const items = res.items || [];
+          return items.map((item) => ({
+            ...item,
+            commentCount: item.commentCount ? Number(item.commentCount) : 0,
+          }));
+        }),
         tap((items) => this.setItems(items)),
       );
   }
@@ -97,9 +103,9 @@ export class BacklogRepository {
     return forkJoin(updates);
   }
 
-  private updateLocal(item: BacklogItem) {
+  updateLocal(item: BacklogItem) {
     if (!item) return;
-    this._items.update((list) => list.map((i) => (i.id === item.id ? item : i)));
+    this._items.update((list) => list.map((i) => (i.id === item.id ? { ...item } : i)));
   }
 
   private addLocal(item: BacklogItem) {

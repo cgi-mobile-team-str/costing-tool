@@ -160,6 +160,11 @@ const FR = {
   'history.no_history_yet_hint': "Cet élément n'a pas encore été modifié.",
   'history.filter_unmodified': 'Non modifiés',
   'history.filter_modified': 'Modifiés',
+  'backlog.comments_title': 'Commentaires',
+  'backlog.add_comment': 'Ajouter un commentaire',
+  'backlog.comment_placeholder': 'Tapez votre commentaire ici...',
+  'backlog.no_comments': 'Aucun commentaire pour cet élément.',
+  'backlog.view_comments': 'Afficher les commentaires',
 
   // Management
   'management.title': 'Gérer les produits et clusters',
@@ -369,6 +374,11 @@ const EN = {
   'history.no_history_yet_hint': 'This item has not been modified yet.',
   'history.filter_unmodified': 'Unmodified',
   'history.filter_modified': 'Modified',
+  'backlog.comments_title': 'Comments',
+  'backlog.add_comment': 'Add a comment',
+  'backlog.comment_placeholder': 'Type your comment here...',
+  'backlog.no_comments': 'No comments for this item.',
+  'backlog.view_comments': 'View comments',
 
   // Management
   'management.title': 'Manage products and clusters',

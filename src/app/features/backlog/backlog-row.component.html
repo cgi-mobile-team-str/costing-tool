@@ -23,10 +23,13 @@
       />
     } @else {
       <div class="flex items-center gap-2">
-        <strong class="item-title-text">{{ item.title }}</strong>
+        <strong class="item-title-text truncate max-w-[200px]" [title]="item.title">{{
+          item.title
+        }}</strong>
+        <!-- Modification Indicator (Left) -->
         @if (item.updatedAt && !isReadOnly) {
           <span
-            class="modified-tag"
+            class="indicator-box indicator-modified"
             [title]="'history.action_update' | translate"
             [appHistoryTooltip]="item.id"
             [appHistoryTooltipDisabled]="!item.updatedAt"
@@ -34,9 +37,28 @@
             [createdAt]="item.createdAt || ''"
           >
             <span class="modified-dot"></span>
-            <!-- {{ 'backlog.modified' | translate }} -->
           </span>
         }
+
+        <!-- Comment Indicator (Right) -->
+        <button
+          type="button"
+          class="indicator-box"
+          [class.active]="hasComments"
+          (click)="onViewComments($event)"
+          [title]="'backlog.view_comments' | translate"
+          [appCommentsTooltip]="item.id"
+          [appCommentsTooltipDisabled]="!hasComments"
+        >
+          <z-icon zType="message-square" class="w-3.5 h-3.5" />
+          @if (hasComments) {
+            <span
+              class="absolute -top-1 -right-1 bg-blue-600 text-white text-[8px] font-bold min-w-[14px] h-[14px] rounded-full flex items-center justify-center px-0.5 shadow-sm"
+            >
+              {{ item.commentCount }}
+            </span>
+          }
+        </button>
       </div>
     }
   </td>

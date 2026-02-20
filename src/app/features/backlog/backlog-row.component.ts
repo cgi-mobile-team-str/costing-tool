@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BacklogItem, Profile } from '../../core/models/domain.model';
 import { ZardButtonComponent } from '../../shared/components/button/button.component';
 import { ZardCheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { CommentsTooltipDirective } from '../../shared/components/comments-tooltip/comments-tooltip.directive';
 import { ZardDropdownMenuItemComponent } from '../../shared/components/dropdown/dropdown-item.component';
 import { ZardDropdownMenuContentComponent } from '../../shared/components/dropdown/dropdown-menu-content.component';
 import { ZardDropdownDirective } from '../../shared/components/dropdown/dropdown-trigger.directive';
@@ -26,6 +27,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     ZardIconComponent,
     TranslatePipe,
     HistoryTooltipDirective,
+    CommentsTooltipDirective,
   ],
   templateUrl: './backlog-row.component.html',
   styleUrls: ['./backlog-row.component.css'],
@@ -53,6 +55,7 @@ export class BacklogRowComponent {
   @Output() moveItemUp = new EventEmitter<BacklogItem>();
   @Output() moveItemDown = new EventEmitter<BacklogItem>();
   @Output() viewHistory = new EventEmitter<BacklogItem>();
+  @Output() viewComments = new EventEmitter<BacklogItem>();
 
   isEditing(field: string): boolean {
     return (
@@ -93,5 +96,14 @@ export class BacklogRowComponent {
     if (!value) return '';
     // Maps MVP -> backlog.scope_mvp
     return `backlog.scope_${value.toLowerCase()}`;
+  }
+
+  get hasComments(): boolean {
+    return Number(this.item.commentCount ?? 0) > 0;
+  }
+
+  onViewComments(event: MouseEvent) {
+    event.stopPropagation();
+    this.viewComments.emit(this.item);
   }
 }
