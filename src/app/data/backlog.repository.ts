@@ -105,7 +105,7 @@ export class BacklogRepository {
 
   updateLocal(item: BacklogItem) {
     if (!item) return;
-    this._items.update((list) => list.map((i) => (i.id === item.id ? { ...item } : i)));
+    this._items.update((list) => list.map((i) => (i.id === item.id ? { ...i, ...item } : i)));
   }
 
   private addLocal(item: BacklogItem) {

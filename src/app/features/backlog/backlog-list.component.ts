@@ -11,9 +11,9 @@ import {
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom, interval } from 'rxjs';
+import { injectQuery } from '@tanstack/angular-query-experimental';
+import { firstValueFrom } from 'rxjs';
 import {
   BacklogItem,
   BacklogVersion,
@@ -147,16 +147,41 @@ export class BacklogListComponent {
     'cost',
   ]);
 
+  backlogQuery = injectQuery(() => {
+    const projectId = this.projectsService.currentProjectId();
+    const versionId = this.activeVersion();
+
+    return {
+      queryKey: ['backlog-data', projectId, versionId],
+      queryFn: async () => {
+        if (!projectId) return null;
+
+        const data = await firstValueFrom(
+          this.backlogService.loadProjectData(projectId, versionId ?? undefined),
+        );
+
+        const profiles = await firstValueFrom(this.profilesRepo.getAll(projectId));
+        this.profiles.set(profiles);
+
+        const versions = await firstValueFrom(this.backlogService.getVersions(projectId));
+        this.versions.set(versions);
+
+        return data;
+      },
+      enabled: !!projectId,
+      refetchInterval: 10000,
+    };
+  });
+
   constructor() {
     effect(
       () => {
         // React to project change
         const projectId = this.projectsService.currentProjectId();
-        const versionId = this.activeVersion();
         if (projectId) {
           this.loadCollapsedState();
           this.loadAllExpandedState();
-          this.refreshData(projectId, versionId);
+          this.selectedIds.set([]); // Reset selection when project/version changes
         }
       },
       { allowSignalWrites: true },
@@ -174,13 +199,6 @@ export class BacklogListComponent {
         }, 0);
       }
     });
-
-    // Auto-refresh every 30 seconds
-    interval(30000)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.refresh();
-      });
   }
 
   totalBuildEffort = computed(() => {
@@ -188,27 +206,7 @@ export class BacklogListComponent {
   });
 
   refresh() {
-    const projectId = this.projectsService.currentProjectId();
-    const versionId = this.activeVersion();
-    if (projectId) {
-      this.refreshData(projectId, versionId);
-    }
-  }
-
-  private refreshData(projectId: string, versionId: string | null) {
-    // 1. Load Backlog Data (Items, Products, Clusters)
-    this.backlogService.loadProjectData(projectId, versionId ?? undefined).subscribe(() => {
-      this.selectedIds.set([]);
-      // 2. Load Profiles (Project-wide, not versioned usually, but good to refresh)
-      this.profilesRepo.getAll(projectId).subscribe((p) => {
-        this.profiles.set(p);
-      });
-    });
-
-    // 3. Load Available Versions (only if needed, or always?)
-    this.backlogService.getVersions(projectId).subscribe((versions) => {
-      this.versions.set(versions);
-    });
+    this.backlogQuery.refetch();
   }
 
   switchVersion(versionId: string | null) {

@@ -59,12 +59,15 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   };
 }
 
+import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes, withHashLocation()),
     provideZard(),
+    provideAngularQuery(new QueryClient()),
     provideAppInitializer(() => {
       const msalService = inject(MsalService);
       const projectsService = inject(ProjectsService);
