@@ -66,4 +66,8 @@ export class BacklogService {
       content,
     });
   }
+
+  deleteItemComment(itemId: string, commentId: string) {
+    return this.http.delete<BacklogComment>(`${this.apiUrl}/items/${itemId}/comments/${commentId}`);
+  }
 }

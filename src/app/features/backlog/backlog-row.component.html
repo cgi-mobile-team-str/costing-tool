@@ -28,16 +28,18 @@
         }}</strong>
         <!-- Modification Indicator (Left) -->
         @if (item.updatedAt && !isReadOnly) {
-          <span
+          <button
+            type="button"
             class="indicator-box indicator-modified"
             [title]="'history.action_update' | translate"
             [appHistoryTooltip]="item.id"
             [appHistoryTooltipDisabled]="!item.updatedAt"
             [creatorName]="item.creatorName || ''"
             [createdAt]="item.createdAt || ''"
+            (click)="$event.stopPropagation(); viewHistory.emit(item)"
           >
             <span class="modified-dot"></span>
-          </span>
+          </button>
         }
 
         <!-- Comment Indicator (Right) -->

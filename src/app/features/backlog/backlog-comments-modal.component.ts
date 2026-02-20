@@ -73,9 +73,27 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                       comment.userName || 'Anonyme'
                     }}</span>
                   </div>
-                  <span class="text-[11px] text-slate-400 font-medium italic">
-                    {{ comment.createdAt | date: 'dd/MM/yyyy HH:mm' }}
-                  </span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-slate-400 font-medium italic">
+                      {{ comment.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                    </span>
+                    <button
+                      (click)="deleteComment(comment)"
+                      class="transition-colors focus:outline-none p-1 rounded-sm flex items-center justify-center cursor-pointer"
+                      [ngClass]="
+                        confirmingDeleteId() === comment.id
+                          ? 'text-red-600 bg-red-100 hover:bg-red-200'
+                          : 'text-slate-400 hover:text-red-500 hover:bg-red-50'
+                      "
+                      [title]="
+                        confirmingDeleteId() === comment.id
+                          ? 'Cliquer encore pour supprimer'
+                          : 'Supprimer'
+                      "
+                    >
+                      <z-icon zType="trash" class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
                 <p class="text-slate-600 text-sm whitespace-pre-wrap pl-11">
                   {{ comment.content }}
@@ -175,6 +193,7 @@ export class BacklogCommentsModalComponent implements OnInit {
   loading = signal(true);
   submitting = signal(false);
   newComment = '';
+  confirmingDeleteId = signal<string | null>(null);
 
   ngOnInit() {
     this.loadComments();
@@ -213,6 +232,28 @@ export class BacklogCommentsModalComponent implements OnInit {
       },
       error: () => {
         this.submitting.set(false);
+      },
+    });
+  }
+
+  deleteComment(comment: BacklogComment) {
+    if (this.confirmingDeleteId() !== comment.id) {
+      this.confirmingDeleteId.set(comment.id);
+      return;
+    }
+
+    this.backlogService.deleteItemComment(this.data.item.id, comment.id).subscribe({
+      next: () => {
+        this.comments.update((comments) => comments.filter((c) => c.id !== comment.id));
+        if (this.data.item.commentCount && this.data.item.commentCount > 0) {
+          this.data.item.commentCount--;
+        }
+        this.confirmingDeleteId.set(null);
+        this.backlogRepo.updateLocal(this.data.item);
+      },
+      error: (err) => {
+        console.error('Failed to delete comment', err);
+        this.confirmingDeleteId.set(null);
       },
     });
   }
