@@ -89,6 +89,26 @@ export class FinancialSummaryComponent {
   // Project Info
   currentProjectName = this.projectsService.currentProjectName;
 
+  // Collapse state for products in hierarchy summary
+  collapsedScopesProducts = signal<Set<string>>(new Set());
+
+  toggleProductCollapse(scope: string, productId: string) {
+    const key = `${scope}-${productId}`;
+    this.collapsedScopesProducts.update((set) => {
+      const newSet = new Set(set);
+      if (newSet.has(key)) {
+        newSet.delete(key);
+      } else {
+        newSet.add(key);
+      }
+      return newSet;
+    });
+  }
+
+  isProductCollapsed(scope: string, productId: string): boolean {
+    return this.collapsedScopesProducts().has(`${scope}-${productId}`);
+  }
+
   constructor() {
     effect(() => {
       const projectId = this.projectsService.currentProjectId();
