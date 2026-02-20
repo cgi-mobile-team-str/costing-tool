@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as ExcelJS from 'exceljs';
-import { Planning, ProductGroup, Profile, Scope } from '../models/domain.model';
+import { BacklogItem, Planning, ProductGroup, Profile, Scope } from '../models/domain.model';
+
+import { CalculationService } from './calculation.service';
 
 export interface ExtractedProfile {
   role: string;
@@ -31,6 +33,8 @@ export interface ExtractedBacklog {
   providedIn: 'root',
 })
 export class ExcelService {
+  constructor(private calcService: CalculationService) {}
+
   async extractProfiles(file: File): Promise<ExtractedProfile[]> {
     const workbook = new ExcelJS.Workbook();
     const arrayBuffer = await file.arrayBuffer();
@@ -51,8 +55,8 @@ export class ExcelService {
 
       const role = row.getCell(2).value;
       const username = row.getCell(3).value;
-      const scr = row.getCell(4).value;
-      const tjm = row.getCell(5).value;
+      const scrCell = row.getCell(4);
+      const tjmCell = row.getCell(5);
 
       // Stop if we reach the "Settings" section or a row without a role
       if (!role || role.toString() === 'Settings') {
@@ -63,8 +67,8 @@ export class ExcelService {
       profiles.push({
         role: role.toString(),
         username: username ? username.toString() : null,
-        scr: this.getNumericalValue(scr),
-        tjm: this.getNumericalValue(tjm),
+        scr: this.getNumericalValue(scrCell),
+        tjm: this.getNumericalValue(tjmCell),
       });
     });
 
@@ -117,8 +121,8 @@ export class ExcelService {
         const isRatio = isOtherRatio || chargeMode.toLowerCase().includes('ratio');
 
         // Column 14 (N) for ratios, else Column 13 (M)
-        const cellValue = isRatio ? row.getCell(14).value : row.getCell(13).value;
-        const effort = this.getNumericalValue(cellValue);
+        const cell = isRatio ? row.getCell(14) : row.getCell(13);
+        const effort = this.getNumericalValue(cell);
 
         items.push({
           title: this.getStringValue(title),
@@ -338,62 +342,87 @@ export class ExcelService {
 
     const scopes: Scope[] = ['MVP', 'V1', 'V2'];
 
-    for (const scope of scopes) {
-      const scopePlannings = plannings.filter((p) => p.scope === scope);
+    // 1. Flatten items
+    const allItems: BacklogItem[] = [];
+    groupedItems.forEach((pg) => {
+      pg.clusters.forEach((cg) => {
+        allItems.push(...cg.items);
+      });
+    });
 
-      for (const plan of scopePlannings) {
-        const profile = profiles.find((p) => p.id === plan.profileId);
-        if (!profile) continue;
+    if (allItems.length > 0 && profiles.length > 0) {
+      // 2. Compute total build effort
+      const totalBuildEffort = this.calcService.calculateTotalBuildEffort(allItems);
 
-        // Calculate total effort for this scope/profile from backlog
-        let totalEffort = 0;
-        groupedItems.forEach((pg) => {
-          pg.clusters.forEach((cg) => {
-            cg.items.forEach((item) => {
-              if (
-                item.scope === scope &&
-                item.profileId === profile.id &&
-                item.chargeType === 'days'
-              ) {
-                totalEffort += item.effortDays || 0;
-              }
-            });
-          });
+      // 3. Group effort by Scope + Profile
+      const effortMap = new Map<string, number>();
+      allItems.forEach((item) => {
+        const scope = item.scope || 'No Scope';
+        const profileId = item.profileId;
+        const key = `${scope}|${profileId}`;
+        const effort = this.calcService.getItemEffort(item, totalBuildEffort);
+        effortMap.set(key, (effortMap.get(key) || 0) + effort);
+      });
+
+      // 4. Group by Scope for export
+      const scopeGroupsMap = new Map<string, any[]>();
+
+      effortMap.forEach((totalEffort, key) => {
+        const [scope, profileId] = key.split('|');
+        const profile = profiles.find((p) => p.id === profileId);
+        if (!profile) return;
+
+        const planning = plannings.find((p) => p.scope === scope && p.profileId === profileId);
+        const distribution = planning ? { ...planning.distribution } : {};
+
+        // Convert distribution keys to numbers if they are strings from backend
+        const numericDistribution: Record<number, number> = {};
+        Object.entries(distribution).forEach(([k, v]) => {
+          numericDistribution[Number(k)] = Number(v);
         });
 
-        const distribution = plan.distribution || {};
-        const sumDistributed = Object.values(distribution).reduce(
-          (sum: number, val: number) => sum + (val || 0),
-          0,
-        );
-        const remaining = totalEffort - sumDistributed;
+        const totalDistributed = Object.values(numericDistribution).reduce((sum, v) => sum + v, 0);
 
         const rowData: any = {
           scope,
           profile: profile.name,
-          remaining: Number(remaining || 0),
+          remaining: Number(totalEffort - totalDistributed || 0),
         };
 
-        for (let i = 1; i <= 24; i++) {
-          rowData[`m${i}`] = Number(distribution[i.toString()] || 0);
+        // Month indexing is 0 to 23
+        for (let i = 0; i < 24; i++) {
+          rowData[`m${i + 1}`] = Number(numericDistribution[i] || 0);
         }
 
-        const row = planningSheet.addRow(rowData);
-
-        // Formatting
-        row.getCell('remaining').numFmt = '0.000';
-        for (let i = 1; i <= 24; i++) {
-          row.getCell(`m${i}`).numFmt = '0.000';
+        if (!scopeGroupsMap.has(scope)) {
+          scopeGroupsMap.set(scope, []);
         }
+        scopeGroupsMap.get(scope)!.push(rowData);
+      });
 
-        row.eachCell((cell) => {
-          cell.border = {
-            top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-            left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-            bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-            right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          };
-        });
+      // 5. Build the sheet rows
+      for (const scope of scopes) {
+        const rows = scopeGroupsMap.get(scope) || [];
+        rows.sort((a, b) => a.profile.localeCompare(b.profile));
+
+        for (const rowData of rows) {
+          const row = planningSheet.addRow(rowData);
+
+          // Formatting
+          row.getCell('remaining').numFmt = '0.000';
+          for (let i = 1; i <= 24; i++) {
+            row.getCell(`m${i}`).numFmt = '0.000';
+          }
+
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            };
+          });
+        }
       }
     }
 
@@ -423,21 +452,56 @@ export class ExcelService {
     return value.toString();
   }
 
-  private getNumericalValue(value: any): number {
-    if (!value) return 0;
+  private getNumericalValue(cellOrValue: any): number {
+    let cell: any = null;
+    let value: any = cellOrValue;
+
+    if (
+      cellOrValue &&
+      typeof cellOrValue === 'object' &&
+      'value' in cellOrValue &&
+      'numFmt' in cellOrValue
+    ) {
+      cell = cellOrValue;
+      value = cell.value;
+    }
+
+    if (value === null || value === undefined) return 0;
+
+    let isPercentFormat = false;
+    if (cell && cell.numFmt && typeof cell.numFmt === 'string' && cell.numFmt.includes('%')) {
+      isPercentFormat = true;
+    }
+
+    let numVal = 0;
 
     if (typeof value === 'object') {
-      if (value.result !== undefined) return Number(value.result);
-      value = this.getStringValue(value);
+      if (value.result !== undefined) {
+        value = value.result;
+      } else {
+        value = this.getStringValue(value);
+      }
     }
 
     if (typeof value === 'string') {
       // Handle "15%", "15,5%", "15.5"
       const cleaned = value.replace('%', '').replace(',', '.').trim();
       const num = parseFloat(cleaned);
-      return isNaN(num) ? 0 : num;
+      numVal = isNaN(num) ? 0 : num;
+
+      if (value.includes('%')) {
+        isPercentFormat = false;
+      }
+    } else if (typeof value === 'number') {
+      numVal = isNaN(value) ? 0 : value;
+    } else {
+      numVal = isNaN(Number(value)) ? 0 : Number(value);
     }
 
-    return isNaN(Number(value)) ? 0 : Number(value);
+    if (isPercentFormat) {
+      return numVal * 100;
+    }
+
+    return numVal;
   }
 }
