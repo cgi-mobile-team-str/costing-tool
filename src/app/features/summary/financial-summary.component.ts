@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, HostListener, inject, signal } from '@angular/core';
 import { BacklogItem, Cluster, Product, Profile } from '../../core/models/domain.model';
 import { BacklogService } from '../../core/services/backlog.service';
 import { CalculationService } from '../../core/services/calculation.service';
@@ -8,6 +8,7 @@ import { BacklogRepository } from '../../data/backlog.repository';
 import { ClustersRepository } from '../../data/clusters.repository';
 import { ProductsRepository } from '../../data/products.repository';
 import { ProfilesRepository } from '../../data/profiles.repository';
+import { ColumnSelectorComponent } from '../backlog/column-selector.component';
 
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
@@ -65,7 +66,7 @@ interface ScopedHierarchySummary {
 @Component({
   selector: 'app-financial-summary',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, ColumnSelectorComponent],
   templateUrl: './financial-summary.component.html',
   styleUrls: ['./financial-summary.component.css'],
 })
@@ -86,11 +87,60 @@ export class FinancialSummaryComponent {
   // Local signal for profiles
   profiles = signal<Profile[]>([]);
 
+  // Column Visibility
+  availableColumns = [
+    { id: 'workload', label: 'Workload' },
+    { id: 'price', label: 'Price' },
+    { id: 'cost', label: 'Cost' },
+    { id: 'dailyRate', label: 'Daily rate' },
+    { id: 'scr', label: 'SCR' },
+    { id: 'margin', label: 'Margin' },
+  ];
+  visibleColumns = signal<string[]>(['workload', 'price', 'cost', 'dailyRate', 'scr', 'margin']);
+
   // Project Info
   currentProjectName = this.projectsService.currentProjectName;
 
   // Collapse state for products in hierarchy summary
   collapsedScopesProducts = signal<Set<string>>(new Set());
+
+  // Manual table and column width resizing
+  colWidth = signal<number>(540); // 60% of 900px roughly
+  tableMaxWidth = signal<number>(900);
+
+  private isResizing = false;
+  private startX = 0;
+  private startColWidth = 0;
+  private startTableWidth = 0;
+
+  initResize(event: MouseEvent) {
+    this.isResizing = true;
+    this.startX = event.clientX;
+    this.startColWidth = this.colWidth();
+    this.startTableWidth = this.tableMaxWidth();
+    event.preventDefault(); // prevent text selection during drag
+  }
+
+  @HostListener('window:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    if (!this.isResizing) return;
+    const diff = event.clientX - this.startX;
+
+    // Apply bounds
+    const newColWidth = Math.max(250, this.startColWidth + diff);
+    // Table expands symmetrically with the column
+    const newTableWidth = Math.max(500, this.startTableWidth + diff);
+
+    this.colWidth.set(newColWidth);
+    this.tableMaxWidth.set(newTableWidth);
+  }
+
+  @HostListener('window:mouseup')
+  onMouseUp() {
+    if (this.isResizing) {
+      this.isResizing = false;
+    }
+  }
 
   toggleProductCollapse(scope: string, productId: string) {
     const key = `${scope}-${productId}`;

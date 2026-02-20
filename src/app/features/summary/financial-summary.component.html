@@ -5,6 +5,14 @@
   </div>
 </div>
 
+<div class="mb-6 flex items-center justify-end pr-6">
+  <app-column-selector
+    [availableColumns]="availableColumns"
+    [visibleColumns]="visibleColumns()"
+    (visibleColumnsChange)="visibleColumns.set($event)"
+  />
+</div>
+
 <div class="summary-section">
   <h3 class="section-title">{{ 'summary.by_profile' | translate }}</h3>
   <div class="table-container shadow-sm">
@@ -13,12 +21,26 @@
         <tr>
           <th scope="col" class="px-4 py-3 w-32 border-r border-red-100">Scope</th>
           <th scope="col" class="px-4 py-3 border-r border-red-100">Profiles</th>
-          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Workload</th>
-          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Price</th>
-          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Cost</th>
-          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Daily rate</th>
-          <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">SCR</th>
-          <th scope="col" class="px-4 py-3 text-right w-20">Margin</th>
+          @if (visibleColumns().includes('workload')) {
+            <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">Workload</th>
+          }
+          @if (visibleColumns().includes('price')) {
+            <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Price</th>
+          }
+          @if (visibleColumns().includes('cost')) {
+            <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-32">Cost</th>
+          }
+          @if (visibleColumns().includes('dailyRate')) {
+            <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">
+              Daily rate
+            </th>
+          }
+          @if (visibleColumns().includes('scr')) {
+            <th scope="col" class="px-4 py-3 text-right border-r border-red-100 w-28">SCR</th>
+          }
+          @if (visibleColumns().includes('margin')) {
+            <th scope="col" class="px-4 py-3 text-right w-20">Margin</th>
+          }
         </tr>
       </thead>
       <tbody class="">
@@ -29,31 +51,43 @@
               {{ scope.scope }}
             </td>
             <td class="px-4 py-2 border-r border-red-100"></td>
-            <td class="px-4 py-2 text-right border-r border-red-100">
-              {{ scope.totalWorkload | number: '1.3-3' }}
-            </td>
-            <td class="px-4 py-2 text-right border-r border-red-100">
-              {{ scope.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-2 text-right border-r border-red-100">
-              {{ scope.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-2 text-right border-r border-red-100">
-              {{ scope.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-2 text-right border-r border-red-100">
-              {{ scope.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-2 text-right">
-              <span
-                class="badge"
-                [class.success]="scope.margin >= 0.2"
-                [class.warning]="scope.margin < 0.2 && scope.margin > 0"
-                [class.destructive]="scope.margin <= 0"
-              >
-                {{ scope.margin | percent: '1.0-0' }}
-              </span>
-            </td>
+            @if (visibleColumns().includes('workload')) {
+              <td class="px-4 py-2 text-right border-r border-red-100">
+                {{ scope.totalWorkload | number: '1.3-3' }}
+              </td>
+            }
+            @if (visibleColumns().includes('price')) {
+              <td class="px-4 py-2 text-right border-r border-red-100">
+                {{ scope.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('cost')) {
+              <td class="px-4 py-2 text-right border-r border-red-100">
+                {{ scope.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('dailyRate')) {
+              <td class="px-4 py-2 text-right border-r border-red-100">
+                {{ scope.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('scr')) {
+              <td class="px-4 py-2 text-right border-r border-red-100">
+                {{ scope.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('margin')) {
+              <td class="px-4 py-2 text-right">
+                <span
+                  class="badge"
+                  [class.success]="scope.margin >= 0.2"
+                  [class.warning]="scope.margin < 0.2 && scope.margin > 0"
+                  [class.destructive]="scope.margin <= 0"
+                >
+                  {{ scope.margin | percent: '1.0-0' }}
+                </span>
+              </td>
+            }
           </tr>
 
           <!-- Profile Rows -->
@@ -65,31 +99,43 @@
               {{ scope.scope }}
             </td>
             <td class="px-4 py-1 border-r border-slate-200">{{ row.profileName }}</td>
-            <td class="px-4 py-1 text-right border-r border-slate-200 bg-slate-50">
-              {{ row.workload | number: '1.3-3' }}
-            </td>
-            <td class="px-4 py-1 text-right border-r border-slate-200">
-              {{ row.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-1 text-right border-r border-slate-200">
-              {{ row.cost | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-1 text-right border-r border-slate-200">
-              {{ row.dailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-1 text-right border-r border-slate-200">
-              {{ row.scr | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
-            <td class="px-4 py-1 text-right bg-slate-50">
-              <span
-                class="badge"
-                [class.success]="row.margin >= 0.2"
-                [class.warning]="row.margin < 0.2 && row.margin > 0"
-                [class.destructive]="row.margin <= 0"
-              >
-                {{ row.margin | percent: '1.0-0' }}
-              </span>
-            </td>
+            @if (visibleColumns().includes('workload')) {
+              <td class="px-4 py-1 text-right border-r border-slate-200 bg-slate-50">
+                {{ row.workload | number: '1.3-3' }}
+              </td>
+            }
+            @if (visibleColumns().includes('price')) {
+              <td class="px-4 py-1 text-right border-r border-slate-200">
+                {{ row.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('cost')) {
+              <td class="px-4 py-1 text-right border-r border-slate-200">
+                {{ row.cost | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('dailyRate')) {
+              <td class="px-4 py-1 text-right border-r border-slate-200">
+                {{ row.dailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('scr')) {
+              <td class="px-4 py-1 text-right border-r border-slate-200">
+                {{ row.scr | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
+            @if (visibleColumns().includes('margin')) {
+              <td class="px-4 py-1 text-right bg-slate-50">
+                <span
+                  class="badge"
+                  [class.success]="row.margin >= 0.2"
+                  [class.warning]="row.margin < 0.2 && row.margin > 0"
+                  [class.destructive]="row.margin <= 0"
+                >
+                  {{ row.margin | percent: '1.0-0' }}
+                </span>
+              </td>
+            }
           </tr>
         </ng-container>
 
@@ -97,31 +143,43 @@
         <tr class="bg-red-50 text-red-900 font-bold border-t-2 border-red-500">
           <td class="px-4 py-3 border-r border-red-200 text-lg uppercase text-red-700">Total</td>
           <td class="px-4 py-3 border-r border-red-200"></td>
-          <td class="px-4 py-3 text-right border-r border-red-200">
-            {{ summaryData().total.totalWorkload | number: '1.3-3' }}
-          </td>
-          <td class="px-4 py-3 text-right border-r border-red-200">
-            {{ summaryData().total.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-3 text-right border-r border-red-200">
-            {{ summaryData().total.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-3 text-right border-r border-red-200">
-            {{ summaryData().total.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-3 text-right border-r border-red-200">
-            {{ summaryData().total.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
-          </td>
-          <td class="px-4 py-3 text-right">
-            <span
-              class="badge"
-              [class.success]="summaryData().total.margin >= 0.2"
-              [class.warning]="summaryData().total.margin < 0.2 && summaryData().total.margin > 0"
-              [class.destructive]="summaryData().total.margin <= 0"
-            >
-              {{ summaryData().total.margin | percent: '1.0-0' }}
-            </span>
-          </td>
+          @if (visibleColumns().includes('workload')) {
+            <td class="px-4 py-3 text-right border-r border-red-200">
+              {{ summaryData().total.totalWorkload | number: '1.3-3' }}
+            </td>
+          }
+          @if (visibleColumns().includes('price')) {
+            <td class="px-4 py-3 text-right border-r border-red-200">
+              {{ summaryData().total.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+          }
+          @if (visibleColumns().includes('cost')) {
+            <td class="px-4 py-3 text-right border-r border-red-200">
+              {{ summaryData().total.totalCost | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+          }
+          @if (visibleColumns().includes('dailyRate')) {
+            <td class="px-4 py-3 text-right border-r border-red-200">
+              {{ summaryData().total.avgDailyRate | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+          }
+          @if (visibleColumns().includes('scr')) {
+            <td class="px-4 py-3 text-right border-r border-red-200">
+              {{ summaryData().total.avgScr | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </td>
+          }
+          @if (visibleColumns().includes('margin')) {
+            <td class="px-4 py-3 text-right">
+              <span
+                class="badge"
+                [class.success]="summaryData().total.margin >= 0.2"
+                [class.warning]="summaryData().total.margin < 0.2 && summaryData().total.margin > 0"
+                [class.destructive]="summaryData().total.margin <= 0"
+              >
+                {{ summaryData().total.margin | percent: '1.0-0' }}
+              </span>
+            </td>
+          }
         </tr>
       </tbody>
     </table>
@@ -130,7 +188,10 @@
 
 <!-- Scoped Hierarchy Summary Tables (One table per Scope) -->
 @for (scopeSum of hierarchySummaryByScopeData(); track scopeSum.scope) {
-  <div class="summary-section compact-summary-table mt-8 mb-8">
+  <div
+    class="summary-section compact-summary-table mt-8 mb-8"
+    [style.max-width.px]="tableMaxWidth()"
+  >
     <h3 class="section-title text-xl">
       {{ 'summary.by_hierarchy' | translate }} - {{ scopeSum.scope }}
     </h3>
@@ -138,13 +199,20 @@
       <table class="w-full text-sm text-left text-slate-300">
         <thead class="text-[10px] uppercase bg-red-900 text-white border-b border-red-800">
           <tr>
-            <th scope="col" class="px-2 py-1.5 w-[60%] border-r border-red-100">
+            <th
+              scope="col"
+              class="px-2 py-1.5 border-r border-red-100 relative group"
+              [style.width.px]="colWidth()"
+            >
               Produit / Cluster
+              <div class="resizer" (mousedown)="initResize($event)"></div>
             </th>
-            <th scope="col" class="px-2 py-1.5 text-right border-r border-red-100 w-[20%]">
-              Workload
-            </th>
-            <th scope="col" class="px-2 py-1.5 text-right w-[20%]">Price</th>
+            @if (visibleColumns().includes('workload')) {
+              <th scope="col" class="px-2 py-1.5 text-right border-r border-red-100">Workload</th>
+            }
+            @if (visibleColumns().includes('price')) {
+              <th scope="col" class="px-2 py-1.5 text-right">Price</th>
+            }
           </tr>
         </thead>
         <tbody class="">
@@ -154,7 +222,7 @@
               class="bg-red-50 text-red-900 font-bold border-b border-red-100 cursor-pointer hover:bg-red-100 transition-colors"
               (click)="toggleProductCollapse(scopeSum.scope, prod.productId)"
             >
-              <td class="px-2 py-1 border-r border-red-100 text-sm uppercase text-red-800 pl-4">
+              <td class="px-2 py-1 border-r border-red-100 text-xs uppercase text-red-800 pl-4">
                 <span class="inline-block w-5 text-center mr-1">
                   <svg
                     class="w-4 h-4 inline-block -mt-1 text-red-800 transition-transform duration-200"
@@ -173,12 +241,18 @@
                 </span>
                 {{ prod.productName }}
               </td>
-              <td class="px-2 py-1 text-right border-r border-red-100 text-sm">
-                {{ prod.totalWorkload | number: '1.3-3' }}
-              </td>
-              <td class="px-2 py-1 text-right text-sm">
-                {{ prod.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
-              </td>
+              @if (visibleColumns().includes('workload')) {
+                <td
+                  class="px-2 py-1 text-right border-r border-red-100 text-xs text-red-800 font-bold"
+                >
+                  {{ prod.totalWorkload | number: '1.3-3' }}
+                </td>
+              }
+              @if (visibleColumns().includes('price')) {
+                <td class="px-2 py-1 text-right text-xs text-red-800 font-bold">
+                  {{ prod.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+                </td>
+              }
             </tr>
 
             <!-- Cluster Rows -->
@@ -190,14 +264,18 @@
                   >
                     {{ cluster.clusterName }}
                   </td>
-                  <td
-                    class="px-2 py-0.5 text-right border-r border-slate-200 bg-slate-50 text-[11px]"
-                  >
-                    {{ cluster.workload | number: '1.3-3' }}
-                  </td>
-                  <td class="px-2 py-0.5 text-right text-[11px]">
-                    {{ cluster.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
-                  </td>
+                  @if (visibleColumns().includes('workload')) {
+                    <td
+                      class="px-2 py-0.5 text-right border-r border-slate-200 bg-slate-50 text-[11px]"
+                    >
+                      {{ cluster.workload | number: '1.3-3' }}
+                    </td>
+                  }
+                  @if (visibleColumns().includes('price')) {
+                    <td class="px-2 py-0.5 text-right text-[11px]">
+                      {{ cluster.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+                    </td>
+                  }
                 </tr>
               }
             }
@@ -208,12 +286,16 @@
             <td class="px-2 py-1.5 border-r border-red-100 text-sm uppercase text-red-700">
               Total {{ scopeSum.scope }}
             </td>
-            <td class="px-2 py-1.5 text-right border-r border-red-100 text-sm">
-              {{ scopeSum.totalWorkload | number: '1.3-3' }}
-            </td>
-            <td class="px-2 py-1.5 text-right text-sm">
-              {{ scopeSum.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
-            </td>
+            @if (visibleColumns().includes('workload')) {
+              <td class="px-2 py-1.5 text-right border-r border-red-100 text-sm">
+                {{ scopeSum.totalWorkload | number: '1.3-3' }}
+              </td>
+            }
+            @if (visibleColumns().includes('price')) {
+              <td class="px-2 py-1.5 text-right text-sm">
+                {{ scopeSum.totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </td>
+            }
           </tr>
         </tbody>
       </table>
