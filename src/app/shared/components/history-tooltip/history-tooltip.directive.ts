@@ -21,26 +21,70 @@ export class HistoryTooltipDirective implements OnDestroy {
 
   private overlayRef: OverlayRef | null = null;
 
-  @HostListener('mouseenter')
-  show() {
-    if (this.appHistoryTooltipDisabled || this.overlayRef) return;
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    if (this.appHistoryTooltipDisabled) return;
+    if (!this.overlayRef) {
+      this.show(event);
+      return;
+    }
 
     const positionStrategy = this.overlayPositionBuilder
-      .flexibleConnectedTo(this.elementRef)
+      .flexibleConnectedTo({
+        x: event.clientX,
+        y: event.clientY,
+        width: 0,
+        height: 0,
+      })
       .withPositions([
         {
           originX: 'start',
           originY: 'bottom',
           overlayX: 'start',
           overlayY: 'top',
-          offsetY: 8,
+          offsetY: 15,
+          offsetX: 15,
         },
         {
           originX: 'start',
           originY: 'top',
           overlayX: 'start',
           overlayY: 'bottom',
-          offsetY: -8,
+          offsetY: -15,
+          offsetX: 15,
+        },
+      ]);
+
+    this.overlayRef.updatePositionStrategy(positionStrategy);
+  }
+
+  @HostListener('mouseenter', ['$event'])
+  show(event: MouseEvent) {
+    if (this.appHistoryTooltipDisabled || this.overlayRef) return;
+
+    const positionStrategy = this.overlayPositionBuilder
+      .flexibleConnectedTo({
+        x: event.clientX,
+        y: event.clientY,
+        width: 0,
+        height: 0,
+      })
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetY: 15,
+          offsetX: 15,
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+          offsetY: -15,
+          offsetX: 15,
         },
       ]);
 
