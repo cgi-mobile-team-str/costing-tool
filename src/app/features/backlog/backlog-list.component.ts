@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   signal,
@@ -10,8 +11,9 @@ import {
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval } from 'rxjs';
 import {
   BacklogItem,
   BacklogVersion,
@@ -88,6 +90,7 @@ export class BacklogListComponent {
   private backlogService = inject(BacklogService);
   i18n = inject(I18nService);
   private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   // items = signal<BacklogItem[]>([]); // Replaced by repo signal
   items = this.repo.items;
@@ -170,6 +173,13 @@ export class BacklogListComponent {
         }, 0);
       }
     });
+
+    // Auto-refresh every 30 seconds
+    interval(30000)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.refresh();
+      });
   }
 
   totalBuildEffort = computed(() => {
