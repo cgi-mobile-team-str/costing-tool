@@ -81,7 +81,7 @@ export class BacklogFormComponent {
     moscow: ['MUST'],
     type: ['build' as BacklogItemType, Validators.required],
     chargeType: ['days' as ChargeType, Validators.required],
-    effortDays: [1, [Validators.required, Validators.min(0)]],
+    effortDays: [1, [Validators.min(0)]],
     profileId: [''],
   });
 

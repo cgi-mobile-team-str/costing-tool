@@ -59,6 +59,10 @@ z-checkbox {
   width: 250px !important;
   min-width: 250px;
   padding-left: 0.25rem;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  text-overflow: clip;
 }
 
 .desc-col {
