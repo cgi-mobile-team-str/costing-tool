@@ -23,9 +23,7 @@
       />
     } @else {
       <div class="flex items-center gap-2">
-        <strong class="item-title-text truncate max-w-[200px]" [title]="item.title">{{
-          item.title
-        }}</strong>
+        <strong class="item-title-text" [title]="item.title">{{ item.title }}</strong>
         <!-- Modification Indicator (Left) -->
         @if (item.updatedAt && !isReadOnly) {
           <button
