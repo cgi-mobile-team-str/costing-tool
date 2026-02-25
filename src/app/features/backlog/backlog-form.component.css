@@ -30,7 +30,7 @@ textarea.form-control {
   resize: vertical;
 }
 textarea.h-80 {
-  height: 60px;
+  height: 150px;
 }
 .d-flex {
   display: flex;

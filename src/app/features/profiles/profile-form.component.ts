@@ -26,7 +26,7 @@ export class ProfileFormComponent {
     id: [''],
     name: ['', Validators.required],
     username: [''],
-    dailyRate: [0, [Validators.required, Validators.min(1)]],
+    dailyRate: [0, [Validators.required, Validators.min(0)]],
     scr: [0, [Validators.min(0)]],
     active: [true],
   });

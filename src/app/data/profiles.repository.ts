@@ -48,4 +48,8 @@ export class ProfilesRepository {
       targetProjectId,
     });
   }
+
+  saveBulk(profiles: Profile[]): Observable<Profile[]> {
+    return this.http.post<Profile[]>(`${this.apiUrl}/bulk`, profiles);
+  }
 }

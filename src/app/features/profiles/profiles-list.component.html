@@ -46,6 +46,7 @@
   <table z-table>
     <thead z-table-header>
       <tr z-table-row>
+        <th z-table-head style="width: 80px"></th>
         <th z-table-head>{{ 'profiles.name' | translate }}</th>
         <th z-table-head>{{ 'profiles.username' | translate }}</th>
         <th z-table-head>{{ 'profiles.rate' | translate }}</th>
@@ -55,8 +56,40 @@
       </tr>
     </thead>
     <tbody z-table-body>
-      @for (profile of filteredProfiles(); track profile.id) {
+      @for (profile of filteredProfiles(); track profile.id; let first = $first; let last = $last) {
         <tr z-table-row [class.inactive]="!profile.active">
+          <td z-table-cell>
+            <div class="flex gap-1">
+              <button
+                z-button
+                zType="ghost"
+                zSize="xs"
+                (click)="moveUp(profile)"
+                [zDisabled]="first"
+                [title]="'common.move_up' | translate"
+              >
+                <img
+                  src="assets/circle-up-regular-full.svg"
+                  alt="Up"
+                  class="h-4 w-4 opacity-50 hover:opacity-100"
+                />
+              </button>
+              <button
+                z-button
+                zType="ghost"
+                zSize="xs"
+                (click)="moveDown(profile)"
+                [zDisabled]="last"
+                [title]="'common.move_down' | translate"
+              >
+                <img
+                  src="assets/circle-down-regular-full.svg"
+                  alt="Down"
+                  class="h-4 w-4 opacity-50 hover:opacity-100"
+                />
+              </button>
+            </div>
+          </td>
           <td z-table-cell class="font-medium">{{ profile.name }}</td>
           <td z-table-cell>{{ profile.username || '-' }}</td>
           <td z-table-cell>{{ profile.dailyRate | currency: 'EUR' }}</td>
@@ -80,7 +113,7 @@
       } @empty {
         @if (searchTerm()) {
           <tr z-table-row>
-            <td z-table-cell colspan="6" class="text-center py-12">
+            <td z-table-cell colspan="7" class="text-center py-12">
               <div class="empty-results">
                 <z-icon zType="search" class="mb-2 opacity-20" style="font-size: 3rem" />
                 <p class="text-muted-foreground text-lg">

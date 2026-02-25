@@ -62,9 +62,46 @@ export class ProfilesListComponent {
     const projectId = this.projectsService.currentProjectId();
     if (projectId) {
       this.repo.getAll(projectId).subscribe((profiles) => {
-        this.profiles.set(profiles);
+        // Sort by order if available
+        const sorted = [...profiles].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        this.profiles.set(sorted);
       });
     }
+  }
+
+  moveUp(profile: Profile) {
+    const profiles = this.profiles();
+    const index = profiles.findIndex((p) => p.id === profile.id);
+    if (index <= 0) return;
+
+    this.swap(index, index - 1);
+  }
+
+  moveDown(profile: Profile) {
+    const profiles = this.profiles();
+    const index = profiles.findIndex((p) => p.id === profile.id);
+    if (index === -1 || index >= profiles.length - 1) return;
+
+    this.swap(index, index + 1);
+  }
+
+  private swap(idx1: number, idx2: number) {
+    const profiles = [...this.profiles()];
+
+    // Swap elements in the array
+    const temp = profiles[idx1];
+    profiles[idx1] = profiles[idx2];
+    profiles[idx2] = temp;
+
+    // Normalize ALL orders based on new positions
+    const updatedProfiles = profiles.map((p, i) => ({
+      ...p,
+      order: i,
+    }));
+
+    this.repo.saveBulk(updatedProfiles).subscribe(() => {
+      this.refresh();
+    });
   }
 
   updateMargin() {

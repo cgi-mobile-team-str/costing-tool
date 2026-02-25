@@ -5,6 +5,7 @@ export interface Profile {
   dailyRate: number;
   scr?: number;
   active: boolean;
+  order?: number;
 }
 
 export interface Project {
