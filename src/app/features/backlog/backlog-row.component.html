@@ -126,7 +126,9 @@
           <option value="WONT">{{ 'backlog.moscow_wont' | translate }}</option>
         </select>
       } @else {
-        <span class="badge moscow">{{ (getMoscowLabel(item.moscow) | translate) || '-' }}</span>
+        <span class="badge moscow" [class]="'moscow-' + item.moscow">{{
+          (getMoscowLabel(item.moscow) | translate) || '-'
+        }}</span>
       }
     </td>
   }
