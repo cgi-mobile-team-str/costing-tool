@@ -48,11 +48,41 @@ export class ProfilesListComponent {
   currentProjectName = this.projectsService.currentProjectName;
   marginPercent = 0;
 
+  // Sorting state
+  sortKey = signal<keyof Profile | 'order'>('order');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
   filteredProfiles = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
-    if (!term) return this.profiles();
-    return this.profiles().filter((p) => p.name.toLowerCase().includes(term));
+    let result = [...this.profiles()];
+
+    if (term) {
+      result = result.filter((p) => p.name.toLowerCase().includes(term));
+    }
+
+    const key = this.sortKey();
+    const dir = this.sortDirection();
+
+    result.sort((a, b) => {
+      const valA = a[key as keyof Profile] ?? '';
+      const valB = b[key as keyof Profile] ?? '';
+
+      if (valA < valB) return dir === 'asc' ? -1 : 1;
+      if (valA > valB) return dir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return result;
   });
+
+  toggleSort(key: keyof Profile | 'order') {
+    if (this.sortKey() === key) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortKey.set(key);
+      this.sortDirection.set('asc');
+    }
+  }
 
   constructor() {
     this.refresh();
@@ -74,6 +104,10 @@ export class ProfilesListComponent {
   drop(event: CdkDragDrop<Profile[]>) {
     const profiles = [...this.profiles()];
     moveItemInArray(profiles, event.previousIndex, event.currentIndex);
+
+    // Reset sorting to custom order when dragging
+    this.sortKey.set('order');
+    this.sortDirection.set('asc');
 
     // Normalize ALL orders based on new positions
     const updatedProfiles = profiles.map((p, i) => ({

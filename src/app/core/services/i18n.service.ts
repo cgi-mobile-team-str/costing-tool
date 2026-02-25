@@ -79,6 +79,7 @@ const FR = {
   'profiles.import_desc': 'Sélectionnez un projet source pour copier ses profils.',
   'profiles.import_select_desc': 'Projets avec des profils disponibles :',
   'profiles.no_projects_to_import': 'Aucun autre projet avec des profils trouvé.',
+  'profiles.manual_order_reset': "Réinitialiser vers l'ordre manuel (réactive le glisser-déposer)",
 
   // Settings
   'settings.project_section': 'Projet',
@@ -294,6 +295,7 @@ const EN = {
   'profiles.import_desc': 'Select a source project to copy its profiles.',
   'profiles.import_select_desc': 'Projects with available profiles:',
   'profiles.no_projects_to_import': 'No other projects with profiles found.',
+  'profiles.manual_order_reset': 'Reset to manual order (re-enables drag and drop)',
 
   // Settings
   'settings.project_section': 'Project',

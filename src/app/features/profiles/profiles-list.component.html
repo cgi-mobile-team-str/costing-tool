@@ -46,32 +46,127 @@
   <table z-table>
     <thead z-table-header>
       <tr z-table-row>
-        <th z-table-head style="width: 80px"></th>
-        <th z-table-head>{{ 'profiles.name' | translate }}</th>
-        <th z-table-head>{{ 'profiles.username' | translate }}</th>
-        <th z-table-head>{{ 'profiles.rate' | translate }}</th>
-        <th z-table-head>{{ 'profiles.scr' | translate }}</th>
-        <th z-table-head>{{ 'profiles.active' | translate }}</th>
+        <th
+          z-table-head
+          style="width: 80px"
+          class="cursor-pointer hover:bg-muted/50 transition-colors"
+          (click)="toggleSort('order')"
+          [title]="'profiles.manual_order_reset' | translate"
+        >
+          <div class="flex items-center justify-center relative w-full">
+            <z-icon zType="grip-vertical" zSize="sm" class="opacity-50" />
+            @if (sortKey() === 'order') {
+              <div class="absolute right-0">
+                <z-icon
+                  [zType]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'"
+                  zSize="sm"
+                />
+              </div>
+            }
+          </div>
+        </th>
+        <th
+          z-table-head
+          class="cursor-pointer hover:bg-muted/50 transition-colors"
+          (click)="toggleSort('name')"
+        >
+          <div class="flex items-center gap-1">
+            {{ 'profiles.name' | translate }}
+            @if (sortKey() === 'name') {
+              <z-icon
+                [zType]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'"
+                zSize="sm"
+              />
+            }
+          </div>
+        </th>
+        <th
+          z-table-head
+          class="cursor-pointer hover:bg-muted/50 transition-colors"
+          (click)="toggleSort('username')"
+        >
+          <div class="flex items-center gap-1">
+            {{ 'profiles.username' | translate }}
+            @if (sortKey() === 'username') {
+              <z-icon
+                [zType]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'"
+                zSize="sm"
+              />
+            }
+          </div>
+        </th>
+        <th
+          z-table-head
+          class="cursor-pointer hover:bg-muted/50 transition-colors text-right"
+          (click)="toggleSort('dailyRate')"
+        >
+          <div class="flex items-center justify-end gap-1">
+            {{ 'profiles.rate' | translate }}
+            @if (sortKey() === 'dailyRate') {
+              <z-icon
+                [zType]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'"
+                zSize="sm"
+              />
+            }
+          </div>
+        </th>
+        <th
+          z-table-head
+          class="cursor-pointer hover:bg-muted/50 transition-colors text-right"
+          (click)="toggleSort('scr')"
+        >
+          <div class="flex items-center justify-end gap-1">
+            {{ 'profiles.scr' | translate }}
+            @if (sortKey() === 'scr') {
+              <z-icon
+                [zType]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'"
+                zSize="sm"
+              />
+            }
+          </div>
+        </th>
+        <th
+          z-table-head
+          class="cursor-pointer hover:bg-muted/50 transition-colors"
+          (click)="toggleSort('active')"
+        >
+          <div class="flex items-center gap-1">
+            {{ 'profiles.active' | translate }}
+            @if (sortKey() === 'active') {
+              <z-icon
+                [zType]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'"
+                zSize="sm"
+              />
+            }
+          </div>
+        </th>
         <th z-table-head class="text-right">{{ 'common.actions' | translate }}</th>
       </tr>
     </thead>
     <tbody z-table-body cdkDropList (cdkDropListDropped)="drop($event)">
       @for (profile of filteredProfiles(); track profile.id) {
-        <tr z-table-row [class.inactive]="!profile.active" cdkDrag>
+        <tr
+          z-table-row
+          [class.inactive]="!profile.active"
+          cdkDrag
+          [cdkDragDisabled]="sortKey() !== 'order'"
+        >
           <td z-table-cell>
-            <div class="flex items-center">
-              <div
-                class="drag-handle mr-2 cursor-grab active:cursor-grabbing text-muted-foreground opacity-50 hover:opacity-100"
-                cdkDragHandle
-              >
-                <z-icon zType="grip-vertical" />
+            @if (sortKey() === 'order') {
+              <div class="flex items-center justify-center w-full">
+                <div
+                  class="drag-handle cursor-grab active:cursor-grabbing text-muted-foreground opacity-50 hover:opacity-100"
+                  cdkDragHandle
+                >
+                  <z-icon zType="grip-vertical" />
+                </div>
               </div>
-            </div>
+            }
           </td>
           <td z-table-cell class="font-medium">{{ profile.name }}</td>
           <td z-table-cell>{{ profile.username || '-' }}</td>
-          <td z-table-cell>{{ profile.dailyRate | currency: 'EUR' }}</td>
-          <td z-table-cell>{{ profile.scr || 0 | currency: 'EUR' }}</td>
+          <td z-table-cell class="text-right">{{ profile.dailyRate | currency: 'EUR' }}</td>
+          <td z-table-cell class="text-right">{{ profile.scr || 0 | currency: 'EUR' }}</td>
           <td z-table-cell>
             <span class="badge" [class.success]="profile.active">{{
               profile.active ? ('common.yes' | translate) : ('common.no' | translate)
