@@ -55,39 +55,17 @@
         <th z-table-head class="text-right">{{ 'common.actions' | translate }}</th>
       </tr>
     </thead>
-    <tbody z-table-body>
-      @for (profile of filteredProfiles(); track profile.id; let first = $first; let last = $last) {
-        <tr z-table-row [class.inactive]="!profile.active">
+    <tbody z-table-body cdkDropList (cdkDropListDropped)="drop($event)">
+      @for (profile of filteredProfiles(); track profile.id) {
+        <tr z-table-row [class.inactive]="!profile.active" cdkDrag>
           <td z-table-cell>
-            <div class="flex gap-1">
-              <button
-                z-button
-                zType="ghost"
-                zSize="xs"
-                (click)="moveUp(profile)"
-                [zDisabled]="first"
-                [title]="'common.move_up' | translate"
+            <div class="flex items-center">
+              <div
+                class="drag-handle mr-2 cursor-grab active:cursor-grabbing text-muted-foreground opacity-50 hover:opacity-100"
+                cdkDragHandle
               >
-                <img
-                  src="assets/circle-up-regular-full.svg"
-                  alt="Up"
-                  class="h-4 w-4 opacity-50 hover:opacity-100"
-                />
-              </button>
-              <button
-                z-button
-                zType="ghost"
-                zSize="xs"
-                (click)="moveDown(profile)"
-                [zDisabled]="last"
-                [title]="'common.move_down' | translate"
-              >
-                <img
-                  src="assets/circle-down-regular-full.svg"
-                  alt="Down"
-                  class="h-4 w-4 opacity-50 hover:opacity-100"
-                />
-              </button>
+                <z-icon zType="grip-vertical" />
+              </div>
             </div>
           </td>
           <td z-table-cell class="font-medium">{{ profile.name }}</td>

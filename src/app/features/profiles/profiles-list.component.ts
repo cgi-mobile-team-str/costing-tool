@@ -1,3 +1,4 @@
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +24,7 @@ import { ProjectImportSelectorComponent } from './project-import-selector.compon
     CommonModule,
     TranslatePipe,
     FormsModule,
+    DragDropModule,
     ZardButtonComponent,
     ZardIconComponent,
     ...ZardTableImports,
@@ -69,29 +71,9 @@ export class ProfilesListComponent {
     }
   }
 
-  moveUp(profile: Profile) {
-    const profiles = this.profiles();
-    const index = profiles.findIndex((p) => p.id === profile.id);
-    if (index <= 0) return;
-
-    this.swap(index, index - 1);
-  }
-
-  moveDown(profile: Profile) {
-    const profiles = this.profiles();
-    const index = profiles.findIndex((p) => p.id === profile.id);
-    if (index === -1 || index >= profiles.length - 1) return;
-
-    this.swap(index, index + 1);
-  }
-
-  private swap(idx1: number, idx2: number) {
+  drop(event: CdkDragDrop<Profile[]>) {
     const profiles = [...this.profiles()];
-
-    // Swap elements in the array
-    const temp = profiles[idx1];
-    profiles[idx1] = profiles[idx2];
-    profiles[idx2] = temp;
+    moveItemInArray(profiles, event.previousIndex, event.currentIndex);
 
     // Normalize ALL orders based on new positions
     const updatedProfiles = profiles.map((p, i) => ({
