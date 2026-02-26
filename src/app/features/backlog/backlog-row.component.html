@@ -40,25 +40,25 @@
           </button>
         }
 
-        <!-- Comment Indicator (Right) -->
-        <button
-          type="button"
-          class="indicator-box"
-          [class.active]="hasComments"
-          (click)="onViewComments($event)"
-          [title]="'backlog.view_comments' | translate"
-          [appCommentsTooltip]="item.id"
-          [appCommentsTooltipDisabled]="!hasComments"
-        >
-          <z-icon zType="message-square" class="w-3.5 h-3.5" />
+        <!-- Comment Indicator (Right) — badge is OUTSIDE button to avoid browser button overflow clipping -->
+        <div class="comment-badge-wrapper">
+          <button
+            type="button"
+            class="indicator-box"
+            [class.active]="hasComments"
+            (click)="onViewComments($event)"
+            [title]="'backlog.view_comments' | translate"
+            [appCommentsTooltip]="item.id"
+            [appCommentsTooltipDisabled]="!hasComments"
+          >
+            <z-icon zType="message-square" class="w-3.5 h-3.5" />
+          </button>
           @if (hasComments) {
-            <span
-              class="absolute -top-1 -right-1 bg-blue-600 text-white text-[8px] font-bold min-w-[14px] h-[14px] rounded-full flex items-center justify-center px-0.5 shadow-sm"
-            >
+            <span class="comment-count-badge" aria-label="{{ item.commentCount }} comment(s)">
               {{ item.commentCount }}
             </span>
           }
-        </button>
+        </div>
       </div>
     }
   </td>
