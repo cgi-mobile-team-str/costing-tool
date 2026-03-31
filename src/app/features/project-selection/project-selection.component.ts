@@ -52,7 +52,12 @@ export class ProjectSelectionComponent implements OnInit {
     this.errorMessage.set(null);
     this.projectsService.getProjects().subscribe({
       next: (projects) => {
-        this.projects.set(projects);
+        const sortedProjects = [...projects].sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
+        this.projects.set(sortedProjects);
         this.loading.set(false);
       },
       error: (err) => {

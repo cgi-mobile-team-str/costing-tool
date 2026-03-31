@@ -43,6 +43,18 @@ thead th {
   text-align: center !important;
 }
 
+.line-number-col {
+  width: 40px !important;
+  min-width: 40px;
+  max-width: 40px !important;
+  text-align: center !important;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 .center-content {
   display: flex;
   align-items: center;

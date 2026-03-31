@@ -61,6 +61,7 @@ export interface BacklogItem {
   createdAt?: string;
   updatedAt?: string;
   commentCount?: number;
+  lineNumber?: number;
 }
 
 export interface Settings {

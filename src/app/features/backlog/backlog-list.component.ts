@@ -393,6 +393,8 @@ export class BacklogListComponent {
       return (prodA?.order ?? 0) - (prodB?.order ?? 0);
     });
 
+    let globalLineNumber = 1;
+
     for (const pid of sortedProductIds) {
       const prodItems = productMap.get(pid)!;
       const productName = allProducts.find((p) => p.id === pid)?.name || 'Unknown Product';
@@ -416,10 +418,14 @@ export class BacklogListComponent {
       const clusterGroups = [];
       for (const cid of sortedClusterIds) {
         const clusterName = allClusters.find((c) => c.id === cid)?.name || 'General';
+        const itemsWithLineNumbers = clusterMap.get(cid)!.map(item => ({
+          ...item,
+          lineNumber: globalLineNumber++
+        }));
         clusterGroups.push({
           clusterId: cid,
           cluster: clusterName,
-          items: clusterMap.get(cid)!, // items are already filtered by product and cluster
+          items: itemsWithLineNumbers, // items are already filtered by product and cluster
         });
       }
 

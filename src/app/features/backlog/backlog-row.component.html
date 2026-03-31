@@ -10,6 +10,10 @@
       />
     </div>
   </td>
+  <!-- Line Number -->
+  <td class="line-number-col">
+    {{ item.lineNumber }}
+  </td>
   <!-- Title -->
   <td class="title-col" (dblclick)="!isReadOnly && startEdit('title')">
     @if (isEditing('title')) {
