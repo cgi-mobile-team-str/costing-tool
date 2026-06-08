@@ -8,7 +8,7 @@ import {
   MsalService,
 } from '@azure/msal-angular';
 import {
-  AuthenticationResult,
+  AccountInfo,
   EventMessage,
   EventType,
   InteractionStatus,
@@ -47,8 +47,8 @@ export class App implements OnInit, OnDestroy {
         takeUntil(this._destroying$),
       )
       .subscribe((result: EventMessage) => {
-        const payload = result.payload as AuthenticationResult;
-        this.authService.instance.setActiveAccount(payload.account);
+        const account = result.payload as AccountInfo;
+        this.authService.instance.setActiveAccount(account);
       });
 
     this.msalBroadcastService.inProgress$
@@ -60,9 +60,10 @@ export class App implements OnInit, OnDestroy {
         } else {
           // You can also look at specific statuses to customize the message
           let message = 'Vérification de l\'authentification...';
-          if (status === InteractionStatus.Login) message = 'Connexion en cours...';
-          else if (status === InteractionStatus.AcquireToken) message = 'Rafraîchissement du token...';
+          if (status === InteractionStatus.AcquireToken) message = 'Authentification en cours...';
           else if (status === InteractionStatus.Startup) message = 'Initialisation...';
+          else if (status === InteractionStatus.HandleRedirect) message = 'Connexion en cours...';
+          else if (status === InteractionStatus.Logout) message = 'Déconnexion en cours...';
           // Make sure not to balance active requests incorrectly for MSAL.
           // For simplicity, directly toggle the loading flag if needed.
           // Or just call show/hide appropriately.
