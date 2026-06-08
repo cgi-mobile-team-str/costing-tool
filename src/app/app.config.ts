@@ -1,5 +1,5 @@
 import { provideZard } from '@/shared/core/provider/providezard';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import {
   ApplicationConfig,
   inject,
@@ -61,10 +61,12 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
 
 import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
+import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor])),
     provideRouter(routes, withHashLocation()),
     provideZard(),
     provideAngularQuery(new QueryClient()),

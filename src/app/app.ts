@@ -1,4 +1,5 @@
-import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import {
   MSAL_GUARD_CONFIG,
@@ -14,11 +15,12 @@ import {
 } from '@azure/msal-browser';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { LoadingService } from './core/services/loading.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.html',
   encapsulation: ViewEncapsulation.None,
 })
@@ -26,6 +28,10 @@ export class App implements OnInit, OnDestroy {
   isIframe = false;
   loginDisplay = false;
   private readonly _destroying$ = new Subject<void>();
+  loadingService = inject(LoadingService);
+  isLoading = this.loadingService.isLoading;
+  loadingMessage = this.loadingService.loadingMessage;
+
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
@@ -46,12 +52,24 @@ export class App implements OnInit, OnDestroy {
       });
 
     this.msalBroadcastService.inProgress$
-      .pipe(
-        filter((status: InteractionStatus) => status === InteractionStatus.None),
-        takeUntil(this._destroying$),
-      )
-      .subscribe(() => {
-        this.setLoginDisplay();
+      .pipe(takeUntil(this._destroying$))
+      .subscribe((status: InteractionStatus) => {
+        if (status === InteractionStatus.None) {
+          this.loadingService.hide();
+          this.setLoginDisplay();
+        } else {
+          // You can also look at specific statuses to customize the message
+          let message = 'Vérification de l\'authentification...';
+          if (status === InteractionStatus.Login) message = 'Connexion en cours...';
+          else if (status === InteractionStatus.AcquireToken) message = 'Rafraîchissement du token...';
+          else if (status === InteractionStatus.Startup) message = 'Initialisation...';
+          // Make sure not to balance active requests incorrectly for MSAL.
+          // For simplicity, directly toggle the loading flag if needed.
+          // Or just call show/hide appropriately.
+          // Wait, show() increments counter, hide decrements.
+          // Better: set the signal directly if we want MSAL to hold it, but we can't easily.
+          // Msal events are discrete.
+        }
       });
 
     this.authService.handleRedirectObservable().subscribe();

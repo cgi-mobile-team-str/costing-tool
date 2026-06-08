@@ -1,1 +1,11 @@
 <router-outlet></router-outlet>
+
+<!-- Global Loader Overlay -->
+<div *ngIf="isLoading()" class="global-loader-overlay">
+  <div class="loader-content">
+    <div class="spinner"></div>
+    <div class="loader-message">
+      {{ loadingMessage() || 'Chargement en cours...' }}
+    </div>
+  </div>
+</div>
